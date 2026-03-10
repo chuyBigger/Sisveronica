@@ -2,23 +2,22 @@ package com.laveronica.siscontrol.domain.productos;
 
 import com.laveronica.siscontrol.domain.categoria.Categoria;
 import com.laveronica.siscontrol.domain.productos.dto.DatosRegistroProducto;
-import com.laveronica.siscontrol.domain.valores.Partida;
-import com.laveronica.siscontrol.domain.valores.UnidadMedida;
+import com.laveronica.siscontrol.enums.Partida;
+import com.laveronica.siscontrol.enums.UnidadMedida;
 import jakarta.persistence.*;
 import jakarta.validation.Valid;
 import lombok.*;
-import org.hibernate.validator.constraints.UniqueElements;
 
 import java.math.BigDecimal;
 
-@Getter
-@Setter
+
 @NoArgsConstructor
 @AllArgsConstructor
 @EqualsAndHashCode(of = "id")
+@Data
 
 @Table(name = "productos")
-@Entity(name = "producto")
+@Entity
 
 public class Producto {
 
@@ -50,19 +49,9 @@ public class Producto {
     @Column(nullable = false)
     private Boolean activo;
 
-    public Producto(@Valid DatosRegistroProducto datos, Partida partida,Categoria categoria) {
 
-        this.id = null;
-        this.nombre = datos.nombre();
-        this.partida = partida;
-        this.categoria = categoria;
-        this.unidadMedida = datos.unidadMedida();
-        this.precioCompra = datos.precioCompra();
-        this.precioVenta = datos.precioVenta();
-        this.activo = true;
-
+    public Producto(DatosRegistroProducto datosNormalizados, Partida partida, Categoria categoria) {
     }
-
 }
 
 

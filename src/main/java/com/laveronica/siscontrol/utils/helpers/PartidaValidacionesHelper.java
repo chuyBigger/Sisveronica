@@ -1,6 +1,6 @@
 package com.laveronica.siscontrol.utils.helpers;
 
-import com.laveronica.siscontrol.domain.valores.Partida;
+import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 

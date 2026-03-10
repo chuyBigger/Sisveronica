@@ -1,6 +1,5 @@
 package com.laveronica.siscontrol.domain.contratos.dto;
 
-import com.laveronica.siscontrol.domain.valores.Partida;
 import jakarta.validation.constraints.Digits;
 import jakarta.validation.constraints.Future;
 import jakarta.validation.constraints.NotNull;

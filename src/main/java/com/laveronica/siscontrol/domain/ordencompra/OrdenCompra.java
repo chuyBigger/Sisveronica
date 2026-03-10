@@ -2,10 +2,10 @@ package com.laveronica.siscontrol.domain.ordencompra;
 
 import com.laveronica.siscontrol.domain.clientes.Cliente;
 import com.laveronica.siscontrol.domain.contratos.Contrato;
-import com.laveronica.siscontrol.domain.notaventadetalle.NotaVentaDetalle;
+import com.laveronica.siscontrol.domain.notaventa.NotaVenta;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosRegistroOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle;
-import com.laveronica.siscontrol.domain.valores.Partida;
+import com.laveronica.siscontrol.enums.Partida;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -14,7 +14,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 @Table(name = "orden_Compras")
-@Entity(name = "ordenes_Compra")
+@Entity
 
 @Getter
 @Setter
@@ -50,6 +50,9 @@ public class OrdenCompra {
     @OneToMany(mappedBy = "ordenCompra", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenCompraDetalle> detalles = new ArrayList<>();
 
+    @OneToMany(mappedBy = "ordenCompra")
+    private List<NotaVenta> ListaNotaVentas = new ArrayList<>();
+
     @Column(nullable = false)
     private Boolean activo;
 
@@ -58,16 +61,15 @@ public class OrdenCompra {
         detalle.setOrdenCompra(this);
     }
 
-    public OrdenCompra(DatosRegistroOrdenCompra datos, Cliente cliente, Contrato contrato, Partida partida){
+    public OrdenCompra(DatosRegistroOrdenCompra datos, Cliente cliente, Contrato contrato, Partida partida, LocalDate fechaFinSemana){
         this.id = null;
         this.cliente = cliente;
         this.contrato = contrato;
         this.partida = partida;
         this.fechaInicioSemana = datos.fechaInicioSemana();
-        this.fechaFinSemana = datos.fechaFinSemana();
+        this.fechaFinSemana = fechaFinSemana;
         this.detalles = new ArrayList<>();
         this.activo = true;
-
     }
 
 }

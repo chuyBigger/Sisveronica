@@ -4,7 +4,8 @@ import com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle;
 
 public record DatosListarDetalleOrdenCompraDetalle(
 
-        String producto,
+        Long id,
+        Long productoId,
         Double lunes,
         Double martes,
         Double miercoles,
@@ -15,7 +16,8 @@ public record DatosListarDetalleOrdenCompraDetalle(
 ) {
     public DatosListarDetalleOrdenCompraDetalle(OrdenCompraDetalle datos) {
         this(
-                datos.getProducto().getNombre(),
+                datos.getId(),
+                datos.getProducto().getId(),
                 datos.getLunes(),
                 datos.getMartes(),
                 datos.getMiercoles(),

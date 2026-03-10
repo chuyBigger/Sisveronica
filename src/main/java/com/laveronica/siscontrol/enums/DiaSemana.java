@@ -1,4 +1,4 @@
-package com.laveronica.siscontrol.domain.valores;
+package com.laveronica.siscontrol.enums;
 
 public enum DiaSemana {
 

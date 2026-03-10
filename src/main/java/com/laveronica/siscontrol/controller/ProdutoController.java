@@ -8,8 +8,9 @@ import com.laveronica.siscontrol.domain.productos.dto.DatosRegistroProducto;
 import com.laveronica.siscontrol.repositories.ProductosRepository;
 import com.laveronica.siscontrol.services.ProductoService;
 import jakarta.validation.Valid;
-import org.springframework.data.domain.Page;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
@@ -19,13 +20,17 @@ import org.springframework.web.util.UriComponentsBuilder;
 
 @RestController
 @RequestMapping("/productos")
+@RequiredArgsConstructor
 public class ProdutoController {
 
-    @Autowired
-    private ProductosRepository productosRepository;
 
-    @Autowired
-    private ProductoService productoService;
+    private final ProductosRepository productosRepository;
+
+
+    private final ProductoService productoService;
+
+
+
 
     @PostMapping
     public ResponseEntity<DatosDetalleProducto> registrar(@RequestBody @Valid DatosRegistroProducto datos, UriComponentsBuilder uriComponentsBuilder){

@@ -7,9 +7,7 @@ import java.time.LocalDate;
 public record DatosDetalleOrdenCompraDetalle(
 
         Long id,
-        Long ordenCompra,
-        LocalDate fecha,
-        String producto,
+        Long producto,
         Double lunes,
         Double martes,
         Double miercoles,
@@ -22,9 +20,7 @@ public record DatosDetalleOrdenCompraDetalle(
     public DatosDetalleOrdenCompraDetalle(OrdenCompraDetalle detalle) {
         this(
                 detalle.getId(),
-                detalle.getOrdenCompra().getId(),
-                detalle.getFecha(),
-                detalle.getProducto().getNombre(),
+                detalle.getProducto().getId(),
                 detalle.getLunes(),
                 detalle.getMartes(),
                 detalle.getMiercoles(),

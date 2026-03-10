@@ -2,7 +2,7 @@ package com.laveronica.siscontrol.repositories;
 
 import com.laveronica.siscontrol.domain.categoria.Categoria;
 import com.laveronica.siscontrol.domain.productos.Producto;
-import com.laveronica.siscontrol.domain.valores.Partida;
+import com.laveronica.siscontrol.enums.Partida;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;

@@ -3,7 +3,8 @@ package com.laveronica.siscontrol.domain.notaventa;
 import com.laveronica.siscontrol.domain.clientes.Cliente;
 import com.laveronica.siscontrol.domain.contratos.Contrato;
 import com.laveronica.siscontrol.domain.notaventadetalle.NotaVentaDetalle;
-import com.laveronica.siscontrol.domain.valores.Partida;
+import com.laveronica.siscontrol.domain.ordencompra.OrdenCompra;
+import com.laveronica.siscontrol.enums.Partida;
 import jakarta.persistence.*;
 import lombok.*;
 
@@ -37,6 +38,10 @@ public class NotaVenta {
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "contrato_id")
     private Contrato contrato;
+
+    @ManyToOne(optional = true, fetch = FetchType.LAZY)
+    @JoinColumn(name = "orden_compra_id", nullable = true)
+    private OrdenCompra ordenCompra;
 
     @Column(nullable = false)
     private LocalDateTime fecha;

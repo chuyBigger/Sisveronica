@@ -1,4 +1,8 @@
-# SIGCOP – Sistema Interno de Gestión y Control de Pedidos
+
+
+
+
+ºnterno de Gestión y Control de Pedidos
 
 **¡Bienvenido a SIGCOP!**  
 Sistema backend desarrollado con **Java y Spring Boot** que gestiona clientes, contratos y pedidos internos, optimizando la operación de cada departamento y generando reportes de rendimiento y metas económicas.
@@ -122,13 +126,7 @@ Copyright (c) 2025 Jesús Medina Casas
 
 ---
 
-## 👨‍💻 Desarrollador
 
-**Jesús Medina Casas**
-- 💻 Apasionado por desarrollo backend con Java y Spring Boot
-- 🎓 Estudiante de Oracle Next Education (ONE)
-- 🌐 [LinkedIn](https://www.linkedin.com/in/jesus-medina-casas/)
-- 🧑‍💻 [GitHub](https://github.com/chuyBigger)
 
 
 # SisControl - Sistema de Control Operativo La Verónica

@@ -1,4 +1,4 @@
-package com.laveronica.siscontrol.domain.valores;
+package com.laveronica.siscontrol.enums;
 
 import com.fasterxml.jackson.annotation.JsonCreator;
 

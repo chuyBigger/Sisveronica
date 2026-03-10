@@ -35,15 +35,21 @@ public class OrdenCompraController {
 
     }
 
-    @PatchMapping(path = "{id}")
-    public ResponseEntity<DatosDetalleOrdenCompra> actilizarOdrdenCompra(@PatchMapping Long id, @Valid @RequestBody DatosActulizarOrdenCompra datos) {
+    @GetMapping(path = "/{id}")
+    public ResponseEntity<DatosDetalleOrdenCompra> buscarOrdenCompraId(@PathVariable Long id ){
+        var ordenCompra = ordenCompraService.buscarOrdenCompraId(id);
+        return ResponseEntity.ok().body(ordenCompra);
+    }
+
+    @PatchMapping(path = "/{id}")
+    public ResponseEntity<DatosDetalleOrdenCompra> actilizarOdrdenCompra(@PathVariable Long id, @Valid @RequestBody DatosActulizarOrdenCompra datos) {
         var ordenCompraActualizada = ordenCompraService.actulizarOrdenCompraId(id, datos);
         return ResponseEntity.ok().body(ordenCompraActualizada);
-
-
-
-
     }
+
+
+
+    
 
 
 }

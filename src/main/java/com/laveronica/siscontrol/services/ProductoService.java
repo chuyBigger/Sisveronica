@@ -9,8 +9,8 @@ import com.laveronica.siscontrol.domain.productos.dto.DatosListarProductos;
 import com.laveronica.siscontrol.domain.productos.dto.DatosRegistroProducto;
 import com.laveronica.siscontrol.utils.helpers.CategoriaValidacionesHelper;
 import com.laveronica.siscontrol.domain.productos.validaciones.ValidadorDeProductos;
-import com.laveronica.siscontrol.domain.valores.Partida;
-import com.laveronica.siscontrol.domain.valores.UnidadMedida;
+import com.laveronica.siscontrol.enums.Partida;
+import com.laveronica.siscontrol.enums.UnidadMedida;
 import com.laveronica.siscontrol.utils.helpers.PartidaValidacionesHelper;
 import com.laveronica.siscontrol.utils.helpers.UnidadMedidaValidacionesHelper;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
@@ -45,7 +45,8 @@ public class ProductoService {
     public Producto registrarProducto(DatosRegistroProducto datos){
 
         var nombre = datos.nombre().toLowerCase().trim();
-        DatosRegistroProducto datosNormalizados = new DatosRegistroProducto(
+
+        var datosNormalizados = new DatosRegistroProducto(
                 datos.nombre().trim().toLowerCase(),
                 datos.partida(),
                 datos.categoriaId(),
@@ -53,9 +54,11 @@ public class ProductoService {
                 datos.precioCompra(),
                 datos.precioVenta()
         );
+
         validadores.forEach(v -> v.validar(datosNormalizados));
-        Partida partida = partidaValidacionesHelper.validaPartidaExistaString(datosNormalizados.partida());
-        Categoria categoria = categoriaValidacionesHelper.validarCategoriaActiva(datosNormalizados.categoriaId());
+
+        var partida = partidaValidacionesHelper.validaPartidaExistaString(datosNormalizados.partida());
+        var categoria = categoriaValidacionesHelper.validarCategoriaActiva(datosNormalizados.categoriaId());
         var nuevoProducto = new Producto(datosNormalizados, partida, categoria);
         productosRepository.save(nuevoProducto);
         return nuevoProducto;

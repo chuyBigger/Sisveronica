@@ -2,7 +2,7 @@ package com.laveronica.siscontrol.domain.ordencompra.dto;
 
 import com.laveronica.siscontrol.domain.ordencompra.OrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompradetalle.dto.DatosDetalleOrdenCompraDetalle;
-import com.laveronica.siscontrol.domain.valores.Partida;
+import com.laveronica.siscontrol.enums.Partida;
 
 import java.time.LocalDate;
 import java.util.List;
@@ -14,7 +14,6 @@ public record DatosDetalleOrdenCompra(
         String contrato,
         Partida partida,
         LocalDate fechaInicioSemana,
-        LocalDate fechsFinSemana,
         List<DatosDetalleOrdenCompraDetalle> detalles
 
 ) {
@@ -25,7 +24,6 @@ public record DatosDetalleOrdenCompra(
                 ordenCompraNueva.getContrato().getContrato(),
                 ordenCompraNueva.getPartida(),
                 ordenCompraNueva.getFechaInicioSemana(),
-                ordenCompraNueva.getFechaFinSemana(),
                 ordenCompraNueva.getDetalles().stream().map(
                         dn -> new DatosDetalleOrdenCompraDetalle(dn)
                 ).collect(Collectors.toList())

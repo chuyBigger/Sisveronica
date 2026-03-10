@@ -41,6 +41,8 @@ public class Contrato {
     @Column(name = "fecha_termino", nullable = false)
     private LocalDate fechaTermino;
 
+
+
     @Column(precision = 12, scale = 2, nullable = false)
     private BigDecimal presupuesto;
 

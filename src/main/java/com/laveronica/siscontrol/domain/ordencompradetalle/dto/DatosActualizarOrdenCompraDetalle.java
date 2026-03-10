@@ -1,11 +1,11 @@
 package com.laveronica.siscontrol.domain.ordencompradetalle.dto;
 
-import java.time.LocalDate;
+import com.fasterxml.jackson.annotation.JsonProperty;
 
-public record DatosRegistroOrdenCompraDetalle(
+public record DatosActualizarOrdenCompraDetalle(
 
-        LocalDate fecha,
-        Long producto,
+        @JsonProperty("producto")
+        Long productoId,
         Double lunes,
         Double martes,
         Double miercoles,
@@ -13,5 +13,6 @@ public record DatosRegistroOrdenCompraDetalle(
         Double viernes,
         Double sabado,
         Double domingo
+
 ) {
 }

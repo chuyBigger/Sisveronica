@@ -10,7 +10,7 @@ import com.laveronica.siscontrol.repositories.NotaVentaRepository;
 import com.laveronica.siscontrol.domain.notaventa.dto.DatosDetalleNota;
 import com.laveronica.siscontrol.domain.notaventa.dto.DatosRegistroNota;
 import com.laveronica.siscontrol.domain.notaventadetalle.NotaVentaDetalle;
-import com.laveronica.siscontrol.domain.valores.Partida;
+import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.utils.helpers.*;
 import jakarta.transaction.Transactional;
 import org.springframework.beans.factory.annotation.Autowired;

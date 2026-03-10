@@ -2,7 +2,7 @@ package com.laveronica.siscontrol.domain.notaventa.dto;
 
 import com.laveronica.siscontrol.domain.notaventa.NotaVenta;
 import com.laveronica.siscontrol.domain.notaventadetalle.dto.NotaVentaListarDetalle;
-import com.laveronica.siscontrol.domain.valores.Partida;
+import com.laveronica.siscontrol.enums.Partida;
 
 import java.math.BigDecimal;
 import java.time.LocalDateTime;

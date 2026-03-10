@@ -1,7 +1,6 @@
 package com.laveronica.siscontrol.utils.helpers;
 
-import com.laveronica.siscontrol.domain.categoria.Categoria;
-import com.laveronica.siscontrol.domain.valores.UnidadMedida;
+import com.laveronica.siscontrol.enums.UnidadMedida;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import org.springframework.stereotype.Component;
 

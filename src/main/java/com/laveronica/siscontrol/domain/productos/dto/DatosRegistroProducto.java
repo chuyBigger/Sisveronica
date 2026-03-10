@@ -1,6 +1,6 @@
 package com.laveronica.siscontrol.domain.productos.dto;
 
-import com.laveronica.siscontrol.domain.valores.UnidadMedida;
+import com.laveronica.siscontrol.enums.UnidadMedida;
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
 import jakarta.validation.constraints.Positive;

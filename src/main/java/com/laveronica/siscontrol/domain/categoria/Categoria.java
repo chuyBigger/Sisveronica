@@ -1,7 +1,7 @@
 package com.laveronica.siscontrol.domain.categoria;
 
 import com.laveronica.siscontrol.domain.categoria.dto.DatosRegistroCategoria;
-import com.laveronica.siscontrol.domain.valores.Partida;
+import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.domain.productos.Producto;
 import jakarta.persistence.*;
 import jakarta.validation.constraints.NotNull;
