@@ -1,0 +1,28 @@
+:host {
+  display: flex;
+  flex-direction: column;
+  height: 100%;
+  background: var(--mat-sys-surface-container, #fafafa);
+}
+
+.sidebar-header {
+  background: var(--mat-sys-primary, #1976d2);
+  color: var(--mat-sys-on-primary, white);
+  font-weight: 500;
+  font-size: 1.125rem;
+}
+
+mat-nav-list {
+  padding-top: 0;
+  flex: 1;
+  overflow-y: auto;
+}
+
+.active-link {
+  background: var(--mat-sys-primary-container, #bbdefb) !important;
+  color: var(--mat-sys-on-primary-container, #1565c0) !important;
+}
+
+.active-link mat-icon {
+  color: var(--mat-sys-primary, #1976d2);
+}

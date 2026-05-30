@@ -12,7 +12,9 @@ import com.laveronica.siscontrol.domain.notaventa.dto.DatosRegistroNota;
 import com.laveronica.siscontrol.domain.notaventadetalle.NotaVentaDetalle;
 import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.utils.helpers.*;
+import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
@@ -22,25 +24,20 @@ import java.math.BigDecimal;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class NotaVentaService {
 
-    @Autowired
-    private NotaVentaRepository notaVentaRepository;
+    private final NotaVentaRepository notaVentaRepository;
 
-    @Autowired
-    private ClienteValidacionesHelper clienteValidacionesHelper;
+    private final ClienteValidacionesHelper clienteValidacionesHelper;
 
-    @Autowired
-    private PartidaValidacionesHelper partidaValidacionesHelper;
+    private final PartidaValidacionesHelper partidaValidacionesHelper;
 
-    @Autowired
-    public ProductoValidacionesHelper productoValidacionesHelper;
+    public final ProductoValidacionesHelper productoValidacionesHelper;
 
-    @Autowired
-    private NotaVentaDetalleService notaVentaDetalleService;
+    private final NotaVentaDetalleService notaVentaDetalleService;
 
-    @Autowired
-    private NotaVentaValidacionesHelper notaVentaValidacionesHelper;
+    private final NotaVentaValidacionesHelper notaVentaValidacionesHelper;
 
     @Transactional
     public DatosDetalleNota registrarNota(DatosRegistroNota datos) {
@@ -98,5 +95,11 @@ public class NotaVentaService {
         nota.setTotalGeneral(nuevoTotalGeneral);
         notaVentaRepository.save(nota);
         return new DatosDetalleNota(nota);
+    }
+
+    @Transactional
+    public void eliminarNota(Long id) {
+        NotaVenta nota = notaVentaValidacionesHelper.notaVentaExiste(id);
+        nota.setActivo(false);
     }
 }

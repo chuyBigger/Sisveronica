@@ -46,6 +46,10 @@ public class NotaVentaController {
         return ResponseEntity.ok().body(notaActualizada);
     }
 
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarNota(@PathVariable Long id){
+        notaVentaService.eliminarNota(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }

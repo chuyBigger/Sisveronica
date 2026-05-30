@@ -90,5 +90,10 @@ public class OrdenCompraService {
         return new DatosDetalleOrdenCompra(ordenCompra);
     }
 
+    @Transactional
+    public void eliminarOrdenCompra(Long id) {
+        OrdenCompra ordenCompra = ordenCompraValidacionesHelper.buscarOrdenCompraId(id);
+        ordenCompra.setActivo(false);
+    }
 
 }

@@ -63,6 +63,7 @@ public class ClienteService {
         if (!cliente.isActivo()) {
             throw new ResourceNotFoundException("⛔ el cliente ya se encuentra eliminado");
         }
+        cliente.setActivo(false);
     }
 
 }

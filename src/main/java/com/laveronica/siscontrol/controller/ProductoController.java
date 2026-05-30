@@ -19,7 +19,7 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RestController
 @RequestMapping("/productos")
 @RequiredArgsConstructor
-public class ProdutoController {
+public class ProductoController {
 
     private final ProductoService productoService;
 

@@ -47,9 +47,10 @@ public class OrdenCompraController {
         return ResponseEntity.ok().body(ordenCompraActualizada);
     }
 
-
-
-    
-
+    @DeleteMapping("/{id}")
+    public ResponseEntity<Void> eliminarOrdenCompra(@PathVariable Long id){
+        ordenCompraService.eliminarOrdenCompra(id);
+        return ResponseEntity.noContent().build();
+    }
 
 }

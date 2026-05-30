@@ -1,0 +1,18 @@
+:host {
+  display: block;
+  height: 100dvh;
+}
+
+.sidenav-container {
+  height: 100%;
+}
+
+.app-sidenav {
+  width: 260px;
+  border-right: 1px solid var(--mat-sys-outline-variant, #e0e0e0);
+}
+
+.app-content {
+  overflow-y: auto;
+  background: var(--mat-sys-surface, #fff);
+}

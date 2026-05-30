@@ -1,0 +1,40 @@
+<div class="dashboard-container">
+  <div class="welcome-section">
+    <h1 class="mat-headline-large">SisVeronica</h1>
+    <p class="mat-body-large">Sistema de Control</p>
+  </div>
+
+  <div class="cards-grid">
+    @for (card of cards; track card.title) {
+      <mat-card class="dashboard-card" [style.--card-color]="card.color" (click)="navigateTo(card.route)">
+        <mat-card-content>
+          <div class="card-content">
+            <mat-icon class="card-icon" [style.color]="card.color">{{ card.icon }}</mat-icon>
+            <div class="card-info">
+              <span class="card-count">{{ card.count }}</span>
+              <span class="card-title">{{ card.title }}</span>
+            </div>
+          </div>
+        </mat-card-content>
+      </mat-card>
+    }
+  </div>
+
+  <div class="quick-actions">
+    <h2>Acciones Rápidas</h2>
+    <div class="actions-row">
+      <button mat-raised-button color="primary" routerLink="/productos/nuevo">
+        <mat-icon>add</mat-icon> Nuevo Producto
+      </button>
+      <button mat-raised-button color="accent" routerLink="/clientes/nuevo">
+        <mat-icon>person_add</mat-icon> Nuevo Cliente
+      </button>
+      <button mat-raised-button color="warn" routerLink="/notaventas/nuevo">
+        <mat-icon>receipt_long</mat-icon> Nueva Nota de Venta
+      </button>
+      <button mat-raised-button routerLink="/ordenes-compra/nuevo">
+        <mat-icon>add_shopping_cart</mat-icon> Nueva Orden de Compra
+      </button>
+    </div>
+  </div>
+</div>

@@ -4,6 +4,7 @@ package com.laveronica.siscontrol.domain.clientes.dto;
 import com.laveronica.siscontrol.domain.clientes.Cliente;
 
 public record DatosDetalleCliente(
+        Long id,
         String nombre,
         String rfc,
         String calle,
@@ -15,6 +16,7 @@ public record DatosDetalleCliente(
 ) {
     public DatosDetalleCliente(Cliente cliente){
         this(
+                cliente.getId(),
                 cliente.getNombre(),
                 cliente.getRfc(),
                 cliente.getCalle(),

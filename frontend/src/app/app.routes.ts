@@ -1,0 +1,36 @@
+import { Routes } from '@angular/router';
+import { DashboardComponent } from './components/layout/dashboard/dashboard.component';
+import { ProductoListaComponent } from './components/productos/producto-lista.component';
+import { ProductoFormComponent } from './components/productos/producto-form.component';
+import { CategoriaListaComponent } from './components/categorias/categoria-lista.component';
+import { CategoriaFormComponent } from './components/categorias/categoria-form.component';
+import { ClienteListaComponent } from './components/clientes/cliente-lista.component';
+import { ClienteFormComponent } from './components/clientes/cliente-form.component';
+import { ContratoListaComponent } from './components/contratos/contrato-lista.component';
+import { ContratoFormComponent } from './components/contratos/contrato-form.component';
+import { NotaVentaListaComponent } from './components/notaventas/notaventa-lista.component';
+import { NotaVentaFormComponent } from './components/notaventas/notaventa-form.component';
+import { OrdenListaComponent } from './components/ordenes-compra/orden-lista.component';
+import { OrdenFormComponent } from './components/ordenes-compra/orden-form.component';
+
+export const routes: Routes = [
+  { path: '', component: DashboardComponent },
+  { path: 'productos', component: ProductoListaComponent },
+  { path: 'productos/nuevo', component: ProductoFormComponent },
+  { path: 'productos/:id', component: ProductoFormComponent },
+  { path: 'categorias', component: CategoriaListaComponent },
+  { path: 'categorias/nuevo', component: CategoriaFormComponent },
+  { path: 'categorias/:id', component: CategoriaFormComponent },
+  { path: 'clientes', component: ClienteListaComponent },
+  { path: 'clientes/nuevo', component: ClienteFormComponent },
+  { path: 'clientes/:id', component: ClienteFormComponent },
+  { path: 'contratos', component: ContratoListaComponent },
+  { path: 'contratos/nuevo', component: ContratoFormComponent },
+  { path: 'contratos/:id', component: ContratoFormComponent },
+  { path: 'notaventas', component: NotaVentaListaComponent },
+  { path: 'notaventas/nuevo', component: NotaVentaFormComponent },
+  { path: 'notaventas/:id', component: NotaVentaFormComponent },
+  { path: 'ordenes-compra', component: OrdenListaComponent },
+  { path: 'ordenes-compra/nuevo', component: OrdenFormComponent },
+  { path: 'ordenes-compra/:id', component: OrdenFormComponent },
+];

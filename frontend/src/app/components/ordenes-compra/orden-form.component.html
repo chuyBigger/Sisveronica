@@ -1,0 +1,119 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ esEdicion ? 'Editar Orden de Compra' : 'Nueva Orden de Compra' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (cargando) {
+        <div class="spinner-wrapper">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="guardar()">
+          <div class="form-grid">
+            <mat-form-field appearance="outline">
+              <mat-label>Cliente</mat-label>
+              <mat-select formControlName="cliente_id" (selectionChange)="onClienteChange()">
+                @for (c of clientes; track c.id) {
+                  <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+                }
+              </mat-select>
+              @if (form.get('cliente_id')?.hasError('required')) {
+                <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Contrato</mat-label>
+              <mat-select formControlName="contrato_id">
+                @for (c of contratos; track c.id) {
+                  <mat-option [value]="c.id">{{ c.contrato }}</mat-option>
+                }
+              </mat-select>
+              @if (form.get('contrato_id')?.hasError('required')) {
+                <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Partida</mat-label>
+              <mat-select formControlName="partida">
+                @for (p of partidas; track p) {
+                  <mat-option [value]="p">{{ p }}</mat-option>
+                }
+              </mat-select>
+              @if (form.get('partida')?.hasError('required')) {
+                <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+
+            <mat-form-field appearance="outline">
+              <mat-label>Fecha Inicio Semana</mat-label>
+              <input matInput [matDatepicker]="pickerSemana" formControlName="fechaInicioSemana">
+              <mat-datepicker-toggle matSuffix [for]="pickerSemana"></mat-datepicker-toggle>
+              <mat-datepicker #pickerSemana></mat-datepicker>
+              @if (form.get('fechaInicioSemana')?.hasError('required')) {
+                <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+          </div>
+
+          <div class="detalles-section">
+            <div class="detalles-header">
+              <h3>Detalles</h3>
+              <button mat-stroked-button color="primary" type="button" (click)="agregarDetalle()">
+                <mat-icon>add</mat-icon> Agregar detalle
+              </button>
+            </div>
+
+            @if (detalles.length === 0) {
+              <p class="empty-message">No hay detalles. Agregue al menos un detalle.</p>
+            }
+
+            <div formArrayName="detalles">
+              @for (detalle of detalles.controls; track $index) {
+                <div class="detalle-card" [formGroupName]="$index">
+                  <div class="detalle-header">
+                    <strong>Detalle #{{ $index + 1 }}</strong>
+                    <button mat-icon-button color="warn" type="button" (click)="eliminarDetalle($index)" matTooltip="Eliminar">
+                      <mat-icon>delete</mat-icon>
+                    </button>
+                  </div>
+                  <div class="detalle-body">
+                    <mat-form-field appearance="outline">
+                      <mat-label>Producto</mat-label>
+                      <mat-select formControlName="producto">
+                        @for (p of productos; track p.id) {
+                          <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
+                        }
+                      </mat-select>
+                      @if (detalle.get('producto')?.hasError('required')) {
+                        <mat-error>Requerido</mat-error>
+                      }
+                    </mat-form-field>
+
+                    <div class="dias-grid">
+                      @for (dia of diasSemana; track dia) {
+                        <mat-form-field appearance="outline">
+                          <mat-label>{{ dia | titlecase }}</mat-label>
+                          <input matInput type="number" min="0" [formControlName]="dia" placeholder="0">
+                        </mat-form-field>
+                      }
+                    </div>
+                  </div>
+                </div>
+              }
+            </div>
+          </div>
+
+          <div class="form-actions">
+            <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+              {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>
