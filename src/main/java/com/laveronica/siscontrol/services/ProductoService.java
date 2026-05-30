@@ -1,6 +1,7 @@
 package com.laveronica.siscontrol.services;
 
 import com.laveronica.siscontrol.domain.productos.Producto;
+import com.laveronica.siscontrol.domain.productos.productomapper.ProductoMapper;
 import com.laveronica.siscontrol.repositories.ProductosRepository;
 import com.laveronica.siscontrol.domain.productos.dto.DatosActualizarProducto;
 import com.laveronica.siscontrol.domain.categoria.Categoria;
@@ -12,10 +13,11 @@ import com.laveronica.siscontrol.domain.productos.validaciones.ValidadorDeProduc
 import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.enums.UnidadMedida;
 import com.laveronica.siscontrol.utils.helpers.PartidaValidacionesHelper;
+import com.laveronica.siscontrol.utils.helpers.ProductoValidacionesHelper;
 import com.laveronica.siscontrol.utils.helpers.UnidadMedidaValidacionesHelper;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -23,45 +25,34 @@ import org.springframework.stereotype.Service;
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ProductoService {
-
-    @Autowired
     //TODO @Qualifier estudiar
-    private PartidaValidacionesHelper partidaValidacionesHelper;
+    private final ProductoMapper productoMapper;
 
-    @Autowired
-    private CategoriaValidacionesHelper categoriaValidacionesHelper;
+    private final PartidaValidacionesHelper partidaValidacionesHelper;
 
-    @Autowired UnidadMedidaValidacionesHelper unidadMedidaValidacionesHelper;
+    private final CategoriaValidacionesHelper categoriaValidacionesHelper;
 
-    @Autowired
+    private final UnidadMedidaValidacionesHelper unidadMedidaValidacionesHelper;
 
-    private List<ValidadorDeProductos> validadores;
+    private final List<ValidadorDeProductos> validadores;
 
-    @Autowired
-    private ProductosRepository productosRepository;
+    private final ProductosRepository productosRepository;
+
+    private final ProductoValidacionesHelper productoValidacionesHelper;
 
     @Transactional
-    public Producto registrarProducto(DatosRegistroProducto datos){
+    public DatosDetalleProducto registrarProducto(DatosRegistroProducto datos) {
 
-        var nombre = datos.nombre().toLowerCase().trim();
-
-        var datosNormalizados = new DatosRegistroProducto(
-                datos.nombre().trim().toLowerCase(),
-                datos.partida(),
-                datos.categoriaId(),
-                datos.unidadMedida(),
-                datos.precioCompra(),
-                datos.precioVenta()
-        );
-
-        validadores.forEach(v -> v.validar(datosNormalizados));
-
-        var partida = partidaValidacionesHelper.validaPartidaExistaString(datosNormalizados.partida());
-        var categoria = categoriaValidacionesHelper.validarCategoriaActiva(datosNormalizados.categoriaId());
-        var nuevoProducto = new Producto(datosNormalizados, partida, categoria);
-        productosRepository.save(nuevoProducto);
-        return nuevoProducto;
+        var nombre = productoValidacionesHelper.validarNombreNoExista(datos);
+        validadores.forEach(v -> v.validar(datos));
+        var partida = partidaValidacionesHelper.validaPartidaExistaString(datos.partida());
+        var categoria = categoriaValidacionesHelper.validarCategoriaActiva(datos.categoriaId());
+        var nuevoProducto = productoMapper.toEntity(datos, partida, categoria);
+        nuevoProducto.setNombre(nombre);
+        var producto = productosRepository.save(nuevoProducto);
+        return productoMapper.toDetalleDto(producto);
     }
 
 
@@ -70,23 +61,21 @@ public class ProductoService {
         return page;
     }
 
-
     public Page<DatosListarProductos> listaProductosPartida(Pageable paguinas, String partida) {
 
         Partida partidaEnum = partidaValidacionesHelper.validaPartidaExistaString(partida);
         var page = productosRepository.findAllByPartidaAndActivoTrue(partidaEnum, paguinas).map(DatosListarProductos::new);
-        if (page.isEmpty()){
+        if (page.isEmpty()) {
             throw new ResourceNotFoundException("No se encontraron productos activos para la partida.");
         }
         return page;
     }
 
-
     public Page<DatosListarProductos> listaProdictosCategoriaId(Long id, Pageable paguinas) {
 
         Categoria categoria = categoriaValidacionesHelper.validarCategoriaActiva(id);
         var page = productosRepository.findAllByCategoriaAndActivoTrue(categoria, paguinas).map(DatosListarProductos::new);
-        if (page.isEmpty()){
+        if (page.isEmpty()) {
             throw new ResourceNotFoundException("No se encontraron productos activos para la Categoria.");
         }
         return page;
@@ -97,7 +86,7 @@ public class ProductoService {
 
         Producto productoEncontrado = productosRepository.findByIdAndActivoTrue(id)
                 .orElseThrow(
-                        ()-> new ResourceNotFoundException("El Id introducido no corresponde a ningun producto")
+                        () -> new ResourceNotFoundException("El Id introducido no corresponde a ningun producto")
                 );
         return new DatosDetalleProducto(productoEncontrado);
 
@@ -107,7 +96,7 @@ public class ProductoService {
     public DatosDetalleProducto buscarProductoNombre(String nombre) {
         Producto productoEncontrado = productosRepository.findByNombreAndActivoTrue(nombre)
                 .orElseThrow(
-                        ()-> new ResourceNotFoundException("No existe producto en el '"+nombre+"' registrado")
+                        () -> new ResourceNotFoundException("No existe producto en el '" + nombre + "' registrado")
                 );
         return new DatosDetalleProducto(productoEncontrado);
     }
@@ -118,8 +107,8 @@ public class ProductoService {
         var productosEncontrados = productosRepository
                 .findAllByNombreContainingAndActivoTrue(palabraBuscar, paguinas)
                 .map(DatosDetalleProducto::new);
-        if (productosEncontrados.isEmpty()){
-            throw new ResourceNotFoundException("No existe coincidecias p productos que contengan '"+palabraBuscar+"' en el registro.");
+        if (productosEncontrados.isEmpty()) {
+            throw new ResourceNotFoundException("No existe coincidecias p productos que contengan '" + palabraBuscar + "' en el registro.");
         }
         return productosEncontrados;
 
@@ -129,14 +118,14 @@ public class ProductoService {
     public DatosDetalleProducto actualizarProductoId(Long id, DatosActualizarProducto datos) {
         Producto productoActualizado = productosRepository.findById(id)
                 .orElseThrow(
-                        ()-> new ResourceNotFoundException("No existe producto con el id: "+id+" o esta mal escrito")
+                        () -> new ResourceNotFoundException("No existe producto con el id: " + id + " o esta mal escrito")
                 );
 
-        if (datos.nombre() != null){
+        if (datos.nombre() != null) {
             String nombreNormalizado = datos.nombre().toLowerCase().trim();
             productoActualizado.setNombre(nombreNormalizado);
         }
-        if (datos.partida() != null){
+        if (datos.partida() != null) {
             Partida partida = partidaValidacionesHelper.validaPartidaExistaString(datos.partida());
             productoActualizado.setPartida(partida);
         }
@@ -144,14 +133,14 @@ public class ProductoService {
             Categoria categoria = categoriaValidacionesHelper.validarCategoriaActiva(datos.categoriaId());
             productoActualizado.setCategoria(categoria);
         }
-        if (datos.unidadMedida() != null){
+        if (datos.unidadMedida() != null) {
             UnidadMedida unidadMedida = unidadMedidaValidacionesHelper.validar(datos.unidadMedida());
             productoActualizado.setUnidadMedida(unidadMedida);
         }
-        if (datos.precioCompra() != null){
+        if (datos.precioCompra() != null) {
             productoActualizado.setPrecioCompra(datos.precioCompra());
         }
-        if (datos.precioVenta() != null){
+        if (datos.precioVenta() != null) {
             productoActualizado.setPrecioVenta(datos.precioVenta());
         }
         return new DatosDetalleProducto(productoActualizado);
@@ -161,7 +150,7 @@ public class ProductoService {
     public void eliminarProducto(Long id) {
         Producto eliminar = productosRepository.findById(id)
                 .orElseThrow(
-                        ()-> new ResourceNotFoundException("No hay un producto con el el id "+id+"registrado")
+                        () -> new ResourceNotFoundException("No hay un producto con el el id " + id + "registrado")
                 );
         eliminar.setActivo(false);
     }

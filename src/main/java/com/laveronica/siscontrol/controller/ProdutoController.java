@@ -5,11 +5,9 @@ import com.laveronica.siscontrol.domain.productos.dto.DatosActualizarProducto;
 import com.laveronica.siscontrol.domain.productos.dto.DatosDetalleProducto;
 import com.laveronica.siscontrol.domain.productos.dto.DatosListarProductos;
 import com.laveronica.siscontrol.domain.productos.dto.DatosRegistroProducto;
-import com.laveronica.siscontrol.repositories.ProductosRepository;
 import com.laveronica.siscontrol.services.ProductoService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -23,20 +21,13 @@ import org.springframework.web.util.UriComponentsBuilder;
 @RequiredArgsConstructor
 public class ProdutoController {
 
-
-    private final ProductosRepository productosRepository;
-
-
     private final ProductoService productoService;
-
-
-
 
     @PostMapping
     public ResponseEntity<DatosDetalleProducto> registrar(@RequestBody @Valid DatosRegistroProducto datos, UriComponentsBuilder uriComponentsBuilder){
-        Producto producto = productoService.registrarProducto(datos);
-        var uri = uriComponentsBuilder.path("/productos/{id}").buildAndExpand(producto.getId()).toUri();
-        return ResponseEntity.created(uri).body(new DatosDetalleProducto(producto));
+        var producto = productoService.registrarProducto(datos);
+        var uri = uriComponentsBuilder.path("/productos/{id}").buildAndExpand(producto).toUri();
+        return ResponseEntity.created(uri).body(producto);
     }
 
     @GetMapping(path = {"","/"})

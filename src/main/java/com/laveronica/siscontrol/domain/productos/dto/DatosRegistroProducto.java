@@ -27,5 +27,8 @@ public record DatosRegistroProducto(
         @Positive(message = "El precio de venta debe ser mayor a 0")
         BigDecimal precioVenta
 ) {
+
+
+
 }
 

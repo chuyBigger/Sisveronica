@@ -3,7 +3,6 @@ package com.laveronica.siscontrol.services;
 import com.laveronica.siscontrol.domain.notaventa.NotaVenta;
 import com.laveronica.siscontrol.domain.notaventadetalle.NotaVentaDetalle;
 import com.laveronica.siscontrol.domain.notaventadetalle.dto.NotaVentaDetalleRegistro;
-import com.laveronica.siscontrol.domain.notaventadetalle.dto.NotaVentaListarDetalle;
 import com.laveronica.siscontrol.domain.productos.Producto;
 import com.laveronica.siscontrol.repositories.NotaVentaDetalleRepository;
 import com.laveronica.siscontrol.utils.helpers.ProductoValidacionesHelper;

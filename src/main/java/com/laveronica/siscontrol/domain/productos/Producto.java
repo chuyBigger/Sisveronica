@@ -1,11 +1,9 @@
 package com.laveronica.siscontrol.domain.productos;
 
 import com.laveronica.siscontrol.domain.categoria.Categoria;
-import com.laveronica.siscontrol.domain.productos.dto.DatosRegistroProducto;
 import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.enums.UnidadMedida;
 import jakarta.persistence.*;
-import jakarta.validation.Valid;
 import lombok.*;
 
 import java.math.BigDecimal;
@@ -48,10 +46,6 @@ public class Producto {
 
     @Column(nullable = false)
     private Boolean activo;
-
-
-    public Producto(DatosRegistroProducto datosNormalizados, Partida partida, Categoria categoria) {
-    }
 }
 
 
