@@ -64,14 +64,14 @@ class ProductoServiceTest {
 
     @Test
     void registrarProductoSuccess() {
-        var datos = new DatosRegistroProducto("leche", "LACTEOS", 1L, UnidadMedida.LITRO, BigDecimal.TEN, BigDecimal.valueOf(20));
+        var datos = new DatosRegistroProducto("leche", "LACTEOS", 1L, UnidadMedida.LITRO, BigDecimal.TEN, BigDecimal.valueOf(20), null);
         Categoria categoria = new Categoria();
         categoria.setId(1L);
         categoria.setNombre("Lacteos");
         Producto producto = new Producto();
-        producto.setId(1L);
+        producto.setId("uuid-1");
         producto.setNombre("leche");
-        var detalle = new DatosDetalleProducto(1L, "leche", "LACTEOS", 1L, "LITRO", BigDecimal.TEN, BigDecimal.valueOf(20));
+        var detalle = new DatosDetalleProducto("uuid-1", "leche", "LACTEOS", 1L, "LITRO", BigDecimal.TEN, BigDecimal.valueOf(20), "PROD-001");
 
         given(productoValidacionesHelper.validarNombreNoExista(datos)).willReturn("leche");
         given(partidaValidacionesHelper.validaPartidaExistaString("LACTEOS")).willReturn(Partida.LACTEOS);
@@ -92,7 +92,7 @@ class ProductoServiceTest {
         categoria.setId(1L);
         categoria.setNombre("Lacteos");
         Producto producto = new Producto();
-        producto.setId(1L);
+        producto.setId("uuid-1");
         producto.setNombre("leche");
         producto.setPartida(Partida.LACTEOS);
         producto.setCategoria(categoria);
@@ -108,7 +108,7 @@ class ProductoServiceTest {
     @Test
     void buscarProductoIdFound() {
         Producto producto = new Producto();
-        producto.setId(1L);
+        producto.setId("uuid-1");
         producto.setNombre("leche");
         producto.setPartida(Partida.LACTEOS);
         Categoria categoria = new Categoria();
@@ -118,19 +118,19 @@ class ProductoServiceTest {
         producto.setUnidadMedida(UnidadMedida.LITRO);
         producto.setPrecioVenta(BigDecimal.valueOf(20));
 
-        given(productosRepository.findByIdAndActivoTrue(1L)).willReturn(Optional.of(producto));
+        given(productosRepository.findByIdAndActivoTrue("uuid-1")).willReturn(Optional.of(producto));
 
-        var result = productoService.buscarProductoId(1L);
+        var result = productoService.buscarProductoId("uuid-1");
 
         assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo("uuid-1");
     }
 
     @Test
     void buscarProductoIdThrowsResourceNotFoundException() {
-        given(productosRepository.findByIdAndActivoTrue(99L)).willReturn(Optional.empty());
+        given(productosRepository.findByIdAndActivoTrue("bad-id")).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> productoService.buscarProductoId(99L))
+        assertThatThrownBy(() -> productoService.buscarProductoId("bad-id"))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("no corresponde a ningun producto");
     }

@@ -8,12 +8,14 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialogModule, MatDialog } from '@angular/material/dialog';
 import { FormsModule } from '@angular/forms';
 import { ProductoService } from '../../services/producto.service';
+import { EnumsService } from '../../services/enums.service';
 import { DatosListarProductos } from '../../models/producto.model';
 
 @Component({
@@ -30,6 +32,7 @@ import { DatosListarProductos } from '../../models/producto.model';
     MatIconModule,
     MatFormFieldModule,
     MatInputModule,
+    MatSelectModule,
     MatCardModule,
     MatTooltipModule,
     MatSnackBarModule,
@@ -40,19 +43,23 @@ import { DatosListarProductos } from '../../models/producto.model';
 })
 export class ProductoListaComponent implements AfterViewInit {
   private productoService = inject(ProductoService);
+  private enumsService = inject(EnumsService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
 
-  displayedColumns: string[] = ['id', 'nombre', 'partida', 'categoria', 'precioVenta', 'acciones'];
+  displayedColumns: string[] = ['id', 'nombre', 'codigo', 'partida', 'categoria', 'precioVenta', 'acciones'];
   dataSource = new MatTableDataSource<DatosListarProductos>([]);
   totalElements = 0;
   searchQuery = '';
+  partidas: string[] = [];
+  partidaSeleccionada = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
+    this.enumsService.getPartidas().subscribe((res) => (this.partidas = res));
     this.cargarProductos();
   }
 
@@ -60,7 +67,15 @@ export class ProductoListaComponent implements AfterViewInit {
     const page = this.paginator?.pageIndex ?? 0;
     const size = this.paginator?.pageSize ?? 10;
 
-    if (this.searchQuery.trim()) {
+    if (this.partidaSeleccionada) {
+      this.productoService.listarPorPartida(this.partidaSeleccionada, page, size).subscribe({
+        next: (res) => {
+          this.dataSource.data = res.content ?? res;
+          this.totalElements = res.totalElements ?? (res.content ? res.content.length : res.length);
+        },
+        error: () => this.snackBar.open('Error al cargar productos', 'Cerrar', { duration: 3000 }),
+      });
+    } else if (this.searchQuery.trim()) {
       this.productoService.buscarPorPalabra(this.searchQuery.trim(), page, size).subscribe({
         next: (res) => {
           this.dataSource.data = res.content ?? res;
@@ -83,18 +98,25 @@ export class ProductoListaComponent implements AfterViewInit {
     this.cargarProductos();
   }
 
+  filtrarPorPartida(): void {
+    this.paginator.firstPage();
+    this.cargarProductos();
+  }
+
   buscar(): void {
+    this.partidaSeleccionada = '';
     this.paginator.firstPage();
     this.cargarProductos();
   }
 
   limpiarBusqueda(): void {
     this.searchQuery = '';
+    this.partidaSeleccionada = '';
     this.paginator.firstPage();
     this.cargarProductos();
   }
 
-  confirmarEliminar(id: number, nombre: string): void {
+  confirmarEliminar(id: string, nombre: string): void {
     if (confirm(`¿Eliminar el producto "${nombre}"?`)) {
       this.productoService.eliminar(id).subscribe({
         next: () => {

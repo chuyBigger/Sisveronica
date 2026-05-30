@@ -44,7 +44,7 @@ export class ProductoFormComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   esEdicion = false;
-  productoId: number | null = null;
+  productoId: string | null = null;
   cargando = false;
   categorias: DatosDetalleCategoria[] = [];
   partidas: string[] = [];
@@ -55,6 +55,7 @@ export class ProductoFormComponent implements OnInit {
     partida: ['', Validators.required],
     categoriaId: ['', Validators.required],
     unidadMedida: ['', Validators.required],
+    codigo: [''],
     precioCompra: [null],
     precioVenta: ['', Validators.required],
   });
@@ -64,7 +65,7 @@ export class ProductoFormComponent implements OnInit {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.esEdicion = true;
-      this.productoId = Number(idParam);
+      this.productoId = idParam;
       this.cargarProducto(this.productoId);
     }
   }
@@ -75,7 +76,7 @@ export class ProductoFormComponent implements OnInit {
     this.categoriaService.listar().subscribe((res) => (this.categorias = res));
   }
 
-  cargarProducto(id: number): void {
+  cargarProducto(id: string): void {
     this.cargando = true;
     this.productoService.buscarPorId(id).subscribe({
       next: (producto) => {

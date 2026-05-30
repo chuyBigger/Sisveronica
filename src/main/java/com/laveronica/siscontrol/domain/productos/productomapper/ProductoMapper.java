@@ -19,6 +19,7 @@ public interface ProductoMapper {
     @Mapping(target = "partida", source = "partida")
     @Mapping(target = "categoria", source = "categoria")
     @Mapping(target = "id", ignore = true)
+    @Mapping(target = "codigo", expression = "java(datos.codigo())")
     Producto toEntity(DatosRegistroProducto datos, Partida partida, Categoria categoria);
 
 }

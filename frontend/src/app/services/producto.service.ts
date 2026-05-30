@@ -29,12 +29,12 @@ export class ProductoService {
     return this.http.get<any>(`${this.apiUrl}/partidas/${partida}`, { params });
   }
 
-  listarPorCategoria(id: number, page = 0, size = 10): Observable<any> {
+  listarPorCategoria(id: string, page = 0, size = 10): Observable<any> {
     const params = new HttpParams().set('page', page).set('size', size);
     return this.http.get<any>(`${this.apiUrl}/categorias/${id}`, { params });
   }
 
-  buscarPorId(id: number): Observable<DatosDetalleProducto> {
+  buscarPorId(id: string): Observable<DatosDetalleProducto> {
     return this.http.get<DatosDetalleProducto>(`${this.apiUrl}/${id}`);
   }
 
@@ -47,11 +47,11 @@ export class ProductoService {
     return this.http.get<any>(`${this.apiUrl}/buscar_palabras`, { params });
   }
 
-  actualizar(id: number, datos: DatosActualizarProducto): Observable<DatosDetalleProducto> {
+  actualizar(id: string, datos: DatosActualizarProducto): Observable<DatosDetalleProducto> {
     return this.http.patch<DatosDetalleProducto>(`${this.apiUrl}/${id}`, datos);
   }
 
-  eliminar(id: number): Observable<void> {
+  eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

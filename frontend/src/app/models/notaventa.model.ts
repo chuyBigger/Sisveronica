@@ -1,6 +1,6 @@
 export interface NotaVentaDetalleRegistro {
   cantidad: number;
-  productoId: number;
+  productoId: string;
 }
 
 export interface NotaVentaListarDetalle {

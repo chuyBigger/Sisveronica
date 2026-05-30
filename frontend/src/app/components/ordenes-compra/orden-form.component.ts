@@ -179,7 +179,7 @@ export class OrdenFormComponent implements OnInit {
       fechaInicioSemana: fecha,
       detalles: raw.detalles.map((d: any) => ({
         fecha: d.fecha || fecha,
-        producto: Number(d.producto),
+        producto: String(d.producto),
         lunes: d.lunes ? Number(d.lunes) : undefined,
         martes: d.martes ? Number(d.martes) : undefined,
         miercoles: d.miercoles ? Number(d.miercoles) : undefined,

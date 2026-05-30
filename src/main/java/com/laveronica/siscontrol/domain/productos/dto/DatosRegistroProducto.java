@@ -25,7 +25,9 @@ public record DatosRegistroProducto(
 
         @NotNull(message = "El precio de venta es obligatorio")
         @Positive(message = "El precio de venta debe ser mayor a 0")
-        BigDecimal precioVenta
+        BigDecimal precioVenta,
+
+        String codigo
 ) {
 
 

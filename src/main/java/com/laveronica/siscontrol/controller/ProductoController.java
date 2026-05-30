@@ -49,7 +49,7 @@ public class ProductoController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<DatosDetalleProducto> buscarProductoId(@PathVariable Long id){
+    public ResponseEntity<DatosDetalleProducto> buscarProductoId(@PathVariable String id){
         var producto = productoService.buscarProductoId(id);
         return ResponseEntity.ok(producto);
     }
@@ -67,13 +67,13 @@ public class ProductoController {
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<DatosDetalleProducto> actualizarProductoId(@PathVariable Long id, @RequestBody DatosActualizarProducto datos){
+    public ResponseEntity<DatosDetalleProducto> actualizarProductoId(@PathVariable String id, @RequestBody DatosActualizarProducto datos){
         var nuevoProducto = productoService.actualizarProductoId(id, datos);
         return ResponseEntity.ok(nuevoProducto);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity eliminarProducto(@PathVariable Long id ){
+    public ResponseEntity eliminarProducto(@PathVariable String id ){
         productoService.eliminarProducto(id);
         return ResponseEntity.noContent().build();
     }

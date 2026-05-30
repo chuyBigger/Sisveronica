@@ -22,7 +22,6 @@ export class SidebarComponent {
   menuItems = [
     { path: '/', icon: 'dashboard', label: 'Dashboard' },
     { path: '/productos', icon: 'inventory_2', label: 'Productos' },
-    { path: '/categorias', icon: 'category', label: 'Categorías' },
     { path: '/clientes', icon: 'people', label: 'Clientes' },
     { path: '/contratos', icon: 'description', label: 'Contratos' },
     { path: '/notaventas', icon: 'receipt', label: 'Notas de Venta' },

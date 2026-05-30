@@ -1,6 +1,6 @@
 export interface DatosRegistroOrdenCompraDetalle {
   fecha: string;
-  producto: number;
+  producto: string;
   lunes?: number;
   martes?: number;
   miercoles?: number;
@@ -62,7 +62,7 @@ export interface DatosDetalleOrdenCompra {
 
 export interface DatosActualizarOrdenCompraDetalle {
   fecha: string;
-  producto: number;
+  producto: string;
   lunes?: number;
   martes?: number;
   miercoles?: number;

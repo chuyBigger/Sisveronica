@@ -60,7 +60,7 @@ class NotaVentaServiceTest {
 
     @Test
     void registrarNotaSuccess() {
-        var detalleRegistro = new NotaVentaDetalleRegistro(5, 1L);
+        var detalleRegistro = new NotaVentaDetalleRegistro(5, "1");
         var datos = new DatosRegistroNota(1L, "ABARROTES", List.of(detalleRegistro));
 
         Cliente cliente = new Cliente();
@@ -68,7 +68,7 @@ class NotaVentaServiceTest {
         cliente.setNombre("Cliente Test");
 
         Producto producto = new Producto();
-        producto.setId(1L);
+        producto.setId("1");
         producto.setNombre("arroz");
         producto.setPrecioVenta(BigDecimal.valueOf(20));
         NotaVentaDetalle detalle = new NotaVentaDetalle();

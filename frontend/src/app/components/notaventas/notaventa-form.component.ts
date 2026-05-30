@@ -78,7 +78,7 @@ export class NotaVentaFormComponent implements OnInit {
     }
   }
 
-  crearDetalle(productoId?: number, cantidad?: number): FormGroup {
+  crearDetalle(productoId?: string, cantidad?: number): FormGroup {
     return this.fb.group({
       productoId: [productoId ?? '', Validators.required],
       cantidad: [cantidad ?? 1, [Validators.required, Validators.min(1)]],
@@ -99,7 +99,7 @@ export class NotaVentaFormComponent implements OnInit {
       const detalle = this.detalles.at(i);
       const prodId = detalle.get('productoId')?.value;
       const cantidad = detalle.get('cantidad')?.value || 0;
-      const prod = this.productos.find((p) => p.id === Number(prodId));
+      const prod = this.productos.find((p) => p.id === prodId);
       if (prod) {
         total += prod.precioVenta * cantidad;
       }
@@ -144,7 +144,7 @@ export class NotaVentaFormComponent implements OnInit {
       clienteId: raw.clienteId,
       partida: raw.partida,
       detalles: raw.detalles.map((d: any) => ({
-        productoId: Number(d.productoId),
+        productoId: String(d.productoId),
         cantidad: Number(d.cantidad),
       })),
     };

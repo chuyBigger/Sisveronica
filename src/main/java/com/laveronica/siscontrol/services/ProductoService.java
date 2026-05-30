@@ -51,6 +51,11 @@ public class ProductoService {
         var categoria = categoriaValidacionesHelper.validarCategoriaActiva(datos.categoriaId());
         var nuevoProducto = productoMapper.toEntity(datos, partida, categoria);
         nuevoProducto.setNombre(nombre);
+        if (datos.codigo() != null && !datos.codigo().isBlank()) {
+            nuevoProducto.setCodigo(datos.codigo().toUpperCase().trim());
+        } else {
+            nuevoProducto.setCodigo("PROD-" + System.currentTimeMillis());
+        }
         var producto = productosRepository.save(nuevoProducto);
         return productoMapper.toDetalleDto(producto);
     }
@@ -82,7 +87,7 @@ public class ProductoService {
     }
 
 
-    public DatosDetalleProducto buscarProductoId(Long id) {
+    public DatosDetalleProducto buscarProductoId(String id) {
 
         Producto productoEncontrado = productosRepository.findByIdAndActivoTrue(id)
                 .orElseThrow(
@@ -115,7 +120,7 @@ public class ProductoService {
     }
 
     @Transactional
-    public DatosDetalleProducto actualizarProductoId(Long id, DatosActualizarProducto datos) {
+    public DatosDetalleProducto actualizarProductoId(String id, DatosActualizarProducto datos) {
         Producto productoActualizado = productosRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("No existe producto con el id: " + id + " o esta mal escrito")
@@ -143,11 +148,14 @@ public class ProductoService {
         if (datos.precioVenta() != null) {
             productoActualizado.setPrecioVenta(datos.precioVenta());
         }
+        if (datos.codigo() != null) {
+            productoActualizado.setCodigo(datos.codigo().toUpperCase().trim());
+        }
         return new DatosDetalleProducto(productoActualizado);
     }
 
     @Transactional
-    public void eliminarProducto(Long id) {
+    public void eliminarProducto(String id) {
         Producto eliminar = productosRepository.findById(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("No hay un producto con el el id " + id + "registrado")

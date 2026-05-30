@@ -5,7 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 public record DatosActualizarOrdenCompraDetalle(
 
         @JsonProperty("producto")
-        Long productoId,
+        String productoId,
         Double lunes,
         Double martes,
         Double miercoles,

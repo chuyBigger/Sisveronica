@@ -47,8 +47,8 @@ class ProductoControllerTest {
 
     @Test
     void registrar() throws Exception {
-        var request = new DatosRegistroProducto("Leche Entera", "LACTEOS", 1L, UnidadMedida.LITRO, BigDecimal.valueOf(15), BigDecimal.valueOf(22));
-        var response = new DatosDetalleProducto(1L, "leche entera", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22));
+        var request = new DatosRegistroProducto("Leche Entera", "LACTEOS", 1L, UnidadMedida.LITRO, BigDecimal.valueOf(15), BigDecimal.valueOf(22), null);
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
 
         given(productoService.registrarProducto(any())).willReturn(response);
 
@@ -56,13 +56,13 @@ class ProductoControllerTest {
                         .contentType(MediaType.APPLICATION_JSON)
                         .content(objectMapper.writeValueAsString(request)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1))
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("uuid-1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value("leche entera"));
     }
 
     @Test
     void listarPodructo() throws Exception {
-        var producto = new DatosListarProductos(1L, "leche entera", "LACTEOS", "Lacteos", BigDecimal.valueOf(22));
+        var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22));
         Page<DatosListarProductos> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 9), 1);
 
         given(productoService.listaProductos(any())).willReturn(page);
@@ -74,18 +74,18 @@ class ProductoControllerTest {
 
     @Test
     void buscarProductoId() throws Exception {
-        var response = new DatosDetalleProducto(1L, "leche entera", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22));
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
 
-        given(productoService.buscarProductoId(1L)).willReturn(response);
+        given(productoService.buscarProductoId("uuid-1")).willReturn(response);
 
-        mockMvc.perform(MockMvcRequestBuilders.get("/productos/1"))
+        mockMvc.perform(MockMvcRequestBuilders.get("/productos/uuid-1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value(1));
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("uuid-1"));
     }
 
     @Test
     void listarProductosPartida() throws Exception {
-        var producto = new DatosListarProductos(1L, "leche entera", "LACTEOS", "Lacteos", BigDecimal.valueOf(22));
+        var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22));
         Page<DatosListarProductos> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 10), 1);
 
         given(productoService.listaProductosPartida(any(), any())).willReturn(page);
@@ -97,7 +97,7 @@ class ProductoControllerTest {
 
     @Test
     void listarProductoCategoria() throws Exception {
-        var producto = new DatosListarProductos(1L, "leche entera", "LACTEOS", "Lacteos", BigDecimal.valueOf(22));
+        var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22));
         Page<DatosListarProductos> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 10), 1);
 
         given(productoService.listaProdictosCategoriaId(any(), any())).willReturn(page);
@@ -109,7 +109,7 @@ class ProductoControllerTest {
 
     @Test
     void buscarProductosPorPalabra() throws Exception {
-        var response = new DatosDetalleProducto(1L, "leche entera", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22));
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
         Page<DatosDetalleProducto> page = new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
 
         given(productoService.buscarProductosPorPalabra(any(), any())).willReturn(page);
@@ -121,8 +121,8 @@ class ProductoControllerTest {
 
     @Test
     void actualizarProductoId() throws Exception {
-        var request = new DatosActualizarProducto("Leche Deslactosada", null, null, null, null, null);
-        var response = new DatosDetalleProducto(1L, "leche deslactosada", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22));
+        var request = new DatosActualizarProducto("Leche Deslactosada", null, null, null, null, null, null);
+        var response = new DatosDetalleProducto("uuid-1", "leche deslactosada", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
 
         given(productoService.actualizarProductoId(any(), any())).willReturn(response);
 
@@ -135,9 +135,9 @@ class ProductoControllerTest {
 
     @Test
     void eliminarProducto() throws Exception {
-        doNothing().when(productoService).eliminarProducto(1L);
+        doNothing().when(productoService).eliminarProducto("uuid-1");
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/productos/1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/productos/uuid-1"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 }

@@ -3,24 +3,27 @@ export interface DatosRegistroProducto {
   partida: string;
   categoriaId: number;
   unidadMedida: string;
+  codigo?: string;
   precioCompra: number | null;
   precioVenta: number;
 }
 
 export interface DatosListarProductos {
-  id: number;
+  id: string;
   nombre: string;
   partida: string;
   categoria: string;
+  codigo: string;
   precioVenta: number;
 }
 
 export interface DatosDetalleProducto {
-  id: number;
+  id: string;
   nombre: string;
   partida: string;
   categoriaId: number;
   unidadMedida: string;
+  codigo: string;
   precioCompra: number | null;
   precioVenta: number;
 }
@@ -30,6 +33,7 @@ export interface DatosActualizarProducto {
   partida?: string;
   categoriaId?: number;
   unidadMedida?: string;
+  codigo?: string;
   precioCompra?: number;
   precioVenta?: number;
 }

@@ -2,8 +2,6 @@ import { Routes } from '@angular/router';
 import { DashboardComponent } from './components/layout/dashboard/dashboard.component';
 import { ProductoListaComponent } from './components/productos/producto-lista.component';
 import { ProductoFormComponent } from './components/productos/producto-form.component';
-import { CategoriaListaComponent } from './components/categorias/categoria-lista.component';
-import { CategoriaFormComponent } from './components/categorias/categoria-form.component';
 import { ClienteListaComponent } from './components/clientes/cliente-lista.component';
 import { ClienteFormComponent } from './components/clientes/cliente-form.component';
 import { ContratoListaComponent } from './components/contratos/contrato-lista.component';
@@ -18,9 +16,6 @@ export const routes: Routes = [
   { path: 'productos', component: ProductoListaComponent },
   { path: 'productos/nuevo', component: ProductoFormComponent },
   { path: 'productos/:id', component: ProductoFormComponent },
-  { path: 'categorias', component: CategoriaListaComponent },
-  { path: 'categorias/nuevo', component: CategoriaFormComponent },
-  { path: 'categorias/:id', component: CategoriaFormComponent },
   { path: 'clientes', component: ClienteListaComponent },
   { path: 'clientes/nuevo', component: ClienteFormComponent },
   { path: 'clientes/:id', component: ClienteFormComponent },

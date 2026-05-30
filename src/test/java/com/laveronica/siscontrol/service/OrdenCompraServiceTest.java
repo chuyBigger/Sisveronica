@@ -58,7 +58,7 @@ class OrdenCompraServiceTest {
 
     @Test
     void registrarOrdenCompraSuccess() {
-        var detalleRegistro = new DatosRegistroOrdenCompraDetalle(LocalDate.now(), 1L, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
+        var detalleRegistro = new DatosRegistroOrdenCompraDetalle(LocalDate.now(), "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
         var datos = new DatosRegistroOrdenCompra(1L, 1L, "ABARROTES", LocalDate.now(), List.of(detalleRegistro));
 
         given(partidaValidacionesHelper.validaPartidaExistaString("ABARROTES")).willReturn(Partida.ABARROTES);

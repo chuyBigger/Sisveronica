@@ -7,7 +7,6 @@ import { MatIconModule } from '@angular/material/icon';
 import { MatButtonModule } from '@angular/material/button';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { ProductoService } from '../../../services/producto.service';
-import { CategoriaService } from '../../../services/categoria.service';
 import { ClienteService } from '../../../services/cliente.service';
 import { ContratoService } from '../../../services/contrato.service';
 import { NotaVentaService } from '../../../services/notaventa.service';
@@ -39,7 +38,6 @@ interface DashboardCard {
 })
 export class DashboardComponent implements OnInit {
   private productoService = inject(ProductoService);
-  private categoriaService = inject(CategoriaService);
   private clienteService = inject(ClienteService);
   private contratoService = inject(ContratoService);
   private notaventaService = inject(NotaVentaService);
@@ -49,7 +47,6 @@ export class DashboardComponent implements OnInit {
 
   cards: DashboardCard[] = [
     { title: 'Productos', count: 0, icon: 'inventory_2', route: '/productos', color: '#1976d2' },
-    { title: 'Categorías', count: 0, icon: 'category', route: '/categorias', color: '#388e3c' },
     { title: 'Clientes', count: 0, icon: 'people', route: '/clientes', color: '#f57c00' },
     { title: 'Contratos', count: 0, icon: 'description', route: '/contratos', color: '#7b1fa2' },
     { title: 'Notas de Venta', count: 0, icon: 'receipt', route: '/notaventas', color: '#c62828' },
@@ -63,7 +60,6 @@ export class DashboardComponent implements OnInit {
   cargarConteos(): void {
     forkJoin({
       productos: this.productoService.listar(0, 1),
-      categorias: this.categoriaService.listar(),
       clientes: this.clienteService.listar(),
       contratos: this.contratoService.listar(),
       notas: this.notaventaService.listar(0, 1),
@@ -71,11 +67,10 @@ export class DashboardComponent implements OnInit {
     }).subscribe({
       next: (res) => {
         this.cards[0].count = res.productos.totalElements ?? (res.productos.content ? res.productos.content.length : 0);
-        this.cards[1].count = res.categorias.length;
-        this.cards[2].count = res.clientes.length;
-        this.cards[3].count = res.contratos.length;
-        this.cards[4].count = res.notas.totalElements ?? (res.notas.content ? res.notas.content.length : 0);
-        this.cards[5].count = res.ordenes.totalElements ?? (res.ordenes.content ? res.ordenes.content.length : 0);
+        this.cards[1].count = res.clientes.length;
+        this.cards[2].count = res.contratos.length;
+        this.cards[3].count = res.notas.totalElements ?? (res.notas.content ? res.notas.content.length : 0);
+        this.cards[4].count = res.ordenes.totalElements ?? (res.ordenes.content ? res.ordenes.content.length : 0);
       },
       error: () => this.snackBar.open('Error al cargar datos del dashboard', 'Cerrar', { duration: 3000 }),
     });

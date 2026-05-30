@@ -20,8 +20,11 @@ import java.math.BigDecimal;
 public class Producto {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
+
+    @Column(name = "codigo", unique = true)
+    private String codigo;
 
     @Column(nullable = false, unique = true)
     private String nombre;

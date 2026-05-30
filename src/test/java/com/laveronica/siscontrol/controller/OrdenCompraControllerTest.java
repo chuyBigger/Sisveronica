@@ -50,9 +50,9 @@ class OrdenCompraControllerTest {
 
     @Test
     void registrarOrdenCompra() throws Exception {
-        var detalle = new DatosRegistroOrdenCompraDetalle(LocalDate.now(), 1L, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
+        var detalle = new DatosRegistroOrdenCompraDetalle(LocalDate.now(), "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
         var request = new DatosRegistroOrdenCompra(1L, 1L, "ABARROTES", LocalDate.now(), List.of(detalle));
-        var detalleResponse = new DatosDetalleOrdenCompraDetalle(1L, 1L, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
+        var detalleResponse = new DatosDetalleOrdenCompraDetalle(1L, "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
         var response = new DatosDetalleOrdenCompra(1L, "Cliente Test", "CON-001", Partida.ABARROTES, LocalDate.now(), List.of(detalleResponse));
 
         given(ordenCompraService.registrarOrdenCompra(any())).willReturn(response);
@@ -66,7 +66,7 @@ class OrdenCompraControllerTest {
 
     @Test
     void listarOrdenCompra() throws Exception {
-        var detalle = new DatosListarDetalleOrdenCompraDetalle(1L, 1L, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
+        var detalle = new DatosListarDetalleOrdenCompraDetalle(1L, "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
         var orden = new DatosListarOrdenCompra(1L, "Cliente Test", "CON-001", "ABARROTES", LocalDate.now(), List.of(detalle));
         Page<DatosListarOrdenCompra> page = new PageImpl<>(List.of(orden), PageRequest.of(0, 9), 1);
 
@@ -79,7 +79,7 @@ class OrdenCompraControllerTest {
 
     @Test
     void buscarOrdenCompraId() throws Exception {
-        var detalle = new DatosDetalleOrdenCompraDetalle(1L, 1L, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
+        var detalle = new DatosDetalleOrdenCompraDetalle(1L, "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
         var response = new DatosDetalleOrdenCompra(1L, "Cliente Test", "CON-001", Partida.ABARROTES, LocalDate.now(), List.of(detalle));
 
         given(ordenCompraService.buscarOrdenCompraId(1L)).willReturn(response);
@@ -92,7 +92,7 @@ class OrdenCompraControllerTest {
     @Test
     void actilizarOdrdenCompra() throws Exception {
         var request = new DatosActulizarOrdenCompra(1L, 1L, "ABARROTES", LocalDate.now(), null);
-        var detalle = new DatosDetalleOrdenCompraDetalle(1L, 1L, 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
+        var detalle = new DatosDetalleOrdenCompraDetalle(1L, "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
         var response = new DatosDetalleOrdenCompra(1L, "Cliente Test", "CON-001", Partida.ABARROTES, LocalDate.now(), List.of(detalle));
 
         given(ordenCompraService.actulizarOrdenCompraId(any(), any())).willReturn(response);

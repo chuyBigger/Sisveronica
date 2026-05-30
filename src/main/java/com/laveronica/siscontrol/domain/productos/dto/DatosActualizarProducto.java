@@ -15,7 +15,9 @@ public record DatosActualizarProducto(
 
         BigDecimal precioCompra,
 
-        BigDecimal precioVenta
+        BigDecimal precioVenta,
+
+        String codigo
 
 ) {
 }

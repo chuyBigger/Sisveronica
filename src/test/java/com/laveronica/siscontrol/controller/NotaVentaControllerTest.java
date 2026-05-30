@@ -51,7 +51,7 @@ class NotaVentaControllerTest {
 
     @Test
     void registrarNota() throws Exception {
-        var detalleRegistro = new NotaVentaDetalleRegistro(5, 1L);
+        var detalleRegistro = new NotaVentaDetalleRegistro(5, "1");
         var request = new DatosRegistroNota(1L, "ABARROTES", List.of(detalleRegistro));
         var detalleListar = new NotaVentaListarDetalle(5, "arroz", BigDecimal.valueOf(20), BigDecimal.valueOf(100));
         var response = new DatosDetalleNota(1L, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalleListar), BigDecimal.valueOf(100));

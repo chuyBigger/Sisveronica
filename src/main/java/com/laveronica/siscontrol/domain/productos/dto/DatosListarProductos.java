@@ -6,10 +6,11 @@ import com.laveronica.siscontrol.domain.productos.Producto;
 import java.math.BigDecimal;
 
 public record DatosListarProductos(
-        Long id,
+        String id,
         String nombre,
         String partida,
         String categoria,
+        String codigo,
         BigDecimal precioVenta
 
 ) {
@@ -21,6 +22,7 @@ public record DatosListarProductos(
                 producto.getNombre(),
                 producto.getPartida().name(),
                 producto.getCategoria().getNombre(),
+                producto.getCodigo(),
                 producto.getPrecioVenta()
         );
 

@@ -9,7 +9,7 @@ import java.math.BigDecimal;
 public record DatosDetalleProducto(
 
         @NotNull
-        Long id,
+        String id,
 
         @NotNull
         String nombre,
@@ -26,9 +26,9 @@ public record DatosDetalleProducto(
         BigDecimal precioCompra,
 
         @NotNull
-        BigDecimal precioVenta
+        BigDecimal precioVenta,
 
-
+        String codigo
 
 ) {
 
@@ -40,7 +40,8 @@ public record DatosDetalleProducto(
                 producto.getCategoria().getId(),
                 producto.getUnidadMedida().name(),
                 producto.getPrecioCompra(),
-                producto.getPrecioVenta()
+                producto.getPrecioVenta(),
+                producto.getCodigo()
         );
     }
 

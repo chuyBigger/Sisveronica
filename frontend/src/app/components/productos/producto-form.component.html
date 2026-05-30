@@ -43,6 +43,11 @@
           </mat-form-field>
 
           <mat-form-field appearance="outline">
+            <mat-label>Código</mat-label>
+            <input matInput formControlName="codigo" placeholder="Código de barras">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
             <mat-label>Unidad de Medida</mat-label>
             <mat-select formControlName="unidadMedida">
               @for (u of unidadesMedida; track u) {
