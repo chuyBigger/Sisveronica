@@ -1,10 +1,8 @@
 CREATE TABLE contratos (
 
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-
+    id VARCHAR(36) PRIMARY KEY,
     contrato VARCHAR(100) NOT NULL UNIQUE,
-
-    cliente_id BIGINT NOT NULL,
+    cliente_id VARCHAR(36) NOT NULL,
 
     fecha_inicio DATE NOT NULL,
     fecha_termino DATE NOT NULL,

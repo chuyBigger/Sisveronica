@@ -12,7 +12,7 @@ public class NotaVentaValidacionesHelper {
     @Autowired
     private NotaVentaRepository notaVentaRepository;
 
-    public NotaVenta notaVentaExiste(Long id){
+    public NotaVenta notaVentaExiste(String id){
         if (id == null ){
             throw new ResourceNotFoundException(" el valor id esta vacio o mal escrito :"+id);
         }

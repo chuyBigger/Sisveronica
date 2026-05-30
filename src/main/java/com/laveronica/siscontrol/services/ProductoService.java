@@ -76,7 +76,7 @@ public class ProductoService {
         return page;
     }
 
-    public Page<DatosListarProductos> listaProdictosCategoriaId(Long id, Pageable paguinas) {
+    public Page<DatosListarProductos> listaProdictosCategoriaId(String id, Pageable paguinas) {
 
         Categoria categoria = categoriaValidacionesHelper.validarCategoriaActiva(id);
         var page = productosRepository.findAllByCategoriaAndActivoTrue(categoria, paguinas).map(DatosListarProductos::new);

@@ -7,8 +7,8 @@ import java.util.List;
 
 public record DatosActulizarOrdenCompra(
 
-        Long clienteId,
-        Long contrato_id,
+        String clienteId,
+        String contrato_id,
         String partida,
         LocalDate fechaInicioSemana,
         List<DatosActualizarOrdenCompraDetalle> detalles

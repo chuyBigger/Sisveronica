@@ -5,6 +5,6 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface NotaVentaDetalleRepository extends JpaRepository<NotaVentaDetalle, Long> {
-    Optional<NotaVentaDetalle> findByNotaVenta_IdAndProducto_NombreIgnoreCase(Long id, String producto);
+public interface NotaVentaDetalleRepository extends JpaRepository<NotaVentaDetalle, String> {
+    Optional<NotaVentaDetalle> findByNotaVenta_IdAndProducto_NombreIgnoreCase(String id, String producto);
 }

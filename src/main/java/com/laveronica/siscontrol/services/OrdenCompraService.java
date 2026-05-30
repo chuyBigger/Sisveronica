@@ -64,12 +64,12 @@ public class OrdenCompraService {
                 .map(DatosListarOrdenCompra::new);
     }
 
-    public DatosDetalleOrdenCompra buscarOrdenCompraId(Long id) {
+    public DatosDetalleOrdenCompra buscarOrdenCompraId(String id) {
         return new DatosDetalleOrdenCompra(ordenCompraValidacionesHelper.buscarOrdenCompraId(id));
     }
 
     @Transactional
-    public DatosDetalleOrdenCompra actulizarOrdenCompraId(Long id, @Valid DatosActulizarOrdenCompra datos) {
+    public DatosDetalleOrdenCompra actulizarOrdenCompraId(String id, @Valid DatosActulizarOrdenCompra datos) {
 
         OrdenCompra ordenCompra = ordenCompraValidacionesHelper.buscarOrdenCompraId(id);
         if (datos.clienteId() != null) {
@@ -91,7 +91,7 @@ public class OrdenCompraService {
     }
 
     @Transactional
-    public void eliminarOrdenCompra(Long id) {
+    public void eliminarOrdenCompra(String id) {
         OrdenCompra ordenCompra = ordenCompraValidacionesHelper.buscarOrdenCompraId(id);
         ordenCompra.setActivo(false);
     }

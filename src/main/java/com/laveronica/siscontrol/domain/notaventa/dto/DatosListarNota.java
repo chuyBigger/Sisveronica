@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record DatosListarNota(
-        Long id,
+        String id,
         LocalDateTime fecha,
         String cliente,
         String partida,

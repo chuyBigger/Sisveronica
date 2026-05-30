@@ -17,7 +17,7 @@ public class NotaVentaDetalleValidacionesHelper {
     private NotaVentaRepository notaVentaRepository;
 
     @Transactional
-    public NotaVentaDetalle detalleProductoExiste(Long id, String producto){
+    public NotaVentaDetalle detalleProductoExiste(String id, String producto){
         if (producto == null || producto.isBlank()){
             return null;
         }

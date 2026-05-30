@@ -9,11 +9,11 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.time.LocalDate;
 import java.util.Optional;
 
-public interface OrdenCompraRespository extends JpaRepository<OrdenCompra, Long> {
+public interface OrdenCompraRespository extends JpaRepository<OrdenCompra, String> {
 
     boolean existsByPartidaAndFechaInicioSemanaAndActivoTrue(Partida partida, LocalDate fecha);
 
     Page<OrdenCompra> findByAndActivoTrue(Pageable paginacion);
 
-    Optional<OrdenCompra> findByIdAndActivoTrue(Long id);
+    Optional<OrdenCompra> findByIdAndActivoTrue(String id);
 }

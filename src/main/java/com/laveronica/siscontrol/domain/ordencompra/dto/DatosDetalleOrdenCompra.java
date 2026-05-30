@@ -9,7 +9,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record DatosDetalleOrdenCompra(
-        Long id,
+        String id,
         String cliente,
         String contrato,
         Partida partida,

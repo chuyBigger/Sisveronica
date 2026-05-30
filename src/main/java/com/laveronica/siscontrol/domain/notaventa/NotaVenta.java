@@ -25,8 +25,8 @@ import java.util.List;
 public class NotaVenta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column(name = "folio", unique = true, nullable = false )
     private Integer folio;

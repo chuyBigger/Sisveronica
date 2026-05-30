@@ -6,10 +6,10 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface CategoriaRepository extends JpaRepository<Categoria, Long> {
+public interface CategoriaRepository extends JpaRepository<Categoria, String> {
 
     boolean existsByNombre(@NotNull String nombre);
 
-    Optional<Categoria> findByIdAndActivoTrue(Long id);
+    Optional<Categoria> findByIdAndActivoTrue(String id);
 
 }

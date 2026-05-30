@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public record DatosDetalleOrdenCompraDetalle(
 
-        Long id,
+        String id,
         String producto,
         Double lunes,
         Double martes,

@@ -35,19 +35,19 @@ public class NotaVentaController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<DatosDetalleNota> buscarNotaId(@PathVariable Long id){
+    public ResponseEntity<DatosDetalleNota> buscarNotaId(@PathVariable String id){
         var nota = notaVentaService.buscarNotaId(id);
         return ResponseEntity.ok().body(nota);
     }
 
     @PatchMapping(path = "/{id}")
-    public ResponseEntity<DatosDetalleNota> actualizarNota(@PathVariable Long id, @RequestBody @Valid DatosActualizarNota datos){
+    public ResponseEntity<DatosDetalleNota> actualizarNota(@PathVariable String id, @RequestBody @Valid DatosActualizarNota datos){
         var notaActualizada = notaVentaService.actualizarNota(id, datos);
         return ResponseEntity.ok().body(notaActualizada);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarNota(@PathVariable Long id){
+    public ResponseEntity<Void> eliminarNota(@PathVariable String id){
         notaVentaService.eliminarNota(id);
         return ResponseEntity.noContent().build();
     }

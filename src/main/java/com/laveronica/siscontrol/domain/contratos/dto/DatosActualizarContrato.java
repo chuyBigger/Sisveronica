@@ -6,7 +6,7 @@ import java.time.LocalDate;
 
 public record DatosActualizarContrato(
 
-        Long clienteId,
+        String clienteId,
         LocalDate fechaInicio,
         LocalDate fechaTermino,
         BigDecimal presupuesto

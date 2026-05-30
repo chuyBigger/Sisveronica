@@ -14,7 +14,7 @@ public record DatosRegistroContrato(
         String contrato,
         @NotNull
         @Positive
-        Long clienteId,
+        String clienteId,
         @NotNull
         LocalDate fechaInicio,
         @NotNull

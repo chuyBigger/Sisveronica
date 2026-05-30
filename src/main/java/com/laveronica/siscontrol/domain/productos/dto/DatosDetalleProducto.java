@@ -18,7 +18,7 @@ public record DatosDetalleProducto(
         String partida,
 
         @NotNull
-        Long categoriaId,
+        String categoriaId,
 
         @NotNull
         String unidadMedida,

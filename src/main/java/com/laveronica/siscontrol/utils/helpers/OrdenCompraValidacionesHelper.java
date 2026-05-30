@@ -25,7 +25,7 @@ public class OrdenCompraValidacionesHelper {
 
 
     //todo es el mimso +
-    public OrdenCompra buscarOrdenCompraId(Long id) {
+    public OrdenCompra buscarOrdenCompraId(String id) {
         System.out.println(id);
         return ordenCompraRespository.findByIdAndActivoTrue(id).orElseThrow(
                 () -> new ResourceNotFoundException("Orden de compra no encontrada o el id no es valido: "+ id)

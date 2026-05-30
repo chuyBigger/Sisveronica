@@ -36,13 +36,13 @@ public class ClienteService {
         return clienteRepository.findAll().stream().filter(Cliente::isActivo).map(DatosDetalleCliente::new).toList();
     }
 
-    public DatosDetalleCliente buscarClienteId(Long id) {
+    public DatosDetalleCliente buscarClienteId(String id) {
         Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("⚠️ Cliente no encontrado con ID: " + id));
         return new DatosDetalleCliente(cliente);
     }
 
     @Transactional
-    public DatosDetalleCliente actualizarCliente(Long id, DatosActualizarCliente datos) {
+    public DatosDetalleCliente actualizarCliente(String id, DatosActualizarCliente datos) {
         Cliente actualizarCliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException(" ⚠️ Cliente no encontrado"));
 
         if (datos.nombre() != null) actualizarCliente.setNombre(datos.nombre());
@@ -58,7 +58,7 @@ public class ClienteService {
     }
 
     @Transactional
-    public void eliminarCliente(Long id) {
+    public void eliminarCliente(String id) {
         Cliente cliente = clienteRepository.findById(id).orElseThrow(() -> new ResourceNotFoundException("⚠️ el cliente que intenta eliminar no existe"));
         if (!cliente.isActivo()) {
             throw new ResourceNotFoundException("⛔ el cliente ya se encuentra eliminado");

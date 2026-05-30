@@ -16,7 +16,7 @@ public record DatosRegistroProducto(
         String partida,
 
         @NotNull(message = "La categoría es obligatoria")
-        Long categoriaId,
+        String categoriaId,
 
         @NotNull(message = "La unidad de medida es obligatoria")
         UnidadMedida unidadMedida,

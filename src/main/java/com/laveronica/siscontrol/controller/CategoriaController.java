@@ -34,19 +34,19 @@ public class CategoriaController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DatosDetalleCategoria> buscarCategoriaId(@PathVariable Long id){
+    public ResponseEntity<DatosDetalleCategoria> buscarCategoriaId(@PathVariable String id){
         Categoria categoriaId = categoriaService.buscarCategoriaId(id);
         return ResponseEntity.ok(new DatosDetalleCategoria(categoriaId));
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<DatosDetalleCategoria> actualizaCategoriaid( @PathVariable Long id, @RequestBody @Valid DatosActualizarCategoria datos){
+    public ResponseEntity<DatosDetalleCategoria> actualizaCategoriaid( @PathVariable String id, @RequestBody @Valid DatosActualizarCategoria datos){
         Categoria categoriaActualizada = categoriaService.actualizarCategoria(id, datos);
         return ResponseEntity.ok(new DatosDetalleCategoria(categoriaActualizada));
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarCategoria(@PathVariable Long id){
+    public ResponseEntity<Void> eliminarCategoria(@PathVariable String id){
         categoriaService.eliminarCategoria(id);
         return ResponseEntity.noContent().build();
     }

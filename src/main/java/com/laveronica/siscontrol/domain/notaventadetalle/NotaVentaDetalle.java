@@ -19,8 +19,8 @@ import java.math.BigDecimal;
 public class NotaVentaDetalle {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column(nullable = false)
     private Integer cantidad;

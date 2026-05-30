@@ -8,7 +8,7 @@ import java.util.List;
 public record DatosRegistroNota(
 
         @NotNull
-        Long clienteId,
+        String clienteId,
         String partida,
         List<NotaVentaDetalleRegistro> detalles
 

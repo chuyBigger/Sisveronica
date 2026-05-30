@@ -35,20 +35,20 @@ public class ContratosController {
     }
 
     @GetMapping("/{id}")
-    public ResponseEntity<DatosDetalleContrato> contratoBuscarId(@PathVariable @Valid Long id) {
+    public ResponseEntity<DatosDetalleContrato> contratoBuscarId(@PathVariable String id) {
         DatosDetalleContrato contratoId = contratoService.buscarContratoId(id);
         return ResponseEntity.ok(contratoId);
     }
 
     @PatchMapping("/{id}")
-    public ResponseEntity<DatosDetalleContrato> actualizarContrato(@PathVariable Long id, @Valid @RequestBody DatosActualizarContrato datos){
+    public ResponseEntity<DatosDetalleContrato> actualizarContrato(@PathVariable String id, @Valid @RequestBody DatosActualizarContrato datos){
         DatosDetalleContrato actualizarContrato = contratoService.actualizarContratoId(id, datos);
         return ResponseEntity.ok(actualizarContrato);
     }
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
-    public void eliminarContrato(@PathVariable Long id){
+    public void eliminarContrato(@PathVariable String id){
          contratoService.eliminarContrato(id);
     }
 

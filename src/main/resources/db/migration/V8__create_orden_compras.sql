@@ -1,8 +1,8 @@
 CREATE TABLE orden_compras (
 
-    id BIGINT PRIMARY KEY AUTO_INCREMENT,
-    cliente_id BIGINT NOT NULL,
-    contrato_id BIGINT NOT NULL,
+    id VARCHAR(36) PRIMARY KEY,
+    cliente_id VARCHAR(36) NOT NULL,
+    contrato_id VARCHAR(36) NOT NULL,
     partida VARCHAR(100) NOT NULL,
     fecha_inicio_semana DATE NOT NULL,
     fecha_fin_semana DATE NOT NULL,

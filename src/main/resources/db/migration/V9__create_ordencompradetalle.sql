@@ -1,7 +1,7 @@
 CREATE TABLE orden_compra_detalles (
 
-    id BIGINT AUTO_INCREMENT PRIMARY KEY,
-    orden_compra_id BIGINT NOT NULL,
+    id VARCHAR(36) PRIMARY KEY,
+    orden_compra_id VARCHAR(36) NOT NULL,
     fecha DATE NOT NULL,
     lunes DOUBLE,
     martes DOUBLE,

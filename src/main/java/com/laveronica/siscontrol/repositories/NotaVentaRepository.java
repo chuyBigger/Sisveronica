@@ -7,8 +7,8 @@ import org.springframework.data.jpa.repository.JpaRepository;
 
 import java.util.Optional;
 
-public interface NotaVentaRepository extends JpaRepository<NotaVenta, Long> {
+public interface NotaVentaRepository extends JpaRepository<NotaVenta, String> {
     Page<NotaVenta> findAllByActivoTrue(Pageable paginacion);
 
-    Optional<NotaVenta> findByIdAndActivoTrue(Long id);
+    Optional<NotaVenta> findByIdAndActivoTrue(String id);
 }

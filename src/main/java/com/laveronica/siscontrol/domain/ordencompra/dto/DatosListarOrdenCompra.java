@@ -8,7 +8,7 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 public record DatosListarOrdenCompra(
-        Long id,
+        String id,
         String cliente,
         String contrato,
         String partida,

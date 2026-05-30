@@ -43,14 +43,14 @@ public class CategoriaService {
                 .toList();
     }
 
-    public Categoria buscarCategoriaId(Long id) {
+    public Categoria buscarCategoriaId(String id) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(() -> new EntityNotFoundException("La categoría seleccionada no existe"));
         return categoria;
     }
 
     @Transactional
-    public Categoria actualizarCategoria(Long id, @Valid DatosActualizarCategoria datos) {
+    public Categoria actualizarCategoria(String id, @Valid DatosActualizarCategoria datos) {
         Categoria categoria = categoriaRepository.findByIdAndActivoTrue(id)
                 .orElseThrow(() -> new EntityNotFoundException("La Categoría seleccionada no existe"));
         if (!datos.nombre().isEmpty()) {
@@ -63,7 +63,7 @@ public class CategoriaService {
     }
 
     @Transactional
-    public void eliminarCategoria(Long id) {
+    public void eliminarCategoria(String id) {
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(()-> new EntityNotFoundException("La categoría seleccionada no existe"));
         categoria.setActivo(false);

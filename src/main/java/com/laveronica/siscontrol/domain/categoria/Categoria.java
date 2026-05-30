@@ -22,8 +22,8 @@ import java.util.List;
 public class Categoria {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @NotNull
     private String nombre;

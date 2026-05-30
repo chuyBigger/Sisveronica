@@ -4,7 +4,7 @@ import com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle;
 
 public record DatosListarDetalleOrdenCompraDetalle(
 
-        Long id,
+        String id,
         String productoId,
         Double lunes,
         Double martes,

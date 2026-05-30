@@ -11,7 +11,7 @@ import java.util.stream.Collectors;
 
 public record DatosDetalleNota(
 
-        Long id,
+        String id,
         LocalDateTime fecha,
         String cliente,
         Partida partida,

@@ -9,7 +9,7 @@ public record DatosActualizarProducto(
 
         String partida,
 
-        Long categoriaId,
+        String categoriaId,
 
         String unidadMedida,
 

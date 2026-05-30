@@ -43,7 +43,7 @@ public class ProductoController {
     }
 
     @GetMapping(path = "/categorias/{id}")
-    public ResponseEntity<Page<DatosListarProductos>> listarProductoCategoria(@PathVariable Long id,@PageableDefault(size = 10, sort = {"nombre"}) Pageable paguinas){
+    public ResponseEntity<Page<DatosListarProductos>> listarProductoCategoria(@PathVariable String id,@PageableDefault(size = 10, sort = {"nombre"}) Pageable paguinas){
         var listaProdustosPorIdCategoria = productoService.listaProdictosCategoriaId(id, paguinas);
         return ResponseEntity.ok(listaProdustosPorIdCategoria);
     }

@@ -57,14 +57,14 @@ public class NotaVentaService {
                 .map(DatosListarNota::new);
     }
 
-    public DatosDetalleNota buscarNotaId(Long id) {
+    public DatosDetalleNota buscarNotaId(String id) {
         NotaVenta nota = notaVentaValidacionesHelper.notaVentaExiste(id);
         return new DatosDetalleNota(nota);
 
     }
 
     @Transactional
-    public DatosDetalleNota actualizarNota(Long id, DatosActualizarNota datos) {
+    public DatosDetalleNota actualizarNota(String id, DatosActualizarNota datos) {
 
         NotaVenta nota = notaVentaValidacionesHelper.notaVentaExiste(id);
         var partida = partidaValidacionesHelper.validaPartidaExistaString(datos.partida());
@@ -98,7 +98,7 @@ public class NotaVentaService {
     }
 
     @Transactional
-    public void eliminarNota(Long id) {
+    public void eliminarNota(String id) {
         NotaVenta nota = notaVentaValidacionesHelper.notaVentaExiste(id);
         nota.setActivo(false);
     }

@@ -5,7 +5,7 @@ import com.laveronica.siscontrol.enums.Partida;
 
 public record DatosDetalleCategoria(
 
-        Long id,
+        String id,
         String nombre,
         Partida partida
 ) {

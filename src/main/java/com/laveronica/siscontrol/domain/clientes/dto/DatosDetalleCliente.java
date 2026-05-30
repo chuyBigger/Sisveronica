@@ -4,7 +4,7 @@ package com.laveronica.siscontrol.domain.clientes.dto;
 import com.laveronica.siscontrol.domain.clientes.Cliente;
 
 public record DatosDetalleCliente(
-        Long id,
+        String id,
         String nombre,
         String rfc,
         String calle,

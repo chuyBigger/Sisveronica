@@ -6,7 +6,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 
 public record DatosDetalleContrato(
-        Long id,
+        String id,
         String contrato,
         String cliente,
         LocalDate fechaInicio,

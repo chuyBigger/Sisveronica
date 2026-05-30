@@ -36,19 +36,19 @@ public class OrdenCompraController {
     }
 
     @GetMapping(path = "/{id}")
-    public ResponseEntity<DatosDetalleOrdenCompra> buscarOrdenCompraId(@PathVariable Long id ){
+    public ResponseEntity<DatosDetalleOrdenCompra> buscarOrdenCompraId(@PathVariable String id ){
         var ordenCompra = ordenCompraService.buscarOrdenCompraId(id);
         return ResponseEntity.ok().body(ordenCompra);
     }
 
     @PatchMapping(path = "/{id}")
-    public ResponseEntity<DatosDetalleOrdenCompra> actilizarOdrdenCompra(@PathVariable Long id, @Valid @RequestBody DatosActulizarOrdenCompra datos) {
+    public ResponseEntity<DatosDetalleOrdenCompra> actilizarOdrdenCompra(@PathVariable String id, @Valid @RequestBody DatosActulizarOrdenCompra datos) {
         var ordenCompraActualizada = ordenCompraService.actulizarOrdenCompraId(id, datos);
         return ResponseEntity.ok().body(ordenCompraActualizada);
     }
 
     @DeleteMapping("/{id}")
-    public ResponseEntity<Void> eliminarOrdenCompra(@PathVariable Long id){
+    public ResponseEntity<Void> eliminarOrdenCompra(@PathVariable String id){
         ordenCompraService.eliminarOrdenCompra(id);
         return ResponseEntity.noContent().build();
     }
