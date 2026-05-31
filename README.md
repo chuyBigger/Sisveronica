@@ -1,241 +1,158 @@
+# SisVeronica
 
+Sistema de control de insumos y administración para cocinas económicas, comedores industriales y restaurantes.
 
+## Stack tecnológico
 
+| Tecnología | Versión |
+|------------|---------|
+| Java | 17 |
+| Spring Boot | 3.5.4 |
+| Spring Data JPA | Hibernate 6 |
+| Flyway | 11.7.2 |
+| MySQL | 8.0+ |
+| Lombok | Última |
+| MapStruct | Última |
+| Maven | Wrapper incluido |
 
-ºnterno de Gestión y Control de Pedidos
+## Requisitos
 
-**¡Bienvenido a SIGCOP!**  
-Sistema backend desarrollado con **Java y Spring Boot** que gestiona clientes, contratos y pedidos internos, optimizando la operación de cada departamento y generando reportes de rendimiento y metas económicas.
+- **Java 17+** (JDK)
+- **MySQL 8.0+**
+- **Maven** (usar `mvnw.cmd` incluido)
 
----
+## Configuración
 
-## 📝 Descripción
+### Base de datos
 
-Este proyecto implementa un backend modular para gestión de pedidos, contratos y clientes:
-
-- API RESTful para gestión de **Clientes** y **Contratos**.
-- Manejo de operaciones CRUD, actualización parcial (PATCH) y eliminación lógica.
-- Validaciones de datos con **Jakarta Validation**.
-- Persistencia con **Spring Data JPA** y **MySQL**.
-- Manejo centralizado de excepciones y mensajes de error claros.
-- DTOs para entrada y salida de datos, separando lógica de negocio y persistencia.
-- Arquitectura modular lista para evolucionar hacia microservicios por partidas.
-
----
-
-## 📌 Funcionalidades principales
-
-### ✅ Gestión de Clientes
-- Registrar nuevos clientes.
-- Consultar clientes existentes.
-- Actualizar información de clientes.
-- Eliminar clientes (eliminación lógica).
-
-### ✅ Gestión de Contratos
-- Registrar contratos asociados a clientes.
-- Consultar contratos activos.
-- Actualización parcial de contratos con PATCH.
-- Eliminación lógica de contratos.
-- Validaciones de reglas de negocio básicas.
-
-### ✅ Operaciones adicionales
-- Manejo de errores con mensajes claros.
-- DTOs para separar la capa de dominio y la presentación.
-- Preparado para integrar **JWT** y seguridad en el futuro.
-- Documentación de API con **Swagger** (pendiente de completar).
-
----
-
-## 🛠️ Tecnologías utilizadas
-
-- 💻 **Lenguaje:** Java 17
-- ⚙️ **Framework:** Spring Boot
-- 🗄️ **Persistencia:** JPA / Hibernate con **MySQL**
-- 🏷️ **Manejo de datos:** DTOs y **Jackson**
-- 🔧 **Validación:** Jakarta Validation (`@Valid`)
-- 📝 **Migraciones de base de datos:** Flyway
-- 🛠️ **Productividad:** Lombok (`@Getter`, `@Setter`, `@AllArgsConstructor`)
-- 🌐 **API REST:** `ResponseEntity` y status codes
-- 📊 **Documentación:** Swagger (pendiente)
-- 🔒 **Seguridad:** JWT (pendiente)
-
----
-
-## 🚀 Cómo ejecutar el proyecto
-
-1. Clona el repositorio:
-
-```bash
-git clone <url-del-repositorio>
+```sql
+CREATE DATABASE sis_veronica;
 ```
 
-2. Configura la base de datos en `application.properties`:
+Las credenciales se configuran en `application.properties`:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/sigcop
-spring.datasource.username=usuario
-spring.datasource.password=contraseña
-spring.jpa.hibernate.ddl-auto=update
-```
-
-3. Instala dependencias:
-
-```bash
-mvn install
-```
-
-4. Ejecuta la aplicación:
-
-```bash
-mvn spring-boot:run
-```
-
-5. Accede a la API (pendiente de documentación Swagger):
-
-```
-http://localhost:8080
-```
-
-
-
-## 📄 Estado actual del proyecto
-
-✅ Funcionalidades implementadas:
-- CRUD de **Clientes**
-- CRUD de **Contratos**
-- Actualización parcial (PATCH)
-- Eliminación lógica
-- Manejo básico de errores
-
-🛠️ Mejoras previstas:
-- Integración de **JWT** y seguridad de endpoints.
-- Documentación completa con **Swagger**.
-- Implementación de microservicios por partidas.
-- Dashboards y reportes automáticos de operaciones y métricas.
-
----
-
-## 📄 Licencia
-
-Proyecto bajo **licencia MIT**:
-
-```text
-MIT License
-Copyright (c) 2025 Jesús Medina Casas
-```
-
----
-
-
-
-
-# SisControl - Sistema de Control Operativo La Verónica
-
-**¡Bienvenido a SisControl!** 🚀
-
-Backend desarrollado con **Java y Spring Boot** para la gestión centralizada de la operación de ventas, contratos, clientes, y logística diaria de *La Verónica*. Este sistema está diseñado para garantizar la integridad de las transacciones y automatizar el registro de pedidos y entregas.
-
----
-
-## 🏗️ Arquitectura y Dominio
-
-Este proyecto implementa una arquitectura **API RESTful modular** enfocada en el dominio de las transacciones de venta.
-
-### Módulos Implementados Recientemente:
-
-| Módulo | Descripción | Relación JPA |
-| :--- | :--- | :--- |
-| **Clientes** | Gestión de maestros de clientes. | `1:N` a Contratos y Notas de Venta |
-| **Días** | Mapeo de días operativos y sus estados. | `1:N` a Notas de Venta |
-| **Nota de Venta** | Transacción principal (cabecera de la venta). | `1:N` a NotaVentaDetalle |
-| **Nota de Venta Detalle** | Ítems, cantidades y subtotales por producto. | `N:1` a Nota de Venta y Producto |
-| **Contratos** | Reglas de negocio y términos asociados al cliente. | `N:1` a Clientes |
-
-### Características Clave:
-* **Integridad Transaccional:** Uso riguroso de **`@Transactional`** para asegurar que las Notas de Venta y sus Detalles se guarden o fallen como una sola unidad.
-* **Persistencia Robusta:** Mapeo de relaciones complejo (`@OneToMany`, `@ManyToOne`, `Enum`) validado y optimizado.
-* **Separación de Responsabilidades:** Utilización de DTOs en la capa de presentación y servicios (`@Service`) para la lógica de negocio.
-* **Manejo de Errores:** Excepciones y validaciones (`Jakarta Validation`) centralizadas.
-
----
-
-## 📌 Tecnologías Utilizadas
-
-| Categoría | Tecnología | Versión / Anotación |
-| :--- | :--- | :--- |
-| **Lenguaje** | Java | Java 17 |
-| **Framework** | Spring Boot | 3.x |
-| **Persistencia** | JPA / Hibernate | MySQL |
-| **Base de Datos** | Migraciones | **Flyway** (Esquema validado) |
-| **Productividad** | Mapeo y POJOs | **Lombok** (`@Getter`, `@AllArgsConstructor`) |
-| **Validación** | Reglas de DTO | Jakarta Validation (`@Valid`, `@NotNull`) |
-| **Testing** | Pruebas Unitarias | JUnit 5 (Próximo) |
-
----
-
-## 🚀 Cómo Ejecutar el Proyecto
-
-### 1. Requisitos
-Asegúrate de tener instalado: **JDK 17** y **MySQL Server** (o similar).
-
-### 2. Configuración de Base de Datos
-Actualiza el archivo `application.properties` con tus credenciales:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/sisveronica
+spring.datasource.url=jdbc:mysql://localhost:3306/sis_veronica
 spring.datasource.username=root
-spring.datasource.password=su_contraseña
-# Flyway se encarga de las migraciones
-spring.jpa.hibernate.ddl-auto=validate 
-Nota: El valor ddl-auto=validate es la configuración más segura en entornos con Flyway, ya que valida que el esquema de la DB coincida con las entidades JPA.
+spring.datasource.password=tu_password
+```
 
-3. Ejecución
-Clona el repositorio: git clone <url-del-repositorio>
+### Ejecución
 
-Navega al directorio del proyecto.
+```bash
+.\mvnw.cmd clean spring-boot:run
+```
 
-Ejecuta la aplicación:
+Flyway ejecuta las migraciones automáticamente al iniciar.
 
-Bash
+## Estructura del proyecto
 
-mvn spring-boot:run
-4. Endpoints Principales (Ejemplo)
-La API estará disponible en http://localhost:8080.
+```
+src/main/java/com/laveronica/siscontrol/
+├── controller/          # Controladores REST
+├── domain/
+│   ├── categoria/       # CRUD categorías + DTOs
+│   ├── clientes/        # CRUD clientes + DTOs
+│   ├── contratos/       # CRUD contratos + DTOs
+│   ├── notaventa/       # Notas de venta + DTOs
+│   ├── notaventadetalle/# Detalle de notas + DTOs
+│   ├── ordencompra/     # Órdenes de compra + DTOs
+│   ├── ordencompradetalle/ # Detalle de órdenes + DTOs
+│   └── productos/       # CRUD productos + DTOs
+├── enums/               # Partida, UnidadMedida, DiaSemana
+├── infra/exceptions/    # Manejo global de errores
+├── repositories/        # Interfaces JPA
+├── services/            # Lógica de negocio
+└── utils/helpers/       # Validaciones reutilizables
 
-Funcionalidad	Método	URL	Body (DTO)
-Registrar Nota	POST	/notas	RegistroNotaVentaDTO
-Registrar Cliente	POST	/clientes	RegistroClienteDTO
+src/main/resources/db/migration/  # Migraciones Flyway (SQL)
+```
 
-Exportar a Hojas de cálculo
-🛣️ Estado y Desarrollo Futuro
-Implementado y Validado:
+## Modelo de datos
 
-Modelo de Dominio (NotaVenta, Detalle, Día, Producto).
+Todas las entidades usan **UUID** como identificador primario (`VARCHAR(36)`) generado automáticamente por Hibernate.
 
-Integridad de Mapeo (JPA y Flyway sincronizados 100%).
+| Entidad | Tabla | IDs foráneos |
+|---------|-------|-------------|
+| Cliente | `clientes` | — |
+| Categoria | `categorias` | — |
+| Producto | `productos` | `categoria_id` → Categoria |
+| Contrato | `contratos` | `cliente_id` → Cliente |
+| OrdenCompra | `orden_compras` | `cliente_id` → Cliente, `contrato_id` → Contrato |
+| OrdenCompraDetalle | `orden_compra_detalles` | `orden_compra_id` → OrdenCompra, `producto_id` → Producto |
+| NotaVenta | `nota_ventas` | `cliente_id` → Cliente, `contrato_id` → Contrato, `orden_compra_id` → OrdenCompra |
+| NotaVentaDetalle | `nota_venta_detalles` | `notaventa_id` → NotaVenta, `producto_id` → Producto |
 
-Controladores y DTOs para Clientes y Contratos.
+## API Endpoints
 
-Endpoint para registrar nueva Nota de Venta (POST /notas).
+### Productos
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/productos` | Crear producto |
+| GET | `/productos` | Listar productos (paginado) |
+| GET | `/productos/{id}` | Buscar por UUID |
+| GET | `/productos/partidas/{partida}` | Filtrar por partida |
+| GET | `/productos/categorias/{id}` | Filtrar por categoría |
+| GET | `/productos/buscar/{nombre}` | Buscar por nombre |
+| GET | `/productos/buscar_palabras?q=` | Búsqueda por palabra |
+| PATCH | `/productos/{id}` | Actualizar producto |
+| DELETE | `/productos/{id}` | Eliminar (baja lógica) |
 
-Próximos Pasos (La Locura):
+### Clientes
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/clientes` | Crear cliente |
+| GET | `/clientes` | Listar clientes |
+| GET | `/clientes/{id}` | Buscar por UUID |
+| PATCH | `/clientes/{id}` | Actualizar cliente |
+| DELETE | `/clientes/{id}` | Eliminar (baja lógica) |
 
-Implementar la lógica completa en el NotaVentaService (cálculo de totales, validación de existencia de IDs, etc.).
+### Categorías
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/categorias` | Crear categoría |
+| GET | `/categorias` | Listar categorías |
+| GET | `/categorias/{id}` | Buscar por UUID |
+| PATCH | `/categorias/{id}` | Actualizar categoría |
+| DELETE | `/categorias/{id}` | Eliminar (baja lógica) |
 
-Desarrollo de la funcionalidad de Órdenes de Compra (OC).
+### Contratos
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/contratos` | Crear contrato |
+| GET | `/contratos` | Listar contratos |
+| GET | `/contratos/{id}` | Buscar por UUID |
+| PATCH | `/contratos/{id}` | Actualizar contrato |
+| DELETE | `/contratos/{id}` | Eliminar (baja lógica) |
 
-Integración de JWT para autenticación y seguridad de endpoints.
+### Órdenes de compra
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/orden_compra` | Crear orden |
+| GET | `/orden_compra` | Listar órdenes (paginado) |
+| GET | `/orden_compra/{id}` | Buscar por UUID |
+| PATCH | `/orden_compra/{id}` | Actualizar orden |
+| DELETE | `/orden_compra/{id}` | Eliminar (baja lógica) |
 
-Documentación completa de la API con Swagger.
+### Notas de venta
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/notaventas` | Crear nota |
+| GET | `/notaventas` | Listar notas (paginado) |
+| GET | `/notaventas/{id}` | Buscar por UUID |
+| PATCH | `/notaventas/{id}` | Actualizar nota |
+| DELETE | `/notaventas/{id}` | Eliminar (baja lógica) |
 
-👨‍💻 Desarrollador
-Jesús Medina Casas
+### Enums
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/enums/partidas` | Listar partidas disponibles |
+| GET | `/enums/unidades-medida` | Listar unidades de medida |
 
-💻 Desarrollador Java y Spring Boot
+## Convenciones
 
-🔗 LinkedIn
-
-🐙 GitHub
-
-📜 Licencia
-Este proyecto está bajo la Licencia MIT.
+- **IDs**: UUID `VARCHAR(36)` generado por Hibernate (`GenerationType.UUID`)
+- **Bajas lógicas**: columna `activo` en todas las tablas (nunca se eliminan registros)
+- **Seed data**: Flyway V12 inserta datos de prueba con UUIDs explícitos
+- **Enums**: `Partida`, `UnidadMedida`, `DiaSemana` almacenados como string en BD
+- **Paginación**: `@PageableDefault` con tamaño 9 o 10 y orden por defecto

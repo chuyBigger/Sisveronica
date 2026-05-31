@@ -4,7 +4,6 @@ CREATE TABLE clientes (
     rfc VARCHAR(50) UNIQUE,
     calle VARCHAR(255),
     numero INT,
-    cntrat_X varchar(255),
     fraccionamiento VARCHAR(255),
     c_p VARCHAR(50) NOT NULL,
     municipio VARCHAR(255),

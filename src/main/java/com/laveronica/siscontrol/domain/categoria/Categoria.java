@@ -35,7 +35,7 @@ public class Categoria {
     @Column(nullable = false)
     private Boolean activo;
 
-    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "categoria")
     private List<Producto> productos = new ArrayList<>();
 
     public Categoria(DatosRegistroCategoria categoria){

@@ -46,10 +46,10 @@ public class Cliente {
     @Column(nullable = false)
     private boolean activo = true;
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cliente")
     private List<NotaVenta> notaVentas = new ArrayList<>();
 
-    @OneToMany(mappedBy = "cliente", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "cliente")
     private List<Contrato> contratos = new ArrayList<>();
 
 

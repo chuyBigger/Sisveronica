@@ -47,11 +47,13 @@ public class OrdenCompra {
     @Column(name = "fecha_fin_semana", nullable = false)
     private LocalDate fechaFinSemana;
 
+    @Builder.Default
     @OneToMany(mappedBy = "ordenCompra", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenCompraDetalle> detalles = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "ordenCompra")
-    private List<NotaVenta> ListaNotaVentas = new ArrayList<>();
+    private List<NotaVenta> listaNotaVentas = new ArrayList<>();
 
     @Column(nullable = false)
     private Boolean activo;
