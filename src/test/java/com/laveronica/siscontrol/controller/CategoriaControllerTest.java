@@ -45,7 +45,7 @@ class CategoriaControllerTest {
     void registrar() throws Exception {
         var request = new DatosRegistroCategoria("Lacteos", Partida.LACTEOS);
         Categoria categoria = new Categoria();
-        categoria.setId(1L);
+        categoria.setId("1");
         categoria.setNombre("Lacteos");
         categoria.setPartida(Partida.LACTEOS);
         categoria.setActivo(true);
@@ -62,7 +62,7 @@ class CategoriaControllerTest {
 
     @Test
     void listarCategorias() throws Exception {
-        var detalle = new DatosDetalleCategoria(1L, "Lacteos", Partida.LACTEOS);
+        var detalle = new DatosDetalleCategoria("1", "Lacteos", Partida.LACTEOS);
 
         given(categoriaService.listaCategorias()).willReturn(List.of(detalle));
 
@@ -73,13 +73,13 @@ class CategoriaControllerTest {
 
     @Test
     void buscarCategoriaId() throws Exception {
-        var detalle = new DatosDetalleCategoria(1L, "Lacteos", Partida.LACTEOS);
+        var detalle = new DatosDetalleCategoria("1", "Lacteos", Partida.LACTEOS);
         Categoria categoria = new Categoria();
-        categoria.setId(1L);
+        categoria.setId("1");
         categoria.setNombre("Lacteos");
         categoria.setPartida(Partida.LACTEOS);
 
-        given(categoriaService.buscarCategoriaId(1L)).willReturn(categoria);
+        given(categoriaService.buscarCategoriaId("1")).willReturn(categoria);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/categorias/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -90,7 +90,7 @@ class CategoriaControllerTest {
     void actualizaCategoriaid() throws Exception {
         var request = new DatosActualizarCategoria("Carnes Frias", Partida.CARNES);
         Categoria categoria = new Categoria();
-        categoria.setId(1L);
+        categoria.setId("1");
         categoria.setNombre("Carnes Frias");
         categoria.setPartida(Partida.CARNES);
 
@@ -105,7 +105,7 @@ class CategoriaControllerTest {
 
     @Test
     void eliminarCategoria() throws Exception {
-        doNothing().when(categoriaService).eliminarCategoria(1L);
+        doNothing().when(categoriaService).eliminarCategoria("1");
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/categorias/1"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());

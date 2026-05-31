@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -29,6 +29,7 @@ import { DatosDetalleContrato } from '../../models/contrato.model';
 export class ContratoListaComponent implements OnInit {
   private contratoService = inject(ContratoService);
   private snackBar = inject(MatSnackBar);
+  private cdr = inject(ChangeDetectorRef);
 
   displayedColumns: string[] = ['id', 'contrato', 'cliente', 'fechaInicio', 'fechaTermino', 'presupuesto', 'acciones'];
   contratos: DatosDetalleContrato[] = [];
@@ -39,12 +40,15 @@ export class ContratoListaComponent implements OnInit {
 
   cargarContratos(): void {
     this.contratoService.listar().subscribe({
-      next: (res) => (this.contratos = res),
+      next: (res) => {
+        this.contratos = res;
+        this.cdr.detectChanges();
+      },
       error: () => this.snackBar.open('Error al cargar contratos', 'Cerrar', { duration: 3000 }),
     });
   }
 
-  confirmarEliminar(id: number, nombre: string): void {
+  confirmarEliminar(id: string, nombre: string): void {
     if (confirm(`¿Eliminar el contrato "${nombre}"?`)) {
       this.contratoService.eliminar(id).subscribe({
         next: () => {

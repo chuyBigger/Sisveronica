@@ -11,13 +11,13 @@ export interface NotaVentaListarDetalle {
 }
 
 export interface DatosRegistroNota {
-  clienteId: number;
+  clienteId: string;
   partida: string;
   detalles: NotaVentaDetalleRegistro[];
 }
 
 export interface DatosListarNota {
-  id: number;
+  id: string;
   fecha: string;
   cliente: string;
   partida: string;
@@ -26,7 +26,7 @@ export interface DatosListarNota {
 }
 
 export interface DatosDetalleNota {
-  id: number;
+  id: string;
   fecha: string;
   cliente: string;
   partida: string;

@@ -40,14 +40,14 @@ class CategoriaServiceTest {
         given(categoriaRepository.existsByNombre("Lacteos")).willReturn(false);
         given(categoriaRepository.save(any())).willAnswer(invocation -> {
             Categoria c = invocation.getArgument(0);
-            c.setId(1L);
+            c.setId("1");
             return c;
         });
 
         Categoria result = categoriaService.registrarCategoria(datos);
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getId()).isEqualTo("1");
         assertThat(result.getNombre()).isEqualTo("Lacteos");
     }
 
@@ -65,13 +65,13 @@ class CategoriaServiceTest {
     @Test
     void listaCategoriasReturnsFilteredList() {
         Categoria cat1 = new Categoria();
-        cat1.setId(1L);
+        cat1.setId("1");
         cat1.setNombre("Lacteos");
         cat1.setPartida(Partida.LACTEOS);
         cat1.setActivo(true);
 
         Categoria cat2 = new Categoria();
-        cat2.setId(2L);
+        cat2.setId("2");
         cat2.setNombre("Carnes");
         cat2.setPartida(Partida.CARNES);
         cat2.setActivo(true);
@@ -87,15 +87,15 @@ class CategoriaServiceTest {
     @Test
     void eliminarCategoriaSetsActivoFalse() {
         Categoria categoria = new Categoria();
-        categoria.setId(1L);
+        categoria.setId("1");
         categoria.setNombre("Lacteos");
         categoria.setActivo(true);
 
-        given(categoriaRepository.findById(1L)).willReturn(Optional.of(categoria));
+        given(categoriaRepository.findById("1")).willReturn(Optional.of(categoria));
 
-        categoriaService.eliminarCategoria(1L);
+        categoriaService.eliminarCategoria("1");
 
         assertThat(categoria.getActivo()).isFalse();
-        verify(categoriaRepository).findById(1L);
+        verify(categoriaRepository).findById("1");
     }
 }

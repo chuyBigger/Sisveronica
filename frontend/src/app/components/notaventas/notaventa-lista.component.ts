@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, inject, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -41,6 +41,7 @@ import { DatosListarNota, NotaVentaListarDetalle } from '../../models/notaventa.
 export class NotaVentaListaComponent implements AfterViewInit {
   private notaventaService = inject(NotaVentaService);
   private snackBar = inject(MatSnackBar);
+  private cdr = inject(ChangeDetectorRef);
 
   displayedColumns: string[] = ['id', 'fecha', 'cliente', 'partida', 'totalGeneral', 'acciones'];
   dataSource = new MatTableDataSource<DatosListarNota>([]);
@@ -61,6 +62,7 @@ export class NotaVentaListaComponent implements AfterViewInit {
       next: (res) => {
         this.dataSource.data = res.content ?? res;
         this.totalElements = res.totalElements ?? (res.content ? res.content.length : res.length);
+        this.cdr.detectChanges();
       },
       error: () => this.snackBar.open('Error al cargar notas de venta', 'Cerrar', { duration: 3000 }),
     });
@@ -74,7 +76,7 @@ export class NotaVentaListaComponent implements AfterViewInit {
     this.expandedElement = this.expandedElement === row ? null : row;
   }
 
-  confirmarEliminar(id: number): void {
+  confirmarEliminar(id: string): void {
     if (confirm('¿Eliminar esta nota de venta?')) {
       this.notaventaService.eliminar(id).subscribe({
         next: () => {

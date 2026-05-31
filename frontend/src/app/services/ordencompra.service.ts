@@ -19,15 +19,15 @@ export class OrdenCompraService {
     return this.http.get<any>(this.apiUrl, { params });
   }
 
-  buscarPorId(id: number): Observable<DatosDetalleOrdenCompra> {
+  buscarPorId(id: string): Observable<DatosDetalleOrdenCompra> {
     return this.http.get<DatosDetalleOrdenCompra>(`${this.apiUrl}/${id}`);
   }
 
-  actualizar(id: number, datos: DatosActulizarOrdenCompra): Observable<DatosDetalleOrdenCompra> {
+  actualizar(id: string, datos: DatosActulizarOrdenCompra): Observable<DatosDetalleOrdenCompra> {
     return this.http.patch<DatosDetalleOrdenCompra>(`${this.apiUrl}/${id}`, datos);
   }
 
-  eliminar(id: number): Observable<void> {
+  eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

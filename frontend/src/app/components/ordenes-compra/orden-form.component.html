@@ -1,119 +1,215 @@
-<div class="container">
-  <mat-card>
-    <mat-card-header>
-      <mat-card-title>{{ esEdicion ? 'Editar Orden de Compra' : 'Nueva Orden de Compra' }}</mat-card-title>
-    </mat-card-header>
-    <mat-card-content>
-      @if (cargando) {
-        <div class="spinner-wrapper">
-          <mat-spinner diameter="40"></mat-spinner>
-        </div>
-      } @else {
-        <form [formGroup]="form" (ngSubmit)="guardar()">
-          <div class="form-grid">
-            <mat-form-field appearance="outline">
-              <mat-label>Cliente</mat-label>
-              <mat-select formControlName="cliente_id" (selectionChange)="onClienteChange()">
-                @for (c of clientes; track c.id) {
-                  <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
-                }
-              </mat-select>
-              @if (form.get('cliente_id')?.hasError('required')) {
-                <mat-error>Requerido</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Contrato</mat-label>
-              <mat-select formControlName="contrato_id">
-                @for (c of contratos; track c.id) {
-                  <mat-option [value]="c.id">{{ c.contrato }}</mat-option>
-                }
-              </mat-select>
-              @if (form.get('contrato_id')?.hasError('required')) {
-                <mat-error>Requerido</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Partida</mat-label>
-              <mat-select formControlName="partida">
-                @for (p of partidas; track p) {
-                  <mat-option [value]="p">{{ p }}</mat-option>
-                }
-              </mat-select>
-              @if (form.get('partida')?.hasError('required')) {
-                <mat-error>Requerido</mat-error>
-              }
-            </mat-form-field>
-
-            <mat-form-field appearance="outline">
-              <mat-label>Fecha Inicio Semana</mat-label>
-              <input matInput [matDatepicker]="pickerSemana" formControlName="fechaInicioSemana">
-              <mat-datepicker-toggle matSuffix [for]="pickerSemana"></mat-datepicker-toggle>
-              <mat-datepicker #pickerSemana></mat-datepicker>
-              @if (form.get('fechaInicioSemana')?.hasError('required')) {
-                <mat-error>Requerido</mat-error>
-              }
-            </mat-form-field>
+@if (modoConfirmacion && datosGuardados) {
+  <div class="container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Orden de Compra Registrada</mat-card-title>
+        <mat-card-subtitle>Folio #{{ datosGuardados.id }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="confirmation-summary">
+          <div class="summary-row">
+            <span class="summary-label">Cliente:</span>
+            <span>{{ datosGuardados.clienteNombre || datosGuardados.cliente }}</span>
           </div>
+          <div class="summary-row">
+            <span class="summary-label">Contrato:</span>
+            <span>{{ datosGuardados.contratoNombre || datosGuardados.contrato }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Partida:</span>
+            <span>{{ datosGuardados.partida }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Semana del:</span>
+            <span>{{ datosGuardados.fechaInicioSemana }}</span>
+          </div>
+        </div>
 
-          <div class="detalles-section">
-            <div class="detalles-header">
-              <h3>Detalles</h3>
-              <button mat-stroked-button color="primary" type="button" (click)="agregarDetalle()">
-                <mat-icon>add</mat-icon> Agregar detalle
-              </button>
+        <div class="table-wrapper">
+          <table class="orden-table">
+            <thead>
+              <tr>
+                <th class="sticky-col">Producto</th>
+                @for (dia of diasSemana; track dia) {
+                  <th>{{ diasLabels[dia] }}</th>
+                }
+                <th>Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (detalle of datosGuardados.detalles; track $index) {
+                <tr>
+                  <td class="sticky-col product-name">{{ detalle.producto }}</td>
+                  @for (dia of diasSemana; track dia) {
+                    <td class="num">{{ detalle[dia] || 0 }}</td>
+                  }
+                  <td class="num total">{{ getConfirmaTotalFila($index) }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="sticky-col total-label">TOTALES</td>
+                @for (dia of diasSemana; track dia) {
+                  <td class="num total">{{ getConfirmaTotalCol(dia) }}</td>
+                }
+                <td class="num total">{{ getConfirmaGranTotal() }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="nuevaOrden()">
+            <mat-icon>add</mat-icon> Nueva Orden
+          </button>
+          <button mat-raised-button color="primary" type="button" (click)="volverLista()">
+            <mat-icon>list</mat-icon> Volver al listado
+          </button>
+        </div>
+      </mat-card-content>
+    </mat-card>
+  </div>
+} @else {
+  <div class="container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ esEdicion ? 'Editar Orden de Compra' : 'Nueva Orden de Compra' }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (cargando && !esEdicion) {
+          <div class="spinner-wrapper">
+            <mat-spinner diameter="40"></mat-spinner>
+          </div>
+        } @else {
+          <form [formGroup]="form">
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Cliente (Clínica)</mat-label>
+                <mat-select formControlName="cliente_id" (selectionChange)="onClienteChange()">
+                  @for (c of clientes; track c.id) {
+                    <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('cliente_id')?.hasError('required')) {
+                  <mat-error>Seleccione una clínica</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Contrato</mat-label>
+                <mat-select formControlName="contrato_id">
+                  @for (c of contratos; track c.id) {
+                    <mat-option [value]="c.id">{{ c.contrato }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('contrato_id')?.hasError('required')) {
+                  <mat-error>Requerido</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Partida</mat-label>
+                <mat-select formControlName="partida" (selectionChange)="onPartidaChange()">
+                  @for (p of partidas; track p) {
+                    <mat-option [value]="p">{{ p }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('partida')?.hasError('required')) {
+                  <mat-error>Seleccione una partida</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Semana del</mat-label>
+                <input matInput [matDatepicker]="pickerSemana" formControlName="fechaInicioSemana">
+                <mat-datepicker-toggle matSuffix [for]="pickerSemana"></mat-datepicker-toggle>
+                <mat-datepicker #pickerSemana></mat-datepicker>
+                @if (form.get('fechaInicioSemana')?.hasError('required')) {
+                  <mat-error>Requerido</mat-error>
+                }
+              </mat-form-field>
             </div>
 
-            @if (detalles.length === 0) {
-              <p class="empty-message">No hay detalles. Agregue al menos un detalle.</p>
+            @if (detalles.length > 0) {
+              <div class="table-section">
+                <h3>Productos - {{ form.get('partida')?.value }}</h3>
+                <p class="section-hint">Capture las cantidades por día para cada producto</p>
+
+                <div class="table-wrapper">
+                  <table class="orden-table" formArrayName="detalles">
+                    <thead>
+                      <tr>
+                        <th class="sticky-col">Producto</th>
+                        @for (dia of diasSemana; track dia) {
+                          <th>{{ diasLabels[dia] }}</th>
+                        }
+                        <th>Total</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (detalle of detalles.controls; track $index) {
+                        <tr [formGroupName]="$index">
+                          <td class="sticky-col product-name">
+                            <span class="product-cell">{{ detalle.get('producto_nombre')?.value }}</span>
+                            <input type="hidden" [formControlName]="'producto_id'">
+                          </td>
+                          @for (dia of diasSemana; track dia) {
+                            <td>
+                              <input
+                                class="cell-input"
+                                type="number"
+                                min="0"
+                                step="0.1"
+                                [formControlName]="dia"
+                                placeholder="0"
+                              >
+                            </td>
+                          }
+                          <td class="num total-row">{{ getTotalSemana($index) }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td class="sticky-col total-label">TOTALES</td>
+                        @for (dia of diasSemana; track dia) {
+                          <td class="num total">{{ getTotales(dia) }}</td>
+                        }
+                        <td class="num total">{{ getGranTotal() }}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
             }
 
-            <div formArrayName="detalles">
-              @for (detalle of detalles.controls; track $index) {
-                <div class="detalle-card" [formGroupName]="$index">
-                  <div class="detalle-header">
-                    <strong>Detalle #{{ $index + 1 }}</strong>
-                    <button mat-icon-button color="warn" type="button" (click)="eliminarDetalle($index)" matTooltip="Eliminar">
-                      <mat-icon>delete</mat-icon>
-                    </button>
-                  </div>
-                  <div class="detalle-body">
-                    <mat-form-field appearance="outline">
-                      <mat-label>Producto</mat-label>
-                      <mat-select formControlName="producto">
-                        @for (p of productos; track p.id) {
-                          <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
-                        }
-                      </mat-select>
-                      @if (detalle.get('producto')?.hasError('required')) {
-                        <mat-error>Requerido</mat-error>
-                      }
-                    </mat-form-field>
+            @if (detalles.length === 0 && form.get('partida')?.value && !cargando) {
+              <div class="empty-state">
+                <p>No se encontraron productos para la partida seleccionada.</p>
+              </div>
+            }
 
-                    <div class="dias-grid">
-                      @for (dia of diasSemana; track dia) {
-                        <mat-form-field appearance="outline">
-                          <mat-label>{{ dia | titlecase }}</mat-label>
-                          <input matInput type="number" min="0" [formControlName]="dia" placeholder="0">
-                        </mat-form-field>
-                      }
-                    </div>
-                  </div>
-                </div>
-              }
+            @if (detalles.length === 0 && !form.get('partida')?.value) {
+              <div class="empty-state">
+                <mat-icon class="empty-icon">table_chart</mat-icon>
+                <p>Seleccione clínica, partida y semana para comenzar a capturar</p>
+              </div>
+            }
+
+            <div class="form-actions">
+              <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+              <button mat-raised-button color="primary" type="button" (click)="guardar()" [disabled]="form.invalid || cargando">
+                @if (cargando) {
+                  <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
+                }
+                <mat-icon>save</mat-icon>
+                {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+              </button>
             </div>
-          </div>
-
-          <div class="form-actions">
-            <button mat-button type="button" (click)="cancelar()">Cancelar</button>
-            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
-              {{ esEdicion ? 'Actualizar' : 'Guardar' }}
-            </button>
-          </div>
-        </form>
-      }
-    </mat-card-content>
-  </mat-card>
-</div>
+          </form>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+}

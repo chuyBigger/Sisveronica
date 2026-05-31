@@ -59,15 +59,15 @@ class OrdenCompraServiceTest {
     @Test
     void registrarOrdenCompraSuccess() {
         var detalleRegistro = new DatosRegistroOrdenCompraDetalle(LocalDate.now(), "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
-        var datos = new DatosRegistroOrdenCompra(1L, 1L, "ABARROTES", LocalDate.now(), List.of(detalleRegistro));
+        var datos = new DatosRegistroOrdenCompra("1", "1", "ABARROTES", LocalDate.now(), List.of(detalleRegistro));
 
         given(partidaValidacionesHelper.validaPartidaExistaString("ABARROTES")).willReturn(Partida.ABARROTES);
-        given(clienteValidacionesHelper.validaClienteExistaId(1L)).willReturn(new Cliente());
-        given(contratoValidacionesHelper.validaContratoExisteId(1L)).willReturn(new Contrato());
+        given(clienteValidacionesHelper.validaClienteExistaId("1")).willReturn(new Cliente());
+        given(contratoValidacionesHelper.validaContratoExisteId("1")).willReturn(new Contrato());
         given(ordenCompraDetalleService.registrarListaDetallesOrdenCompra(any(), any())).willReturn(List.of());
         given(ordenCompraRespository.save(any())).willAnswer(invocation -> {
             OrdenCompra oc = invocation.getArgument(0);
-            oc.setId(1L);
+            oc.setId("1");
             return oc;
         });
 
@@ -79,7 +79,7 @@ class OrdenCompraServiceTest {
     @Test
     void listarOrdenesCompraReturnsPage() {
         OrdenCompra oc = new OrdenCompra();
-        oc.setId(1L);
+        oc.setId("1");
         oc.setPartida(Partida.ABARROTES);
         oc.setFechaInicioSemana(LocalDate.now());
         oc.setCliente(new Cliente());
@@ -97,7 +97,7 @@ class OrdenCompraServiceTest {
     @Test
     void buscarOrdenCompraIdFound() {
         OrdenCompra oc = new OrdenCompra();
-        oc.setId(1L);
+        oc.setId("1");
         oc.setPartida(Partida.ABARROTES);
         oc.setFechaInicioSemana(LocalDate.now());
         Cliente cliente = new Cliente();
@@ -107,11 +107,11 @@ class OrdenCompraServiceTest {
         contrato.setContrato("CON-001");
         oc.setContrato(contrato);
 
-        given(ordenCompraValidacionesHelper.buscarOrdenCompraId(1L)).willReturn(oc);
+        given(ordenCompraValidacionesHelper.buscarOrdenCompraId("1")).willReturn(oc);
 
-        DatosDetalleOrdenCompra result = ordenCompraService.buscarOrdenCompraId(1L);
+        DatosDetalleOrdenCompra result = ordenCompraService.buscarOrdenCompraId("1");
 
         assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo("1");
     }
 }

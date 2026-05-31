@@ -45,12 +45,12 @@ class ContratosControllerTest {
 
     @Test
     void registrar() throws Exception {
-        var request = new DatosRegistroContrato("CON-001", 1L, LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var request = new DatosRegistroContrato("CON-001", "1", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
         Cliente cliente = new Cliente();
-        cliente.setId(1L);
+        cliente.setId("1");
         cliente.setNombre("Cliente Test");
         Contrato contrato = Contrato.builder()
-                .id(1L).contrato("CON-001").cliente(cliente)
+                .id("1").contrato("CON-001").cliente(cliente)
                 .fechaInicio(LocalDate.now())
                 .fechaTermino(LocalDate.now().plusDays(30))
                 .presupuesto(BigDecimal.valueOf(5000))
@@ -66,7 +66,7 @@ class ContratosControllerTest {
 
     @Test
     void contratosLista() throws Exception {
-        var detalle = new DatosDetalleContrato(1L, "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var detalle = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
 
         given(contratoService.listarContratos()).willReturn(List.of(detalle));
 
@@ -77,9 +77,9 @@ class ContratosControllerTest {
 
     @Test
     void contratoBuscarId() throws Exception {
-        var detalle = new DatosDetalleContrato(1L, "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var detalle = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
 
-        given(contratoService.buscarContratoId(1L)).willReturn(detalle);
+        given(contratoService.buscarContratoId("1")).willReturn(detalle);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/contratos/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -89,8 +89,8 @@ class ContratosControllerTest {
 
     @Test
     void actualizarContrato() throws Exception {
-        var request = new DatosActualizarContrato(1L, LocalDate.now(), LocalDate.now().plusDays(60), BigDecimal.valueOf(8000));
-        var response = new DatosDetalleContrato(1L, "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(60), BigDecimal.valueOf(8000));
+        var request = new DatosActualizarContrato("1", LocalDate.now(), LocalDate.now().plusDays(60), BigDecimal.valueOf(8000));
+        var response = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(60), BigDecimal.valueOf(8000));
 
         given(contratoService.actualizarContratoId(any(), any())).willReturn(response);
 
@@ -103,7 +103,7 @@ class ContratosControllerTest {
 
     @Test
     void eliminarContrato() throws Exception {
-        doNothing().when(contratoService).eliminarContrato(1L);
+        doNothing().when(contratoService).eliminarContrato("1");
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/contratos/1"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());

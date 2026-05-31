@@ -46,7 +46,7 @@ export class ContratoFormComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   esEdicion = false;
-  contratoId: number | null = null;
+  contratoId: string | null = null;
   cargando = false;
   clientes: DatosDetalleCliente[] = [];
 
@@ -63,12 +63,12 @@ export class ContratoFormComponent implements OnInit {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.esEdicion = true;
-      this.contratoId = Number(idParam);
+      this.contratoId = idParam;
       this.cargarContrato(this.contratoId);
     }
   }
 
-  cargarContrato(id: number): void {
+  cargarContrato(id: string): void {
     this.cargando = true;
     this.contratoService.buscarPorId(id).subscribe({
       next: (c) => {

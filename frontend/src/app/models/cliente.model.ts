@@ -10,7 +10,7 @@ export interface DatosRegistroCliente {
 }
 
 export interface DatosDetalleCliente {
-  id: number;
+  id: string;
   nombre: string;
   rfc: string;
   calle: string;

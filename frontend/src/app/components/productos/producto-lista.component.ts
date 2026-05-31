@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, inject, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -46,6 +46,7 @@ export class ProductoListaComponent implements AfterViewInit {
   private enumsService = inject(EnumsService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private cdr = inject(ChangeDetectorRef);
 
   displayedColumns: string[] = ['id', 'nombre', 'codigo', 'partida', 'categoria', 'precioVenta', 'acciones'];
   dataSource = new MatTableDataSource<DatosListarProductos>([]);
@@ -59,7 +60,10 @@ export class ProductoListaComponent implements AfterViewInit {
 
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
-    this.enumsService.getPartidas().subscribe((res) => (this.partidas = res));
+    this.enumsService.getPartidas().subscribe((res) => {
+      this.partidas = res;
+      this.cdr.detectChanges();
+    });
     this.cargarProductos();
   }
 
@@ -72,6 +76,7 @@ export class ProductoListaComponent implements AfterViewInit {
         next: (res) => {
           this.dataSource.data = res.content ?? res;
           this.totalElements = res.totalElements ?? (res.content ? res.content.length : res.length);
+          this.cdr.detectChanges();
         },
         error: () => this.snackBar.open('Error al cargar productos', 'Cerrar', { duration: 3000 }),
       });
@@ -80,6 +85,7 @@ export class ProductoListaComponent implements AfterViewInit {
         next: (res) => {
           this.dataSource.data = res.content ?? res;
           this.totalElements = res.totalElements ?? (res.content ? res.content.length : res.length);
+          this.cdr.detectChanges();
         },
         error: () => this.snackBar.open('Error al cargar productos', 'Cerrar', { duration: 3000 }),
       });
@@ -88,6 +94,7 @@ export class ProductoListaComponent implements AfterViewInit {
         next: (res) => {
           this.dataSource.data = res.content ?? res;
           this.totalElements = res.totalElements ?? (res.content ? res.content.length : res.length);
+          this.cdr.detectChanges();
         },
         error: () => this.snackBar.open('Error al cargar productos', 'Cerrar', { duration: 3000 }),
       });

@@ -44,7 +44,7 @@ class ClienteControllerTest {
     void registrar() throws Exception {
         var request = new DatosRegistroCliente("Cliente Test", "XAXX010101000", "Calle 1", 123, "Fracc", "12345", "Municipio", "Estado");
         Cliente cliente = new Cliente();
-        cliente.setId(1L);
+        cliente.setId("1");
         cliente.setNombre("Cliente Test");
 
         given(clienteService.registarCliente(any())).willReturn(cliente);
@@ -57,7 +57,7 @@ class ClienteControllerTest {
 
     @Test
     void listarClietes() throws Exception {
-        var detalle = new DatosDetalleCliente(1L, "Cliente Test", "XAXX010101000", "Calle 1", 123, "Fracc", "12345", "Municipio", "Estado");
+        var detalle = new DatosDetalleCliente("1", "Cliente Test", "XAXX010101000", "Calle 1", 123, "Fracc", "12345", "Municipio", "Estado");
 
         given(clienteService.buscarTodos()).willReturn(List.of(detalle));
 
@@ -68,9 +68,9 @@ class ClienteControllerTest {
 
     @Test
     void mostrarClienteId() throws Exception {
-        var detalle = new DatosDetalleCliente(1L, "Cliente Test", "XAXX010101000", "Calle 1", 123, "Fracc", "12345", "Municipio", "Estado");
+        var detalle = new DatosDetalleCliente("1", "Cliente Test", "XAXX010101000", "Calle 1", 123, "Fracc", "12345", "Municipio", "Estado");
 
-        given(clienteService.buscarClienteId(1L)).willReturn(detalle);
+        given(clienteService.buscarClienteId("1")).willReturn(detalle);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/clientes/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -80,7 +80,7 @@ class ClienteControllerTest {
     @Test
     void actulizarCliente() throws Exception {
         var request = new DatosActualizarCliente("Cliente Actualizado", null, null, null, null, null, null);
-        var detalle = new DatosDetalleCliente(1L, "Cliente Actualizado", "XAXX010101000", "Calle 1", 123, "Fracc", "12345", "Municipio", "Estado");
+        var detalle = new DatosDetalleCliente("1", "Cliente Actualizado", "XAXX010101000", "Calle 1", 123, "Fracc", "12345", "Municipio", "Estado");
 
         given(clienteService.actualizarCliente(any(), any())).willReturn(detalle);
 
@@ -93,7 +93,7 @@ class ClienteControllerTest {
 
     @Test
     void eliminarCliente() throws Exception {
-        doNothing().when(clienteService).eliminarCliente(1L);
+        doNothing().when(clienteService).eliminarCliente("1");
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/clientes/1"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());

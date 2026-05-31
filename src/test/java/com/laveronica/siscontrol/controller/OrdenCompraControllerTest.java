@@ -51,9 +51,9 @@ class OrdenCompraControllerTest {
     @Test
     void registrarOrdenCompra() throws Exception {
         var detalle = new DatosRegistroOrdenCompraDetalle(LocalDate.now(), "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
-        var request = new DatosRegistroOrdenCompra(1L, 1L, "ABARROTES", LocalDate.now(), List.of(detalle));
-        var detalleResponse = new DatosDetalleOrdenCompraDetalle(1L, "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
-        var response = new DatosDetalleOrdenCompra(1L, "Cliente Test", "CON-001", Partida.ABARROTES, LocalDate.now(), List.of(detalleResponse));
+        var request = new DatosRegistroOrdenCompra("1", "1", "ABARROTES", LocalDate.now(), List.of(detalle));
+        var detalleResponse = new DatosDetalleOrdenCompraDetalle("1", "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
+        var response = new DatosDetalleOrdenCompra("1", "Cliente Test", "CON-001", Partida.ABARROTES, LocalDate.now(), List.of(detalleResponse));
 
         given(ordenCompraService.registrarOrdenCompra(any())).willReturn(response);
 
@@ -66,8 +66,8 @@ class OrdenCompraControllerTest {
 
     @Test
     void listarOrdenCompra() throws Exception {
-        var detalle = new DatosListarDetalleOrdenCompraDetalle(1L, "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
-        var orden = new DatosListarOrdenCompra(1L, "Cliente Test", "CON-001", "ABARROTES", LocalDate.now(), List.of(detalle));
+        var detalle = new DatosListarDetalleOrdenCompraDetalle("1", "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
+        var orden = new DatosListarOrdenCompra("1", "Cliente Test", "CON-001", "ABARROTES", LocalDate.now(), List.of(detalle));
         Page<DatosListarOrdenCompra> page = new PageImpl<>(List.of(orden), PageRequest.of(0, 9), 1);
 
         given(ordenCompraService.listarOrdenesCompra(any())).willReturn(page);
@@ -79,10 +79,10 @@ class OrdenCompraControllerTest {
 
     @Test
     void buscarOrdenCompraId() throws Exception {
-        var detalle = new DatosDetalleOrdenCompraDetalle(1L, "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
-        var response = new DatosDetalleOrdenCompra(1L, "Cliente Test", "CON-001", Partida.ABARROTES, LocalDate.now(), List.of(detalle));
+        var detalle = new DatosDetalleOrdenCompraDetalle("1", "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
+        var response = new DatosDetalleOrdenCompra("1", "Cliente Test", "CON-001", Partida.ABARROTES, LocalDate.now(), List.of(detalle));
 
-        given(ordenCompraService.buscarOrdenCompraId(1L)).willReturn(response);
+        given(ordenCompraService.buscarOrdenCompraId("1")).willReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/orden_compra/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -91,9 +91,9 @@ class OrdenCompraControllerTest {
 
     @Test
     void actilizarOdrdenCompra() throws Exception {
-        var request = new DatosActulizarOrdenCompra(1L, 1L, "ABARROTES", LocalDate.now(), null);
-        var detalle = new DatosDetalleOrdenCompraDetalle(1L, "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
-        var response = new DatosDetalleOrdenCompra(1L, "Cliente Test", "CON-001", Partida.ABARROTES, LocalDate.now(), List.of(detalle));
+        var request = new DatosActulizarOrdenCompra("1", "1", "ABARROTES", LocalDate.now(), null);
+        var detalle = new DatosDetalleOrdenCompraDetalle("1", "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
+        var response = new DatosDetalleOrdenCompra("1", "Cliente Test", "CON-001", Partida.ABARROTES, LocalDate.now(), List.of(detalle));
 
         given(ordenCompraService.actulizarOrdenCompraId(any(), any())).willReturn(response);
 
@@ -106,7 +106,7 @@ class OrdenCompraControllerTest {
 
     @Test
     void eliminarOrdenCompra() throws Exception {
-        doNothing().when(ordenCompraService).eliminarOrdenCompra(1L);
+        doNothing().when(ordenCompraService).eliminarOrdenCompra("1");
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/orden_compra/1"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());

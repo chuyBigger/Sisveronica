@@ -52,9 +52,9 @@ class NotaVentaControllerTest {
     @Test
     void registrarNota() throws Exception {
         var detalleRegistro = new NotaVentaDetalleRegistro(5, "1");
-        var request = new DatosRegistroNota(1L, "ABARROTES", List.of(detalleRegistro));
+        var request = new DatosRegistroNota("1", "ABARROTES", List.of(detalleRegistro));
         var detalleListar = new NotaVentaListarDetalle(5, "arroz", BigDecimal.valueOf(20), BigDecimal.valueOf(100));
-        var response = new DatosDetalleNota(1L, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalleListar), BigDecimal.valueOf(100));
+        var response = new DatosDetalleNota("1", LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalleListar), BigDecimal.valueOf(100));
 
         given(notaVentaService.registrarNota(any())).willReturn(response);
 
@@ -68,7 +68,7 @@ class NotaVentaControllerTest {
     @Test
     void listaNotas() throws Exception {
         var detalle = new NotaVentaListarDetalle(5, "arroz", BigDecimal.valueOf(20), BigDecimal.valueOf(100));
-        var nota = new DatosListarNota(1L, LocalDateTime.now(), "Cliente Test", "ABARROTES", List.of(detalle), BigDecimal.valueOf(100));
+        var nota = new DatosListarNota("1", LocalDateTime.now(), "Cliente Test", "ABARROTES", List.of(detalle), BigDecimal.valueOf(100));
         Page<DatosListarNota> page = new PageImpl<>(List.of(nota), PageRequest.of(0, 9), 1);
 
         given(notaVentaService.listarNotas(any())).willReturn(page);
@@ -81,9 +81,9 @@ class NotaVentaControllerTest {
     @Test
     void buscarNotaId() throws Exception {
         var detalle = new NotaVentaListarDetalle(5, "arroz", BigDecimal.valueOf(20), BigDecimal.valueOf(100));
-        var response = new DatosDetalleNota(1L, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalle), BigDecimal.valueOf(100));
+        var response = new DatosDetalleNota("1", LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalle), BigDecimal.valueOf(100));
 
-        given(notaVentaService.buscarNotaId(1L)).willReturn(response);
+        given(notaVentaService.buscarNotaId("1")).willReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/notaventas/1"))
                 .andExpect(MockMvcResultMatchers.status().isOk())
@@ -95,7 +95,7 @@ class NotaVentaControllerTest {
         var detalleActualizar = new NotaVentaActualizarDetalle(10, "arroz");
         var request = new DatosActualizarNota("ABARROTES", List.of(detalleActualizar));
         var detalleListar = new NotaVentaListarDetalle(10, "arroz", BigDecimal.valueOf(20), BigDecimal.valueOf(200));
-        var response = new DatosDetalleNota(1L, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalleListar), BigDecimal.valueOf(200));
+        var response = new DatosDetalleNota("1", LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalleListar), BigDecimal.valueOf(200));
 
         given(notaVentaService.actualizarNota(any(), any())).willReturn(response);
 
@@ -108,7 +108,7 @@ class NotaVentaControllerTest {
 
     @Test
     void eliminarNota() throws Exception {
-        doNothing().when(notaVentaService).eliminarNota(1L);
+        doNothing().when(notaVentaService).eliminarNota("1");
 
         mockMvc.perform(MockMvcRequestBuilders.delete("/notaventas/1"))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());

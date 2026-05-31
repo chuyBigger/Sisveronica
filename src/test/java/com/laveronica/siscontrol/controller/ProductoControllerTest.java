@@ -47,8 +47,8 @@ class ProductoControllerTest {
 
     @Test
     void registrar() throws Exception {
-        var request = new DatosRegistroProducto("Leche Entera", "LACTEOS", 1L, UnidadMedida.LITRO, BigDecimal.valueOf(15), BigDecimal.valueOf(22), null);
-        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+        var request = new DatosRegistroProducto("Leche Entera", "LACTEOS", "1", UnidadMedida.LITRO, BigDecimal.valueOf(15), BigDecimal.valueOf(22), null);
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
 
         given(productoService.registrarProducto(any())).willReturn(response);
 
@@ -74,7 +74,7 @@ class ProductoControllerTest {
 
     @Test
     void buscarProductoId() throws Exception {
-        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
 
         given(productoService.buscarProductoId("uuid-1")).willReturn(response);
 
@@ -109,7 +109,7 @@ class ProductoControllerTest {
 
     @Test
     void buscarProductosPorPalabra() throws Exception {
-        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
         Page<DatosDetalleProducto> page = new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
 
         given(productoService.buscarProductosPorPalabra(any(), any())).willReturn(page);
@@ -122,7 +122,7 @@ class ProductoControllerTest {
     @Test
     void actualizarProductoId() throws Exception {
         var request = new DatosActualizarProducto("Leche Deslactosada", null, null, null, null, null, null);
-        var response = new DatosDetalleProducto("uuid-1", "leche deslactosada", "LACTEOS", 1L, "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+        var response = new DatosDetalleProducto("uuid-1", "leche deslactosada", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
 
         given(productoService.actualizarProductoId(any(), any())).willReturn(response);
 

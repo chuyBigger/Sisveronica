@@ -46,32 +46,32 @@ class ContratoServiceTest {
 
     @Test
     void registrarContratoSuccess() {
-        var datos = new DatosRegistroContrato("CON-001", 1L, LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var datos = new DatosRegistroContrato("CON-001", "1", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
         Cliente cliente = new Cliente();
-        cliente.setId(1L);
+        cliente.setId("1");
         cliente.setNombre("Cliente Test");
 
-        given(clienteValidacionesHelper.validaClienteExistaId(1L)).willReturn(cliente);
+        given(clienteValidacionesHelper.validaClienteExistaId("1")).willReturn(cliente);
         given(contratoRepository.save(any())).willAnswer(invocation -> {
             Contrato c = invocation.getArgument(0);
-            c.setId(1L);
+            c.setId("1");
             return c;
         });
 
         Contrato result = contratoService.registrarContrato(datos);
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getId()).isEqualTo("1");
     }
 
     @Test
     void listarContratosReturnsList() {
         Cliente cliente = new Cliente();
-        cliente.setId(1L);
+        cliente.setId("1");
         cliente.setNombre("Cliente Test");
 
         Contrato contrato = new Contrato();
-        contrato.setId(1L);
+        contrato.setId("1");
         contrato.setContrato("CON-001");
         contrato.setCliente(cliente);
         contrato.setFechaInicio(LocalDate.now());
@@ -89,33 +89,33 @@ class ContratoServiceTest {
 
     @Test
     void buscarContratoIdFound() {
-        var detalle = new DatosDetalleContrato(1L, "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var detalle = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
 
-        given(contratoValidacionesHelper.buscarContratoExisteId(1L)).willReturn(detalle);
+        given(contratoValidacionesHelper.buscarContratoExisteId("1")).willReturn(detalle);
 
-        var result = contratoService.buscarContratoId(1L);
+        var result = contratoService.buscarContratoId("1");
 
         assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo("1");
     }
 
     @Test
     void eliminarContratoSetsActivoFalse() {
         Cliente cliente = new Cliente();
-        cliente.setId(1L);
+        cliente.setId("1");
         cliente.setNombre("Cliente Test");
 
         Contrato contrato = new Contrato();
-        contrato.setId(1L);
+        contrato.setId("1");
         contrato.setContrato("CON-001");
         contrato.setCliente(cliente);
         contrato.setActivo(true);
 
-        given(contratoValidacionesHelper.validaContratoExisteId(1L)).willReturn(contrato);
+        given(contratoValidacionesHelper.validaContratoExisteId("1")).willReturn(contrato);
 
-        contratoService.eliminarContrato(1L);
+        contratoService.eliminarContrato("1");
 
         assertThat(contrato.getActivo()).isFalse();
-        verify(contratoValidacionesHelper).validaContratoExisteId(1L);
+        verify(contratoValidacionesHelper).validaContratoExisteId("1");
     }
 }

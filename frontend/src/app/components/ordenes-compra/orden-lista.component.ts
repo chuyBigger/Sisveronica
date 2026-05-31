@@ -1,4 +1,4 @@
-import { Component, inject, ViewChild, AfterViewInit } from '@angular/core';
+import { Component, inject, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
@@ -31,6 +31,7 @@ import { DatosListarOrdenCompra } from '../../models/ordencompra.model';
 export class OrdenListaComponent implements AfterViewInit {
   private ordenService = inject(OrdenCompraService);
   private snackBar = inject(MatSnackBar);
+  private cdr = inject(ChangeDetectorRef);
 
   displayedColumns: string[] = ['id', 'cliente', 'contrato', 'partida', 'fechaInicioSemana', 'acciones'];
   dataSource = new MatTableDataSource<DatosListarOrdenCompra>([]);
@@ -50,6 +51,7 @@ export class OrdenListaComponent implements AfterViewInit {
       next: (res) => {
         this.dataSource.data = res.content ?? res;
         this.totalElements = res.totalElements ?? (res.content ? res.content.length : res.length);
+        this.cdr.detectChanges();
       },
       error: () => this.snackBar.open('Error al cargar órdenes de compra', 'Cerrar', { duration: 3000 }),
     });
@@ -59,7 +61,7 @@ export class OrdenListaComponent implements AfterViewInit {
     this.cargarOrdenes();
   }
 
-  confirmarEliminar(id: number): void {
+  confirmarEliminar(id: string): void {
     if (confirm('¿Eliminar esta orden de compra?')) {
       this.ordenService.eliminar(id).subscribe({
         next: () => {

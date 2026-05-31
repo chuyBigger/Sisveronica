@@ -47,7 +47,7 @@ export class NotaVentaFormComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   esEdicion = false;
-  notaId: number | null = null;
+  notaId: string | null = null;
   cargando = false;
   clientes: DatosDetalleCliente[] = [];
   productos: DatosListarProductos[] = [];
@@ -73,7 +73,7 @@ export class NotaVentaFormComponent implements OnInit {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.esEdicion = true;
-      this.notaId = Number(idParam);
+      this.notaId = idParam;
       this.cargarNota(this.notaId);
     }
   }
@@ -107,7 +107,7 @@ export class NotaVentaFormComponent implements OnInit {
     return total;
   }
 
-  cargarNota(id: number): void {
+  cargarNota(id: string): void {
     this.cargando = true;
     this.notaventaService.buscarPorId(id).subscribe({
       next: (nota) => {

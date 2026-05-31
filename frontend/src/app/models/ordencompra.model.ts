@@ -35,15 +35,15 @@ export interface DatosListarDetalleOrdenCompraDetalle {
 }
 
 export interface DatosRegistroOrdenCompra {
-  cliente_id: number;
-  contrato_id: number;
+  cliente_id: string;
+  contrato_id: string;
   partida: string;
   fechaInicioSemana: string;
   detalles: DatosRegistroOrdenCompraDetalle[];
 }
 
 export interface DatosListarOrdenCompra {
-  id: number;
+  id: string;
   cliente: string;
   contrato: string;
   partida: string;
@@ -52,7 +52,7 @@ export interface DatosListarOrdenCompra {
 }
 
 export interface DatosDetalleOrdenCompra {
-  id: number;
+  id: string;
   cliente: string;
   contrato: string;
   partida: string;
@@ -73,8 +73,8 @@ export interface DatosActualizarOrdenCompraDetalle {
 }
 
 export interface DatosActulizarOrdenCompra {
-  clienteId?: number;
-  contrato_id?: number;
+  clienteId?: string;
+  contrato_id?: string;
   partida?: string;
   fechaInicioSemana?: string;
   detalles?: DatosActualizarOrdenCompraDetalle[];

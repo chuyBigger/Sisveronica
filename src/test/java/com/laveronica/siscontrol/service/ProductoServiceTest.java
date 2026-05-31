@@ -64,18 +64,18 @@ class ProductoServiceTest {
 
     @Test
     void registrarProductoSuccess() {
-        var datos = new DatosRegistroProducto("leche", "LACTEOS", 1L, UnidadMedida.LITRO, BigDecimal.TEN, BigDecimal.valueOf(20), null);
+        var datos = new DatosRegistroProducto("leche", "LACTEOS", "1", UnidadMedida.LITRO, BigDecimal.TEN, BigDecimal.valueOf(20), null);
         Categoria categoria = new Categoria();
-        categoria.setId(1L);
+        categoria.setId("1");
         categoria.setNombre("Lacteos");
         Producto producto = new Producto();
         producto.setId("uuid-1");
         producto.setNombre("leche");
-        var detalle = new DatosDetalleProducto("uuid-1", "leche", "LACTEOS", 1L, "LITRO", BigDecimal.TEN, BigDecimal.valueOf(20), "PROD-001");
+        var detalle = new DatosDetalleProducto("uuid-1", "leche", "LACTEOS", "1", "LITRO", BigDecimal.TEN, BigDecimal.valueOf(20), "PROD-001");
 
         given(productoValidacionesHelper.validarNombreNoExista(datos)).willReturn("leche");
         given(partidaValidacionesHelper.validaPartidaExistaString("LACTEOS")).willReturn(Partida.LACTEOS);
-        given(categoriaValidacionesHelper.validarCategoriaActiva(1L)).willReturn(categoria);
+        given(categoriaValidacionesHelper.validarCategoriaActiva("1")).willReturn(categoria);
         given(productoMapper.toEntity(datos, Partida.LACTEOS, categoria)).willReturn(producto);
         given(productosRepository.save(producto)).willReturn(producto);
         given(productoMapper.toDetalleDto(producto)).willReturn(detalle);
@@ -89,7 +89,7 @@ class ProductoServiceTest {
     @Test
     void listaProductosReturnsPage() {
         Categoria categoria = new Categoria();
-        categoria.setId(1L);
+        categoria.setId("1");
         categoria.setNombre("Lacteos");
         Producto producto = new Producto();
         producto.setId("uuid-1");
@@ -112,7 +112,7 @@ class ProductoServiceTest {
         producto.setNombre("leche");
         producto.setPartida(Partida.LACTEOS);
         Categoria categoria = new Categoria();
-        categoria.setId(1L);
+        categoria.setId("1");
         categoria.setNombre("Lacteos");
         producto.setCategoria(categoria);
         producto.setUnidadMedida(UnidadMedida.LITRO);

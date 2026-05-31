@@ -4,7 +4,7 @@ export interface DatosRegistroCategoria {
 }
 
 export interface DatosDetalleCategoria {
-  id: number;
+  id: string;
   nombre: string;
   partida: string;
 }

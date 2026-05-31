@@ -1,13 +1,13 @@
 export interface DatosRegistroContrato {
   contrato: string;
-  clienteId: number;
+  clienteId: string;
   fechaInicio: string;
   fechaTermino: string;
   presupuesto: number;
 }
 
 export interface DatosDetalleContrato {
-  id: number;
+  id: string;
   contrato: string;
   cliente: string;
   fechaInicio: string;
@@ -16,7 +16,7 @@ export interface DatosDetalleContrato {
 }
 
 export interface DatosActualizarContrato {
-  clienteId?: number;
+  clienteId?: string;
   fechaInicio?: string;
   fechaTermino?: string;
   presupuesto?: number;

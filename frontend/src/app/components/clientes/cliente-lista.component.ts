@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule } from '@angular/material/table';
@@ -29,6 +29,7 @@ import { DatosDetalleCliente } from '../../models/cliente.model';
 export class ClienteListaComponent implements OnInit {
   private clienteService = inject(ClienteService);
   private snackBar = inject(MatSnackBar);
+  private cdr = inject(ChangeDetectorRef);
 
   displayedColumns: string[] = ['id', 'nombre', 'rfc', 'municipio', 'estado', 'acciones'];
   clientes: DatosDetalleCliente[] = [];
@@ -39,12 +40,15 @@ export class ClienteListaComponent implements OnInit {
 
   cargarClientes(): void {
     this.clienteService.listar().subscribe({
-      next: (res) => (this.clientes = res),
+      next: (res) => {
+        this.clientes = res;
+        this.cdr.detectChanges();
+      },
       error: () => this.snackBar.open('Error al cargar clientes', 'Cerrar', { duration: 3000 }),
     });
   }
 
-  confirmarEliminar(id: number, nombre: string): void {
+  confirmarEliminar(id: string, nombre: string): void {
     if (confirm(`¿Eliminar el cliente "${nombre}"?`)) {
       this.clienteService.eliminar(id).subscribe({
         next: () => {

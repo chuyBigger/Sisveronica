@@ -1,4 +1,4 @@
-import { Component, inject, OnInit } from '@angular/core';
+import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { RouterModule, Router } from '@angular/router';
 import { MatGridListModule } from '@angular/material/grid-list';
@@ -44,6 +44,7 @@ export class DashboardComponent implements OnInit {
   private ordenService = inject(OrdenCompraService);
   private snackBar = inject(MatSnackBar);
   private router = inject(Router);
+  private cdr = inject(ChangeDetectorRef);
 
   cards: DashboardCard[] = [
     { title: 'Productos', count: 0, icon: 'inventory_2', route: '/productos', color: '#1976d2' },
@@ -71,6 +72,7 @@ export class DashboardComponent implements OnInit {
         this.cards[2].count = res.contratos.length;
         this.cards[3].count = res.notas.totalElements ?? (res.notas.content ? res.notas.content.length : 0);
         this.cards[4].count = res.ordenes.totalElements ?? (res.ordenes.content ? res.ordenes.content.length : 0);
+        this.cdr.detectChanges();
       },
       error: () => this.snackBar.open('Error al cargar datos del dashboard', 'Cerrar', { duration: 3000 }),
     });

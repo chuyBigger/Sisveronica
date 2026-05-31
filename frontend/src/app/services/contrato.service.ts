@@ -18,15 +18,15 @@ export class ContratoService {
     return this.http.get<DatosDetalleContrato[]>(this.apiUrl);
   }
 
-  buscarPorId(id: number): Observable<DatosDetalleContrato> {
+  buscarPorId(id: string): Observable<DatosDetalleContrato> {
     return this.http.get<DatosDetalleContrato>(`${this.apiUrl}/${id}`);
   }
 
-  actualizar(id: number, datos: DatosActualizarContrato): Observable<DatosDetalleContrato> {
+  actualizar(id: string, datos: DatosActualizarContrato): Observable<DatosDetalleContrato> {
     return this.http.patch<DatosDetalleContrato>(`${this.apiUrl}/${id}`, datos);
   }
 
-  eliminar(id: number): Observable<void> {
+  eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

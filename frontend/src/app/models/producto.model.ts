@@ -1,7 +1,7 @@
 export interface DatosRegistroProducto {
   nombre: string;
   partida: string;
-  categoriaId: number;
+  categoriaId: string;
   unidadMedida: string;
   codigo?: string;
   precioCompra: number | null;
@@ -21,7 +21,7 @@ export interface DatosDetalleProducto {
   id: string;
   nombre: string;
   partida: string;
-  categoriaId: number;
+  categoriaId: string;
   unidadMedida: string;
   codigo: string;
   precioCompra: number | null;
@@ -31,7 +31,7 @@ export interface DatosDetalleProducto {
 export interface DatosActualizarProducto {
   nombre?: string;
   partida?: string;
-  categoriaId?: number;
+  categoriaId?: string;
   unidadMedida?: string;
   codigo?: string;
   precioCompra?: number;

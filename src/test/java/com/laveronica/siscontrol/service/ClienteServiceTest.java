@@ -36,25 +36,25 @@ class ClienteServiceTest {
         given(clienteRepository.existsByNombre("Cliente Test")).willReturn(false);
         given(clienteRepository.save(any())).willAnswer(invocation -> {
             Cliente c = invocation.getArgument(0);
-            c.setId(1L);
+            c.setId("1");
             return c;
         });
 
         Cliente result = clienteService.registarCliente(datos);
 
         assertThat(result).isNotNull();
-        assertThat(result.getId()).isEqualTo(1L);
+        assertThat(result.getId()).isEqualTo("1");
     }
 
     @Test
     void buscarTodosReturnsActiveClients() {
         Cliente c1 = new Cliente();
-        c1.setId(1L);
+        c1.setId("1");
         c1.setNombre("Cliente Activo");
         c1.setActivo(true);
 
         Cliente c2 = new Cliente();
-        c2.setId(2L);
+        c2.setId("2");
         c2.setNombre("Cliente Inactivo");
         c2.setActivo(false);
 
@@ -69,24 +69,24 @@ class ClienteServiceTest {
     @Test
     void buscarClienteIdFound() {
         Cliente cliente = new Cliente();
-        cliente.setId(1L);
+        cliente.setId("1");
         cliente.setNombre("Cliente Test");
         cliente.setActivo(true);
 
-        given(clienteRepository.findById(1L)).willReturn(Optional.of(cliente));
+        given(clienteRepository.findById("1")).willReturn(Optional.of(cliente));
 
-        DatosDetalleCliente result = clienteService.buscarClienteId(1L);
+        DatosDetalleCliente result = clienteService.buscarClienteId("1");
 
         assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo("1");
         assertThat(result.nombre()).isEqualTo("Cliente Test");
     }
 
     @Test
     void buscarClienteIdThrowsResourceNotFoundException() {
-        given(clienteRepository.findById(99L)).willReturn(Optional.empty());
+        given(clienteRepository.findById("99")).willReturn(Optional.empty());
 
-        assertThatThrownBy(() -> clienteService.buscarClienteId(99L))
+        assertThatThrownBy(() -> clienteService.buscarClienteId("99"))
                 .isInstanceOf(ResourceNotFoundException.class)
                 .hasMessageContaining("no encontrado con ID");
     }

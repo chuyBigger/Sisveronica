@@ -18,15 +18,15 @@ export class ClienteService {
     return this.http.get<DatosDetalleCliente[]>(this.apiUrl);
   }
 
-  buscarPorId(id: number): Observable<DatosDetalleCliente> {
+  buscarPorId(id: string): Observable<DatosDetalleCliente> {
     return this.http.get<DatosDetalleCliente>(`${this.apiUrl}/${id}`);
   }
 
-  actualizar(id: number, datos: DatosActualizarCliente): Observable<DatosDetalleCliente> {
+  actualizar(id: string, datos: DatosActualizarCliente): Observable<DatosDetalleCliente> {
     return this.http.patch<DatosDetalleCliente>(`${this.apiUrl}/${id}`, datos);
   }
 
-  eliminar(id: number): Observable<void> {
+  eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

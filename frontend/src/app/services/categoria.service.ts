@@ -18,15 +18,15 @@ export class CategoriaService {
     return this.http.get<DatosDetalleCategoria[]>(this.apiUrl);
   }
 
-  buscarPorId(id: number): Observable<DatosDetalleCategoria> {
+  buscarPorId(id: string): Observable<DatosDetalleCategoria> {
     return this.http.get<DatosDetalleCategoria>(`${this.apiUrl}/${id}`);
   }
 
-  actualizar(id: number, datos: DatosActualizarCategoria): Observable<DatosDetalleCategoria> {
+  actualizar(id: string, datos: DatosActualizarCategoria): Observable<DatosDetalleCategoria> {
     return this.http.patch<DatosDetalleCategoria>(`${this.apiUrl}/${id}`, datos);
   }
 
-  eliminar(id: number): Observable<void> {
+  eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

@@ -61,10 +61,10 @@ class NotaVentaServiceTest {
     @Test
     void registrarNotaSuccess() {
         var detalleRegistro = new NotaVentaDetalleRegistro(5, "1");
-        var datos = new DatosRegistroNota(1L, "ABARROTES", List.of(detalleRegistro));
+        var datos = new DatosRegistroNota("1", "ABARROTES", List.of(detalleRegistro));
 
         Cliente cliente = new Cliente();
-        cliente.setId(1L);
+        cliente.setId("1");
         cliente.setNombre("Cliente Test");
 
         Producto producto = new Producto();
@@ -77,12 +77,12 @@ class NotaVentaServiceTest {
         detalle.setPrecioVenta(BigDecimal.valueOf(20));
         detalle.setSubTotal(BigDecimal.valueOf(100));
 
-        given(clienteValidacionesHelper.validaClienteExistaId(1L)).willReturn(cliente);
+        given(clienteValidacionesHelper.validaClienteExistaId("1")).willReturn(cliente);
         given(partidaValidacionesHelper.validaPartidaExistaString("ABARROTES")).willReturn(Partida.ABARROTES);
         given(notaVentaDetalleService.registrarNuevaListaNotaVentasDetalles(any(), any())).willReturn(List.of(detalle));
         given(notaVentaRepository.save(any())).willAnswer(invocation -> {
             NotaVenta nv = invocation.getArgument(0);
-            nv.setId(1L);
+            nv.setId("1");
             return nv;
         });
 
@@ -94,7 +94,7 @@ class NotaVentaServiceTest {
     @Test
     void listarNotasReturnsPage() {
         NotaVenta nota = new NotaVenta();
-        nota.setId(1L);
+        nota.setId("1");
         Cliente cliente = new Cliente();
         cliente.setNombre("Cliente Test");
         nota.setCliente(cliente);
@@ -114,7 +114,7 @@ class NotaVentaServiceTest {
     @Test
     void buscarNotaIdFound() {
         NotaVenta nota = new NotaVenta();
-        nota.setId(1L);
+        nota.setId("1");
         Cliente cliente = new Cliente();
         cliente.setNombre("Cliente Test");
         nota.setCliente(cliente);
@@ -122,11 +122,11 @@ class NotaVentaServiceTest {
         nota.setFecha(LocalDateTime.now());
         nota.setTotalGeneral(BigDecimal.valueOf(100));
 
-        given(notaVentaValidacionesHelper.notaVentaExiste(1L)).willReturn(nota);
+        given(notaVentaValidacionesHelper.notaVentaExiste("1")).willReturn(nota);
 
-        DatosDetalleNota result = notaVentaService.buscarNotaId(1L);
+        DatosDetalleNota result = notaVentaService.buscarNotaId("1");
 
         assertThat(result).isNotNull();
-        assertThat(result.id()).isEqualTo(1L);
+        assertThat(result.id()).isEqualTo("1");
     }
 }

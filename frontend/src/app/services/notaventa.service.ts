@@ -19,15 +19,15 @@ export class NotaVentaService {
     return this.http.get<any>(this.apiUrl, { params });
   }
 
-  buscarPorId(id: number): Observable<DatosDetalleNota> {
+  buscarPorId(id: string): Observable<DatosDetalleNota> {
     return this.http.get<DatosDetalleNota>(`${this.apiUrl}/${id}`);
   }
 
-  actualizar(id: number, datos: DatosActualizarNota): Observable<DatosDetalleNota> {
+  actualizar(id: string, datos: DatosActualizarNota): Observable<DatosDetalleNota> {
     return this.http.patch<DatosDetalleNota>(`${this.apiUrl}/${id}`, datos);
   }
 
-  eliminar(id: number): Observable<void> {
+  eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
 }

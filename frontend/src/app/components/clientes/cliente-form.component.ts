@@ -37,7 +37,7 @@ export class ClienteFormComponent implements OnInit {
   private snackBar = inject(MatSnackBar);
 
   esEdicion = false;
-  clienteId: number | null = null;
+  clienteId: string | null = null;
   cargando = false;
 
   form: FormGroup = this.fb.group({
@@ -55,12 +55,12 @@ export class ClienteFormComponent implements OnInit {
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.esEdicion = true;
-      this.clienteId = Number(idParam);
+      this.clienteId = idParam;
       this.cargarCliente(this.clienteId);
     }
   }
 
-  cargarCliente(id: number): void {
+  cargarCliente(id: string): void {
     this.cargando = true;
     this.clienteService.buscarPorId(id).subscribe({
       next: (cliente) => {
