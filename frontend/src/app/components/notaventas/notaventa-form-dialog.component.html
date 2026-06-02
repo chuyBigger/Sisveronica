@@ -1,0 +1,150 @@
+<div class="dialog-layout">
+  <div class="side-menu">
+    <div class="menu-header">
+      <mat-icon>receipt</mat-icon>
+      <span>{{ data.mode === 'create' ? 'Nueva Nota' : 'Editar Nota' }}</span>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="menu-actions">
+      <button mat-stroked-button class="menu-btn" (click)="guardar()" [disabled]="form.invalid || guardando">
+        @if (guardando) {
+          <mat-spinner diameter="16" class="btn-spinner"></mat-spinner>
+        } @else {
+          <mat-icon>save</mat-icon>
+        }
+        {{ data.mode === 'create' ? 'Crear' : 'Guardar' }}
+      </button>
+      <button mat-stroked-button class="menu-btn" (click)="cancelar()">
+        <mat-icon>close</mat-icon> Cancelar
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+    @if (detalles.length > 0) {
+      <div class="menu-summary">
+        <span class="summary-label">Productos:</span>
+        <span class="summary-value">{{ detalles.length }}</span>
+        <span class="summary-label">Total:</span>
+        <span class="summary-value">{{ calcularTotal() | currency:'MXN':'symbol':'1.2-2' }}</span>
+      </div>
+    }
+  </div>
+
+  @if (cargando) {
+    <div class="loading-area">
+      <mat-spinner diameter="40"></mat-spinner>
+      <span>Cargando...</span>
+    </div>
+  } @else {
+    <div class="form-area">
+      <div class="header">
+        <div class="header-top">
+          <div class="header-left">
+            <img src="logo.jpeg" alt="Logo" class="logo-img">
+            <div class="brand">
+              <h1 class="business-name">{{ negocio.nombre }}</h1>
+              <p class="slogan">{{ negocio.eslogan }}</p>
+            </div>
+          </div>
+          <div class="folio-box">
+            <span class="folio-label">NOTA No.</span>
+            <span class="folio-number">{{ folioDisplay }}</span>
+          </div>
+        </div>
+        <div class="fiscal-info">
+          <p>{{ negocio.fiscal }}</p>
+          <p>{{ negocio.rfc }}</p>
+          <p>{{ negocio.domicilio }}</p>
+        </div>
+      </div>
+
+      <form [formGroup]="form">
+        <div class="control-section">
+          <div class="control-row">
+            <span class="control-label">Fecha:</span>
+            <span class="control-value">{{ '' | date:'fullDate' }}</span>
+          </div>
+          <div class="control-row">
+            <span class="control-label">Receptor:</span>
+            <mat-form-field appearance="outline" class="inline-field">
+              <mat-select formControlName="clienteId">
+                @for (c of clientes; track c.id) {
+                  <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+                }
+              </mat-select>
+              @if (form.get('clienteId')?.hasError('required')) {
+                <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+          </div>
+          <div class="control-row">
+            <span class="control-label">Partida:</span>
+            <mat-form-field appearance="outline" class="inline-field">
+              <mat-select formControlName="partida" (selectionChange)="onPartidaChange()">
+                @for (p of partidas; track p) {
+                  <mat-option [value]="p">{{ p }}</mat-option>
+                }
+              </mat-select>
+              @if (form.get('partida')?.hasError('required')) {
+                <mat-error>Requerido</mat-error>
+              }
+            </mat-form-field>
+          </div>
+        </div>
+
+        <table class="detalle-table">
+          <thead>
+            <tr>
+              <th class="col-no">No.</th>
+              <th class="col-producto">Producto</th>
+              <th class="col-cantidad">Cantidad</th>
+              <th class="col-precio">C. Unit.</th>
+              <th class="col-total">Total</th>
+              <th class="col-accion"></th>
+            </tr>
+          </thead>
+          <tbody formArrayName="detalles">
+            @for (detalle of detalles.controls; track $index) {
+              <tr [formGroupName]="$index">
+                <td class="col-no">{{ $index + 1 }}</td>
+                <td class="col-producto">
+                  <mat-form-field appearance="outline" class="cell-field">
+                    <mat-select formControlName="productoId">
+                      @for (p of productos; track p.id) {
+                        <mat-option [value]="p.id">{{ p.nombre }}</mat-option>
+                      }
+                    </mat-select>
+                  </mat-form-field>
+                </td>
+                <td class="col-cantidad">
+                  <mat-form-field appearance="outline" class="cell-field">
+                    <input matInput type="number" min="0.1" step="0.1" formControlName="cantidad">
+                  </mat-form-field>
+                </td>
+                <td class="col-precio">{{ getPrecio(detalle.get('productoId')?.value) | currency:'MXN':'symbol':'1.2-2' }}</td>
+                <td class="col-total">{{ getDetalleSubTotal($index) | currency:'MXN':'symbol':'1.2-2' }}</td>
+                <td class="col-accion">
+                  <button mat-icon-button color="warn" type="button" (click)="eliminarDetalle($index)" matTooltip="Eliminar" size="small">
+                    <mat-icon>remove_circle</mat-icon>
+                  </button>
+                </td>
+              </tr>
+            }
+          </tbody>
+          <tfoot>
+            <tr class="add-row">
+              <td colspan="6">
+                <button mat-stroked-button type="button" (click)="agregarDetalle()" class="add-btn">
+                  <mat-icon>add</mat-icon> Agregar producto
+                </button>
+              </td>
+            </tr>
+            <tr class="total-row">
+              <td colspan="4" class="total-label">TOTAL GENERAL</td>
+              <td class="total-amount" colspan="2">{{ calcularTotal() | currency:'MXN':'symbol':'1.2-2' }}</td>
+            </tr>
+          </tfoot>
+        </table>
+      </form>
+    </div>
+  }
+</div>

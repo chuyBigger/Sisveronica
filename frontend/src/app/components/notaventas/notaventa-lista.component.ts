@@ -2,55 +2,66 @@ import { Component, inject, ViewChild, AfterViewInit, ChangeDetectorRef } from '
 import { CommonModule } from '@angular/common';
 import { RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatSortModule, MatSort } from '@angular/material/sort';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
+import { MatSelectModule } from '@angular/material/select';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
-import { MatChipsModule } from '@angular/material/chips';
-import { trigger, state, style, transition, animate } from '@angular/animations';
+import { MatDialogModule, MatDialog } from '@angular/material/dialog';
+import { FormsModule } from '@angular/forms';
 import { NotaVentaService } from '../../services/notaventa.service';
-import { DatosListarNota, NotaVentaListarDetalle } from '../../models/notaventa.model';
+import { EnumsService } from '../../services/enums.service';
+import { DatosListarNota } from '../../models/notaventa.model';
+import { NotaVentaPreviewDialogComponent } from './notaventa-preview-dialog.component';
+import { NotaVentaFormDialogComponent, NotaVentaFormData } from './notaventa-form-dialog.component';
 
 @Component({
   selector: 'app-notaventa-lista',
   standalone: true,
   imports: [
-    CommonModule,
-    RouterModule,
-    MatTableModule,
-    MatPaginatorModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatTooltipModule,
-    MatSnackBarModule,
-    MatChipsModule,
+    CommonModule, RouterModule, FormsModule,
+    MatTableModule, MatSortModule, MatPaginatorModule,
+    MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
+    MatCardModule, MatTooltipModule, MatSnackBarModule, MatDialogModule,
   ],
   templateUrl: './notaventa-lista.component.html',
   styleUrl: './notaventa-lista.component.scss',
-  animations: [
-    trigger('detailExpand', [
-      state('collapsed', style({ height: '0px', minHeight: '0' })),
-      state('expanded', style({ height: '*' })),
-      transition('expanded <=> collapsed', animate('225ms cubic-bezier(0.4, 0.0, 0.2, 1)')),
-    ]),
-  ],
 })
 export class NotaVentaListaComponent implements AfterViewInit {
   private notaventaService = inject(NotaVentaService);
+  private enumsService = inject(EnumsService);
   private snackBar = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
+  private dialog = inject(MatDialog);
 
-  displayedColumns: string[] = ['id', 'fecha', 'cliente', 'partida', 'totalGeneral', 'acciones'];
+  displayedColumns: string[] = ['folio', 'fecha', 'cliente', 'partida', 'totalGeneral', 'acciones'];
   dataSource = new MatTableDataSource<DatosListarNota>([]);
   totalElements = 0;
-  expandedElement: DatosListarNota | null = null;
+  searchQuery = '';
+  partidas: string[] = [];
+  partidaSeleccionada = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
 
   ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = (data, filter) => {
+      const q = filter.toLowerCase();
+      const folioMatch = data.folio?.toString().includes(q) ?? false;
+      return folioMatch ||
+             data.cliente.toLowerCase().includes(q) ||
+             data.partida.toLowerCase().includes(q);
+    };
+    this.enumsService.getPartidas().subscribe((res) => {
+      this.partidas = res;
+      this.cdr.detectChanges();
+    });
     this.cargarNotas();
   }
 
@@ -72,8 +83,67 @@ export class NotaVentaListaComponent implements AfterViewInit {
     this.cargarNotas();
   }
 
-  toggleExpand(row: DatosListarNota): void {
-    this.expandedElement = this.expandedElement === row ? null : row;
+  filtrar(): void {
+    const parts: string[] = [];
+    if (this.searchQuery.trim()) {
+      parts.push(this.searchQuery.trim().toLowerCase());
+    }
+    if (this.partidaSeleccionada) {
+      parts.push(this.partidaSeleccionada.toLowerCase());
+    }
+    this.dataSource.filter = parts.join(' ');
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  limpiarBusqueda(): void {
+    this.searchQuery = '';
+    this.partidaSeleccionada = '';
+    this.dataSource.filter = '';
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  abrirCrear(): void {
+    const dialogRef = this.dialog.open(NotaVentaFormDialogComponent, {
+      data: { mode: 'create' } as NotaVentaFormData,
+      width: '900px',
+      maxWidth: '95vw',
+      panelClass: 'notaventa-preview-dialog',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'saved') this.cargarNotas();
+    });
+  }
+
+  abrirEditar(notaId: string): void {
+    const dialogRef = this.dialog.open(NotaVentaFormDialogComponent, {
+      data: { mode: 'edit', notaId } as NotaVentaFormData,
+      width: '900px',
+      maxWidth: '95vw',
+      panelClass: 'notaventa-preview-dialog',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'saved') this.cargarNotas();
+    });
+  }
+
+  abrirPreview(row: DatosListarNota): void {
+    const dialogRef = this.dialog.open(NotaVentaPreviewDialogComponent, {
+      data: row,
+      width: '900px',
+      maxWidth: '95vw',
+      panelClass: 'notaventa-preview-dialog',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'deleted') {
+        this.cargarNotas();
+      } else if (result?.action === 'edit') {
+        this.abrirEditar(result.notaId);
+      }
+    });
   }
 
   confirmarEliminar(id: string): void {

@@ -2,83 +2,66 @@
   <mat-card>
     <mat-card-header>
       <mat-card-title>Notas de Venta</mat-card-title>
-      <button mat-raised-button color="primary" routerLink="/notaventas/nuevo">
-        <mat-icon>add</mat-icon> Crear
-      </button>
+      <div class="header-actions">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Partida</mat-label>
+          <mat-select [(ngModel)]="partidaSeleccionada" (selectionChange)="filtrar()">
+            <mat-option value="">Todas</mat-option>
+            @for (p of partidas; track p) {
+              <mat-option [value]="p">{{ p }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Buscar nota</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (keyup.enter)="filtrar()" placeholder="Folio, cliente o partida">
+          @if (searchQuery || partidaSeleccionada) {
+            <button matSuffix mat-icon-button (click)="limpiarBusqueda()">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="abrirCrear()">
+          <mat-icon>add</mat-icon> Crear
+        </button>
+      </div>
     </mat-card-header>
     <mat-card-content>
       <div class="table-wrapper">
-        <table mat-table [dataSource]="dataSource" multiTemplateDataRows>
-          <ng-container matColumnDef="id">
-            <th mat-header-cell *matHeaderCellDef>ID</th>
-            <td mat-cell *matCellDef="let row">{{ row.id }}</td>
+        <table mat-table [dataSource]="dataSource" matSort>
+          <ng-container matColumnDef="folio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Folio</th>
+            <td mat-cell *matCellDef="let row">{{ row.folio }}</td>
           </ng-container>
           <ng-container matColumnDef="fecha">
-            <th mat-header-cell *matHeaderCellDef>Fecha</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha</th>
             <td mat-cell *matCellDef="let row">{{ row.fecha | date }}</td>
           </ng-container>
           <ng-container matColumnDef="cliente">
-            <th mat-header-cell *matHeaderCellDef>Cliente</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Cliente</th>
             <td mat-cell *matCellDef="let row">{{ row.cliente }}</td>
           </ng-container>
           <ng-container matColumnDef="partida">
-            <th mat-header-cell *matHeaderCellDef>Partida</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Partida</th>
             <td mat-cell *matCellDef="let row">{{ row.partida }}</td>
           </ng-container>
           <ng-container matColumnDef="totalGeneral">
-            <th mat-header-cell *matHeaderCellDef>Total</th>
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
             <td mat-cell *matCellDef="let row">{{ row.totalGeneral | currency }}</td>
           </ng-container>
           <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef>Acciones</th>
             <td mat-cell *matCellDef="let row">
-              <button mat-icon-button (click)="toggleExpand(row)" matTooltip="Ver detalles">
-                <mat-icon>{{ expandedElement === row ? 'expand_less' : 'expand_more' }}</mat-icon>
-              </button>
-              <button mat-icon-button color="warn" (click)="confirmarEliminar(row.id)" matTooltip="Eliminar">
+              <button mat-icon-button color="warn" (click)="$event.stopPropagation(); confirmarEliminar(row.id)" matTooltip="Eliminar">
                 <mat-icon>delete</mat-icon>
               </button>
-            </td>
-          </ng-container>
-
-          <ng-container matColumnDef="expandedDetail">
-            <td mat-cell *matCellDef="let row" [attr.colspan]="displayedColumns.length">
-              <div class="detail-row" [@detailExpand]="row === expandedElement ? 'expanded' : 'collapsed'">
-                <div class="detail-content">
-                  <h4>Detalles</h4>
-                  <table class="inner-table">
-                    <thead>
-                      <tr>
-                        <th>Producto</th>
-                        <th>Cantidad</th>
-                        <th>Precio</th>
-                        <th>Subtotal</th>
-                      </tr>
-                    </thead>
-                    <tbody>
-                      @for (d of row.detalles; track $index) {
-                        <tr>
-                          <td>{{ d.producto }}</td>
-                          <td>{{ d.cantidad }}</td>
-                          <td>{{ d.precio | currency }}</td>
-                          <td>{{ d.subTotal | currency }}</td>
-                        </tr>
-                      }
-                    </tbody>
-                  </table>
-                </div>
-              </div>
             </td>
           </ng-container>
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"
             class="data-row"
-            (click)="toggleExpand(row)">
-          </tr>
-          <tr mat-row *matRowDef="let row; columns: ['expandedDetail'];"
-            class="detail-row-main"
-            [@detailExpand]="row === expandedElement ? 'expanded' : 'collapsed'">
+            (click)="abrirPreview(row)">
           </tr>
         </table>
       </div>

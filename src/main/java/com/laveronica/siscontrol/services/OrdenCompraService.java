@@ -3,6 +3,10 @@ package com.laveronica.siscontrol.services;
 
 import com.laveronica.siscontrol.domain.clientes.Cliente;
 import com.laveronica.siscontrol.domain.contratos.Contrato;
+import com.laveronica.siscontrol.domain.notaventa.NotaVenta;
+import com.laveronica.siscontrol.domain.notaventa.dto.DatosDetalleNota;
+import com.laveronica.siscontrol.domain.notaventa.dto.DatosGenerarNotaDesdeOrden;
+import com.laveronica.siscontrol.domain.notaventa.dto.DatosListarNota;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosActulizarOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosListarOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompra.OrdenCompra;
@@ -10,6 +14,7 @@ import com.laveronica.siscontrol.domain.ordencompra.dto.DatosDetalleOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosRegistroOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle;
 import com.laveronica.siscontrol.enums.Partida;
+import com.laveronica.siscontrol.repositories.NotaVentaRepository;
 import com.laveronica.siscontrol.repositories.OrdenCompraRespository;
 import com.laveronica.siscontrol.utils.helpers.ClienteValidacionesHelper;
 import com.laveronica.siscontrol.utils.helpers.ContratoValidacionesHelper;
@@ -23,7 +28,9 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 public class OrdenCompraService {
@@ -46,11 +53,17 @@ public class OrdenCompraService {
     @Autowired
     private PartidaValidacionesHelper partidaValidacionesHelper;
 
+    @Autowired
+    private NotaVentaRepository notaVentaRepository;
+
+    @Autowired
+    private NotaVentaService notaVentaService;
+
     public DatosDetalleOrdenCompra registrarOrdenCompra(@Valid DatosRegistroOrdenCompra datos) {
         Partida partida = partidaValidacionesHelper.validaPartidaExistaString(datos.partida());
-        ordenCompraValidacionesHelper.validaOrdenCompraExiste(datos.fechaInicioSemana(), partida);
+        ordenCompraValidacionesHelper.validaOrdenCompraExiste(datos.cliente_id(), datos.fechaInicioSemana(), partida);
         Cliente cliente = clienteValidacionesHelper.validaClienteExistaId(datos.cliente_id());
-        Contrato contrato = contratoValidacionesHelper.validaContratoExisteId(datos.cliente_id());
+        Contrato contrato = contratoValidacionesHelper.validaContratoExisteId(datos.contrato_id());
         LocalDate fechaTerminoContrato = datos.fechaInicioSemana().plusDays(6);
         OrdenCompra ordenCompraNueva = new OrdenCompra(datos, cliente, contrato, partida, fechaTerminoContrato);
         List<OrdenCompraDetalle> detalles = ordenCompraDetalleService.registrarListaDetallesOrdenCompra(datos.detalles(), ordenCompraNueva);
@@ -72,6 +85,10 @@ public class OrdenCompraService {
     public DatosDetalleOrdenCompra actulizarOrdenCompraId(String id, @Valid DatosActulizarOrdenCompra datos) {
 
         OrdenCompra ordenCompra = ordenCompraValidacionesHelper.buscarOrdenCompraId(id);
+        String clienteId = datos.clienteId() != null ? datos.clienteId() : ordenCompra.getCliente().getId();
+        Partida partida = datos.partida() != null ? partidaValidacionesHelper.validaPartidaExistaString(datos.partida()) : ordenCompra.getPartida();
+        LocalDate fecha = datos.fechaInicioSemana() != null ? datos.fechaInicioSemana() : ordenCompra.getFechaInicioSemana();
+        ordenCompraValidacionesHelper.validaOrdenCompraExisteAlActualizar(id, clienteId, fecha, partida);
         if (datos.clienteId() != null) {
             ordenCompra.setCliente(clienteValidacionesHelper.validaClienteExistaId(datos.clienteId()));
         }
@@ -79,7 +96,7 @@ public class OrdenCompraService {
             ordenCompra.setContrato(contratoValidacionesHelper.validaContratoExisteId(datos.contrato_id()));
         }
         if (datos.partida() != null) {
-            ordenCompra.setPartida(partidaValidacionesHelper.validaPartidaExistaString(datos.partida()));
+            ordenCompra.setPartida(partida);
         }
         if (datos.fechaInicioSemana() != null) {
             ordenCompra.setFechaInicioSemana(datos.fechaInicioSemana());
@@ -94,6 +111,35 @@ public class OrdenCompraService {
     public void eliminarOrdenCompra(String id) {
         OrdenCompra ordenCompra = ordenCompraValidacionesHelper.buscarOrdenCompraId(id);
         ordenCompra.setActivo(false);
+    }
+
+    @Transactional
+    public DatosDetalleOrdenCompra confirmarOrdenCompra(String id, String username) {
+        OrdenCompra ordenCompra = ordenCompraValidacionesHelper.buscarOrdenCompraId(id);
+        ordenCompra.setConfirmadoPor(username);
+        ordenCompra.setFechaConfirmacion(LocalDateTime.now());
+        ordenCompraRespository.save(ordenCompra);
+        return new DatosDetalleOrdenCompra(ordenCompra);
+    }
+
+    public List<DatosListarNota> listarNotasPorOrden(String ordenId) {
+        OrdenCompra ordenCompra = ordenCompraValidacionesHelper.buscarOrdenCompraId(ordenId);
+        return notaVentaRepository.findByOrdenCompraIdAndActivoTrue(ordenId)
+                .stream().map(DatosListarNota::new).collect(Collectors.toList());
+    }
+
+    @Transactional
+    public List<DatosDetalleNota> generarTodasNotas(String ordenId) {
+        ordenCompraValidacionesHelper.buscarOrdenCompraId(ordenId);
+        String[] dias = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"};
+        List<DatosDetalleNota> notas = new java.util.ArrayList<>();
+        for (String dia : dias) {
+            try {
+                notas.add(notaVentaService.generarNotaDesdeOrden(new DatosGenerarNotaDesdeOrden(ordenId, dia)));
+            } catch (Exception ignored) {
+            }
+        }
+        return notas;
     }
 
 }

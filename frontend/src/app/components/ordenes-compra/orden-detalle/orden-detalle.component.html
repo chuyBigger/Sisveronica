@@ -1,0 +1,161 @@
+<div class="page">
+  <div class="toolbar">
+    <button mat-stroked-button (click)="volver()">
+      <mat-icon>arrow_back</mat-icon> Volver
+    </button>
+    <span class="toolbar-spacer"></span>
+    <button mat-stroked-button (click)="editar()" [disabled]="!!orden.confirmadoPor">
+      <mat-icon>edit</mat-icon> Editar
+    </button>
+    <button mat-stroked-button (click)="eliminar()" [disabled]="!!orden.confirmadoPor">
+      <mat-icon>delete</mat-icon> Eliminar
+    </button>
+    <button mat-stroked-button color="accent" (click)="confirmar()" [disabled]="!!orden.confirmadoPor">
+      <mat-icon>verified</mat-icon> Confirmar
+    </button>
+    <button mat-raised-button color="primary" (click)="generarNotas()" [disabled]="generando || !orden.confirmadoPor">
+      <mat-icon>receipt_long</mat-icon> {{ generando ? 'Generando...' : 'Crear Notas' }}
+    </button>
+  </div>
+
+  @if (cargando) {
+    <div class="loading">Cargando orden...</div>
+  } @else {
+    <!-- ORDEN DE COMPRA -->
+    <mat-card class="orden-card">
+      <mat-card-header>
+        <mat-card-title>Orden de Compra</mat-card-title>
+        @if (orden.confirmadoPor) {
+          <mat-card-subtitle class="confirmado-badge">
+            Confirmada por {{ orden.confirmadoPor }} — {{ orden.fechaConfirmacion | date:'dd/MM/yyyy HH:mm' }}
+          </mat-card-subtitle>
+        }
+      </mat-card-header>
+      <mat-card-content>
+        <div class="info-grid">
+          <div class="info-item"><span class="label">Cliente:</span> {{ orden.cliente }}</div>
+          <div class="info-item"><span class="label">Contrato:</span> {{ orden.contrato }}</div>
+          <div class="info-item"><span class="label">Partida:</span> {{ orden.partida }}</div>
+          <div class="info-item"><span class="label">Semana:</span> {{ orden.fechaInicioSemana | date:'dd/MM/yyyy' }} — {{ getFinSemana() | date:'dd/MM/yyyy' }}</div>
+        </div>
+
+        <mat-divider></mat-divider>
+
+        <div class="table-wrapper">
+          <table>
+            <thead>
+              <tr>
+                <th class="col-prod">Producto</th>
+                @for (d of diasCorto; track d) {
+                  <th class="col-dia">{{ d }}</th>
+                }
+                <th class="col-total">Total</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (detalle of orden.detalles; track $index) {
+                <tr>
+                  <td class="col-prod">{{ detalle.productoNombre }}</td>
+                  @for (dia of dias; track dia) {
+                    <td class="col-dia">{{ getValor(detalle, dia) }}</td>
+                  }
+                  <td class="col-total">{{ totalRow(detalle) }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <th>Totales</th>
+                @for (dia of dias; track dia) {
+                  <th>{{ sumarDia(orden.detalles, dia) }}</th>
+                }
+                <th>{{ totalGeneral() }}</th>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- CANCELACIONES -->
+    <mat-card class="cancelaciones-card">
+      <mat-card-header>
+        <mat-card-title>Cancelaciones</mat-card-title>
+        <div class="header-actions">
+          <button mat-stroked-button color="warn" (click)="abrirCrearCancelacion()" [disabled]="!orden.confirmadoPor">
+            <mat-icon>remove_circle</mat-icon> Nueva Cancelación
+          </button>
+          @if (cancelaciones.length > 0) {
+            <button mat-raised-button color="primary" (click)="reconstruirNotas()" [disabled]="reconstruyendo">
+              <mat-icon>refresh</mat-icon> {{ reconstruyendo ? 'Reconstruyendo...' : 'Reconstruir Notas' }}
+            </button>
+          }
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        @if (cancelaciones.length === 0) {
+          <p class="sin-datos">No hay cancelaciones registradas.</p>
+        }
+        <div class="cancelaciones-grid">
+          @for (cancel of cancelaciones; track cancel.id) {
+            <mat-card class="cancelacion-mini" [class.validada]="cancel.validadoPor">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>{{ cancel.validadoPor ? 'verified' : 'unpublished' }}</mat-icon>
+                <mat-card-title>{{ cancel.dia }}</mat-card-title>
+                <mat-card-subtitle>{{ cancel.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="cancel-creado">Creado por: {{ cancel.creadoPor }}</p>
+                @if (cancel.validadoPor) {
+                  <p class="cancel-validado">Validado por: {{ cancel.validadoPor }} — {{ cancel.fechaValidacion | date:'dd/MM/yyyy HH:mm' }}</p>
+                }
+                <ul class="cancel-detalles">
+                  @for (d of cancel.detalles; track d.id) {
+                    <li>{{ d.productoNombre }}: {{ d.cantidadCancelada }}</li>
+                  }
+                </ul>
+              </mat-card-content>
+              <mat-card-actions>
+                @if (!cancel.validadoPor) {
+                  <button mat-button color="accent" (click)="validarCancelacion(cancel.id)">
+                    <mat-icon>check_circle</mat-icon> Validar
+                  </button>
+                  <button mat-button color="warn" (click)="eliminarCancelacion(cancel.id)">
+                    <mat-icon>delete</mat-icon> Eliminar
+                  </button>
+                }
+              </mat-card-actions>
+            </mat-card>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
+    <!-- NOTAS DE VENTA -->
+    <mat-card class="notas-card">
+      <mat-card-header>
+        <mat-card-title>Notas de Venta</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+        @if (notas.length === 0) {
+          <p class="sin-datos">Aún no se han generado notas. Confirma la orden y presiona "Crear Notas".</p>
+        }
+        <div class="notas-grid">
+          @for (nota of notas; track nota.id) {
+            <mat-card class="nota-mini" [class.tiene-cancelacion]="notaTieneCancelacion(nota)" (click)="abrirNota(nota)">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>receipt</mat-icon>
+                <mat-card-title>Folio #{{ nota.folio }}</mat-card-title>
+                <mat-card-subtitle>{{ nota.fecha | date:'dd/MM/yyyy' }} @if (nota.dia) { — {{ nota.dia }} }</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="nota-cliente">{{ nota.cliente }}</p>
+                <p class="nota-total">{{ nota.totalGeneral | currency:'MXN':'symbol':'1.2-2' }}</p>
+              </mat-card-content>
+            </mat-card>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+  }
+</div>
