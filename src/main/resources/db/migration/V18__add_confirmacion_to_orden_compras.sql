@@ -1,0 +1,3 @@
+ALTER TABLE orden_compras
+ADD COLUMN confirmado_por VARCHAR(100) DEFAULT NULL,
+ADD COLUMN fecha_confirmacion DATETIME DEFAULT NULL;
