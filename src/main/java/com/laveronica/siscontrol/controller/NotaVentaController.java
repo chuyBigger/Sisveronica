@@ -1,6 +1,7 @@
 package com.laveronica.siscontrol.controller;
 
 import com.laveronica.siscontrol.domain.notaventa.dto.DatosActualizarNota;
+import com.laveronica.siscontrol.domain.notaventa.dto.DatosGenerarNotaDesdeOrden;
 import com.laveronica.siscontrol.domain.notaventa.dto.DatosListarNota;
 import com.laveronica.siscontrol.services.NotaVentaService;
 import com.laveronica.siscontrol.domain.notaventa.dto.DatosDetalleNota;
@@ -26,6 +27,12 @@ public class NotaVentaController {
         DatosDetalleNota nuevaNotaVenta = notaVentaService.registrarNota(datos);
         var uri = uriComponentsBuilder.path("/notaventas/{id}").buildAndExpand(nuevaNotaVenta.id()).toUri();
         return ResponseEntity.created(uri).body(nuevaNotaVenta);
+    }
+
+    @PostMapping("/generar-desde-orden")
+    public ResponseEntity<DatosDetalleNota> generarNotaDesdeOrden(@RequestBody @Valid DatosGenerarNotaDesdeOrden datos) {
+        DatosDetalleNota nuevaNota = notaVentaService.generarNotaDesdeOrden(datos);
+        return ResponseEntity.ok(nuevaNota);
     }
 
     @GetMapping(path = {"","/"})

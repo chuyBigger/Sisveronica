@@ -1,12 +1,17 @@
-import { Component, inject, OnInit, ChangeDetectorRef } from '@angular/core';
+import { Component, inject, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
-import { MatTableModule } from '@angular/material/table';
+import { Router, RouterModule } from '@angular/router';
+import { MatTableModule, MatTableDataSource } from '@angular/material/table';
+import { MatSortModule, MatSort } from '@angular/material/sort';
+import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
+import { MatFormFieldModule } from '@angular/material/form-field';
+import { MatInputModule } from '@angular/material/input';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
+import { FormsModule } from '@angular/forms';
 import { ContratoService } from '../../services/contrato.service';
 import { DatosDetalleContrato } from '../../models/contrato.model';
 
@@ -14,38 +19,63 @@ import { DatosDetalleContrato } from '../../models/contrato.model';
   selector: 'app-contrato-lista',
   standalone: true,
   imports: [
-    CommonModule,
-    RouterModule,
-    MatTableModule,
-    MatButtonModule,
-    MatIconModule,
-    MatCardModule,
-    MatTooltipModule,
-    MatSnackBarModule,
+    CommonModule, RouterModule, FormsModule,
+    MatTableModule, MatSortModule, MatPaginatorModule,
+    MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule,
+    MatCardModule, MatTooltipModule, MatSnackBarModule,
   ],
   templateUrl: './contrato-lista.component.html',
   styleUrl: './contrato-lista.component.scss',
 })
-export class ContratoListaComponent implements OnInit {
+export class ContratoListaComponent implements AfterViewInit {
   private contratoService = inject(ContratoService);
   private snackBar = inject(MatSnackBar);
+  private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
-  displayedColumns: string[] = ['id', 'contrato', 'cliente', 'fechaInicio', 'fechaTermino', 'presupuesto', 'acciones'];
-  contratos: DatosDetalleContrato[] = [];
+  displayedColumns: string[] = ['contrato', 'cliente', 'fechaInicio', 'fechaTermino', 'presupuesto', 'acciones'];
+  dataSource = new MatTableDataSource<DatosDetalleContrato>([]);
+  totalElements = 0;
+  searchQuery = '';
 
-  ngOnInit(): void {
+  @ViewChild(MatPaginator) paginator!: MatPaginator;
+  @ViewChild(MatSort) sort!: MatSort;
+
+  ngAfterViewInit(): void {
+    this.dataSource.sort = this.sort;
+    this.dataSource.filterPredicate = (data, filter) => {
+      const q = filter.toLowerCase();
+      return data.contrato.toLowerCase().includes(q) ||
+             data.cliente.toLowerCase().includes(q);
+    };
     this.cargarContratos();
   }
 
   cargarContratos(): void {
     this.contratoService.listar().subscribe({
       next: (res) => {
-        this.contratos = res;
+        this.dataSource.data = res;
+        this.totalElements = res.length;
         this.cdr.detectChanges();
       },
       error: () => this.snackBar.open('Error al cargar contratos', 'Cerrar', { duration: 3000 }),
     });
+  }
+
+  buscar(): void {
+    this.dataSource.filter = this.searchQuery.trim().toLowerCase();
+    if (this.dataSource.paginator) {
+      this.dataSource.paginator.firstPage();
+    }
+  }
+
+  limpiarBusqueda(): void {
+    this.searchQuery = '';
+    this.buscar();
+  }
+
+  verContrato(id: string): void {
+    this.router.navigate(['/contratos', id]);
   }
 
   confirmarEliminar(id: string, nombre: string): void {

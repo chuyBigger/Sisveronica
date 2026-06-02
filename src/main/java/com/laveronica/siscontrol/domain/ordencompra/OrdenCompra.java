@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -57,6 +58,12 @@ public class OrdenCompra {
 
     @Column(nullable = false)
     private Boolean activo;
+
+    @Column(name = "confirmado_por")
+    private String confirmadoPor;
+
+    @Column(name = "fecha_confirmacion")
+    private LocalDateTime fechaConfirmacion;
 
     public void agregarDetalles(OrdenCompraDetalle detalle) {
         detalles.add(detalle);

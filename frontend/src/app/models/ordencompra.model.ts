@@ -13,6 +13,7 @@ export interface DatosRegistroOrdenCompraDetalle {
 export interface DatosDetalleOrdenCompraDetalle {
   fecha: string;
   producto: string;
+  productoNombre: string;
   lunes: number;
   martes: number;
   miercoles: number;
@@ -58,6 +59,8 @@ export interface DatosDetalleOrdenCompra {
   partida: string;
   fechaInicioSemana: string;
   detalles: DatosDetalleOrdenCompraDetalle[];
+  confirmadoPor?: string;
+  fechaConfirmacion?: string;
 }
 
 export interface DatosActualizarOrdenCompraDetalle {

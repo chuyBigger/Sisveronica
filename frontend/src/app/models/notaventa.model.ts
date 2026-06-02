@@ -18,20 +18,24 @@ export interface DatosRegistroNota {
 
 export interface DatosListarNota {
   id: string;
+  folio?: number;
   fecha: string;
   cliente: string;
   partida: string;
   detalles: NotaVentaListarDetalle[];
   totalGeneral: number;
+  dia?: string;
 }
 
 export interface DatosDetalleNota {
   id: string;
+  folio?: number;
   fecha: string;
   cliente: string;
   partida: string;
   detalles: NotaVentaListarDetalle[];
   totalGeneral: number;
+  dia?: string;
 }
 
 export interface NotaVentaActualizarDetalle {

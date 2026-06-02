@@ -15,3 +15,7 @@ spring:
   web:
     resources:
       add-mappings: false
+
+jwt:
+  secret: laveronica-siscontrol-jwt-secret-key-2024-muy-seguro-para-produccion
+  expiration-ms: 86400000

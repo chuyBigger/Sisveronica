@@ -30,4 +30,16 @@ export class OrdenCompraService {
   eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  confirmar(id: string): Observable<DatosDetalleOrdenCompra> {
+    return this.http.post<DatosDetalleOrdenCompra>(`${this.apiUrl}/${id}/confirmar`, {});
+  }
+
+  listarNotasPorOrden(id: string): Observable<any> {
+    return this.http.get<any>(`${this.apiUrl}/${id}/notas`);
+  }
+
+  generarTodasNotas(id: string): Observable<any> {
+    return this.http.post<any>(`${this.apiUrl}/${id}/generar-notas`, {});
+  }
 }

@@ -11,7 +11,7 @@ import java.util.Optional;
 
 public interface OrdenCompraRespository extends JpaRepository<OrdenCompra, String> {
 
-    boolean existsByPartidaAndFechaInicioSemanaAndActivoTrue(Partida partida, LocalDate fecha);
+    boolean existsByCliente_IdAndPartidaAndFechaInicioSemanaAndActivoTrue(String clienteId, Partida partida, LocalDate fecha);
 
     Page<OrdenCompra> findByAndActivoTrue(Pageable paginacion);
 

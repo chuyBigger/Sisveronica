@@ -71,9 +71,18 @@ export class ProductoFormComponent implements OnInit {
   }
 
   cargarCatalogos(): void {
-    this.enumsService.getPartidas().subscribe((res) => (this.partidas = res));
-    this.enumsService.getUnidadesMedida().subscribe((res) => (this.unidadesMedida = res));
-    this.categoriaService.listar().subscribe((res) => (this.categorias = res));
+    this.enumsService.getPartidas().subscribe({
+      next: (res) => (this.partidas = res),
+      error: () => this.snackBar.open('Error al cargar partidas', 'Cerrar', { duration: 2000 }),
+    });
+    this.enumsService.getUnidadesMedida().subscribe({
+      next: (res) => (this.unidadesMedida = res),
+      error: () => this.snackBar.open('Error al cargar unidades', 'Cerrar', { duration: 2000 }),
+    });
+    this.categoriaService.listar().subscribe({
+      next: (res) => (this.categorias = res),
+      error: () => this.snackBar.open('Error al cargar categorías', 'Cerrar', { duration: 2000 }),
+    });
   }
 
   cargarProducto(id: string): void {

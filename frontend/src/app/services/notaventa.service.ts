@@ -14,6 +14,10 @@ export class NotaVentaService {
     return this.http.post<DatosDetalleNota>(this.apiUrl, datos);
   }
 
+  generarDesdeOrden(ordenCompraId: string, dia: string): Observable<DatosDetalleNota> {
+    return this.http.post<DatosDetalleNota>(`${this.apiUrl}/generar-desde-orden`, { ordenCompraId, dia });
+  }
+
   listar(page = 0, size = 9): Observable<any> {
     const params = new HttpParams().set('page', page).set('size', size);
     return this.http.get<any>(this.apiUrl, { params });

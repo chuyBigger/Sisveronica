@@ -21,6 +21,71 @@ body {
   font: var(--mat-sys-body-medium);
   margin: 0;
   height: 100%;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+  color-scheme: dark;
+}
+
+body.dark-mode {
+  --mat-sys-surface: #121212;
+  --mat-sys-surface-dim: #0d0d0d;
+  --mat-sys-surface-container: #1e1e1e;
+  --mat-sys-surface-container-low: #1a1a1a;
+  --mat-sys-surface-container-high: #2a2a2a;
+  --mat-sys-surface-container-highest: #333333;
+  --mat-sys-on-surface: #e0e0e0;
+  --mat-sys-on-surface-variant: #aaaaaa;
+  --mat-sys-outline: #444444;
+  --mat-sys-outline-variant: #333333;
+  --mat-sys-primary: #90caf9;
+  --mat-sys-on-primary: #003258;
+  --mat-sys-primary-container: #00497d;
+  --mat-sys-on-primary-container: #d1e4ff;
+  --mat-sys-secondary: #bec6dc;
+  --mat-sys-on-secondary: #283141;
+  --mat-sys-secondary-container: #3e4758;
+  --mat-sys-on-secondary-container: #dae2f9;
+  --mat-sys-error: #ffb4ab;
+  --mat-sys-on-error: #690005;
+  --mat-sys-error-container: #93000a;
+  --mat-sys-on-error-container: #ffdad6;
+  --mat-sys-surface-on: #ffffff;
+  --mat-sys-shadow: #000000;
+}
+
+body.dark-mode .mat-mdc-card {
+  background-color: #1e1e1e;
+}
+
+body.dark-mode .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-color: #1e1e1e;
+}
+
+body.dark-mode .mat-mdc-table {
+  background-color: #1e1e1e;
+}
+
+.data-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.data-row:hover {
+  background-color: var(--mat-sys-primary-container, #e3eef9) !important;
+}
+
+body.dark-mode .data-row:hover {
+  background-color: #2a3a4a !important;
+}
+
+body.dark-mode .mat-mdc-header-row {
+  background-color: #2a2a2a;
+}
+
+body.dark-mode .mat-mdc-row:hover {
+  background-color: #2a2a2a;
 }
 
 * {
@@ -33,4 +98,47 @@ html, body {
 
 .mat-mdc-form-field-error {
   font-size: 0.75rem;
+}
+
+.notaventa-preview-dialog .mat-mdc-dialog-surface,
+.producto-preview-dialog .mat-mdc-dialog-surface {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.container {
+  padding: 20px;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.header-actions .mat-mdc-form-field {
+  min-width: 160px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+table {
+  width: 100%;
+}
+
+@media print {
+  .notaventa-preview-dialog { display: none !important; }
 }

@@ -1,6 +1,6 @@
 import { Component, inject, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
 import { CommonModule } from '@angular/common';
-import { RouterModule } from '@angular/router';
+import { Router, RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatPaginatorModule, MatPaginator } from '@angular/material/paginator';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -17,6 +17,7 @@ import { FormsModule } from '@angular/forms';
 import { ProductoService } from '../../services/producto.service';
 import { EnumsService } from '../../services/enums.service';
 import { DatosListarProductos } from '../../models/producto.model';
+import { ProductoPreviewDialogComponent } from './producto-preview-dialog.component';
 
 @Component({
   selector: 'app-producto-lista',
@@ -46,9 +47,10 @@ export class ProductoListaComponent implements AfterViewInit {
   private enumsService = inject(EnumsService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
+  private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
-  displayedColumns: string[] = ['id', 'nombre', 'codigo', 'partida', 'categoria', 'precioVenta', 'acciones'];
+  displayedColumns: string[] = ['codigo', 'nombre', 'partida', 'categoria', 'precioVenta', 'acciones'];
   dataSource = new MatTableDataSource<DatosListarProductos>([]);
   totalElements = 0;
   searchQuery = '';
@@ -121,6 +123,20 @@ export class ProductoListaComponent implements AfterViewInit {
     this.partidaSeleccionada = '';
     this.paginator.firstPage();
     this.cargarProductos();
+  }
+
+  abrirPreview(producto: DatosListarProductos): void {
+    const dialogRef = this.dialog.open(ProductoPreviewDialogComponent, {
+      width: '700px',
+      data: producto,
+      panelClass: 'producto-preview-dialog',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'deleted' || result === 'updated') {
+        this.cargarProductos();
+      }
+    });
   }
 
   confirmarEliminar(id: string, nombre: string): void {

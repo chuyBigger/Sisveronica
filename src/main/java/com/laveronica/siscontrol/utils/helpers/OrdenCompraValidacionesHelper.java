@@ -17,10 +17,21 @@ public class OrdenCompraValidacionesHelper {
     private OrdenCompraRespository ordenCompraRespository;
 
 
-    public void validaOrdenCompraExiste(LocalDate fecha, Partida partida) {
-        if (ordenCompraRespository.existsByPartidaAndFechaInicioSemanaAndActivoTrue(partida, fecha)){
-            throw new RecursoExistenteException("Ya existe una Orden de compra con esta partida: " + partida + "y esta fecha :" +fecha);
+    public void validaOrdenCompraExiste(String clienteId, LocalDate fecha, Partida partida) {
+        if (ordenCompraRespository.existsByCliente_IdAndPartidaAndFechaInicioSemanaAndActivoTrue(clienteId, partida, fecha)){
+            throw new RecursoExistenteException("Ya existe una orden de compra para este cliente, partida " + partida + " y semana " + fecha);
         }
+    }
+
+    public void validaOrdenCompraExisteAlActualizar(String id, String clienteId, LocalDate fecha, Partida partida) {
+        OrdenCompra actual = buscarOrdenCompraId(id);
+        boolean mismoCliente = actual.getCliente().getId().equals(clienteId);
+        boolean mismaPartida = actual.getPartida().equals(partida);
+        boolean mismaSemana = actual.getFechaInicioSemana().equals(fecha);
+        if (mismoCliente && mismaPartida && mismaSemana) {
+            return;
+        }
+        validaOrdenCompraExiste(clienteId, fecha, partida);
     }
 
 

@@ -8,6 +8,7 @@ public record DatosDetalleOrdenCompraDetalle(
 
         String id,
         String producto,
+        String productoNombre,
         Double lunes,
         Double martes,
         Double miercoles,
@@ -21,6 +22,7 @@ public record DatosDetalleOrdenCompraDetalle(
         this(
                 detalle.getId(),
                 detalle.getProducto().getId().toString(),
+                detalle.getProducto().getNombre(),
                 detalle.getLunes(),
                 detalle.getMartes(),
                 detalle.getMiercoles(),

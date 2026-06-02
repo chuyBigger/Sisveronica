@@ -1,5 +1,7 @@
 package com.laveronica.siscontrol.controller;
 
+import com.laveronica.siscontrol.domain.notaventa.dto.DatosDetalleNota;
+import com.laveronica.siscontrol.domain.notaventa.dto.DatosListarNota;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosActulizarOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosDetalleOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosListarOrdenCompra;
@@ -11,8 +13,11 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
 import org.springframework.http.ResponseEntity;
+import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("/orden_compra")
@@ -51,6 +56,25 @@ public class OrdenCompraController {
     public ResponseEntity<Void> eliminarOrdenCompra(@PathVariable String id){
         ordenCompraService.eliminarOrdenCompra(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/confirmar")
+    public ResponseEntity<DatosDetalleOrdenCompra> confirmarOrdenCompra(@PathVariable String id) {
+        String username = SecurityContextHolder.getContext().getAuthentication().getName();
+        var ordenCompra = ordenCompraService.confirmarOrdenCompra(id, username);
+        return ResponseEntity.ok(ordenCompra);
+    }
+
+    @GetMapping("/{id}/notas")
+    public ResponseEntity<List<DatosListarNota>> listarNotasPorOrden(@PathVariable String id) {
+        var notas = ordenCompraService.listarNotasPorOrden(id);
+        return ResponseEntity.ok(notas);
+    }
+
+    @PostMapping("/{id}/generar-notas")
+    public ResponseEntity<List<DatosDetalleNota>> generarTodasNotas(@PathVariable String id) {
+        var notas = ordenCompraService.generarTodasNotas(id);
+        return ResponseEntity.ok(notas);
     }
 
 }

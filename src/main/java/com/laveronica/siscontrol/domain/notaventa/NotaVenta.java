@@ -59,6 +59,9 @@ public class NotaVenta {
     @Column(nullable = false)
     private Boolean activo;
 
+    @Column(length = 10)
+    private String dia;
+
     public void agregarDetalles(NotaVentaDetalle detalle) {
         detalles.add(detalle);
         detalle.setNotaVenta(this);

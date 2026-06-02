@@ -10,16 +10,19 @@ import java.util.stream.Collectors;
 
 public record DatosListarNota(
         String id,
+        Integer folio,
         LocalDateTime fecha,
         String cliente,
         String partida,
         List<NotaVentaListarDetalle> detalles,
-        BigDecimal totalGeneral
+        BigDecimal totalGeneral,
+        String dia
 
 ) {
     public DatosListarNota(NotaVenta datos) {
         this(
                 datos.getId(),
+                datos.getFolio(),
                 datos.getFecha(),
                 datos.getCliente().getNombre(),
                 datos.getPartida().name(),
@@ -27,7 +30,8 @@ public record DatosListarNota(
                         .map(
                         detalle -> new NotaVentaListarDetalle(detalle))
                         .collect(Collectors.toList()),
-                datos.getTotalGeneral()
+                datos.getTotalGeneral(),
+                datos.getDia()
         );
     }
 
