@@ -1,0 +1,109 @@
+<div class="dialog-content">
+  <div class="dialog-header">
+    <mat-icon>upload_file</mat-icon>
+    <h2>Cargar productos desde Excel</h2>
+  </div>
+
+  <mat-divider></mat-divider>
+
+  @if (!reporte) {
+    <div class="upload-section">
+      <p class="instructions">
+        Selecciona un archivo <strong>.xlsx</strong> con los productos a registrar.
+        <br>El archivo debe tener las columnas: Nombre, Partida, Categoría, Código, Unidad Medida, Precio Compra, Precio Venta.
+      </p>
+
+      <div class="file-input-wrapper">
+        <input
+          type="file"
+          accept=".xlsx"
+          (change)="onFileSelected($event)"
+          #fileInput
+          hidden>
+        <button mat-stroked-button (click)="fileInput.click()" class="file-btn">
+          <mat-icon>attach_file</mat-icon>
+          {{ archivoSeleccionado ? archivoSeleccionado.name : 'Seleccionar archivo' }}
+        </button>
+      </div>
+
+      <div class="actions">
+        <button mat-stroked-button (click)="descargarPlantilla()" class="template-btn">
+          <mat-icon>download</mat-icon> Descargar plantilla
+        </button>
+        <button
+          mat-raised-button
+          color="primary"
+          (click)="cargar()"
+          [disabled]="!archivoSeleccionado || cargando">
+          @if (cargando) {
+            <mat-spinner diameter="20"></mat-spinner>
+          } @else {
+            <ng-container>
+              <mat-icon>upload</mat-icon> Cargar productos
+            </ng-container>
+          }
+        </button>
+      </div>
+    </div>
+  } @else {
+    <div class="report-section">
+      <h3>Reporte de carga</h3>
+
+      <div class="report-summary">
+        <div class="report-item success">
+          <mat-icon>check_circle</mat-icon>
+          <div>
+            <span class="report-number">{{ reporte.exitosos }}</span>
+            <span class="report-label">Exitosos</span>
+          </div>
+        </div>
+        <div class="report-item warning">
+          <mat-icon>warning</mat-icon>
+          <div>
+            <span class="report-number">{{ reporte.duplicados }}</span>
+            <span class="report-label">Duplicados</span>
+          </div>
+        </div>
+        <div class="report-item error">
+          <mat-icon>error</mat-icon>
+          <div>
+            <span class="report-number">{{ reporte.sinPrecio }}</span>
+            <span class="report-label">Sin precio</span>
+          </div>
+        </div>
+      </div>
+
+      @if (reporte.mensajesDuplicados.length > 0) {
+        <mat-divider></mat-divider>
+        <div class="report-details">
+          <h4>Duplicados</h4>
+          <ul>
+            @for (msg of reporte.mensajesDuplicados; track $index) {
+              <li>{{ msg }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (reporte.mensajesSinPrecio.length > 0) {
+        <mat-divider></mat-divider>
+        <div class="report-details">
+          <h4>Sin precio de venta</h4>
+          <ul>
+            @for (msg of reporte.mensajesSinPrecio; track $index) {
+              <li>{{ msg }}</li>
+            }
+          </ul>
+        </div>
+      }
+    </div>
+  }
+
+  <mat-divider></mat-divider>
+
+  <div class="dialog-actions">
+    <button mat-button (click)="cerrar()">
+      {{ reporte ? 'Cerrar' : 'Cancelar' }}
+    </button>
+  </div>
+</div>
