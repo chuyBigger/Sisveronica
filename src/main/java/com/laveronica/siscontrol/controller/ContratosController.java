@@ -5,6 +5,9 @@ import com.laveronica.siscontrol.domain.contratos.dto.DatosActualizarContrato;
 import com.laveronica.siscontrol.domain.contratos.dto.DatosDetalleContrato;
 import com.laveronica.siscontrol.domain.contratos.dto.DatosRegistroContrato;
 import com.laveronica.siscontrol.services.ContratoService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
@@ -16,12 +19,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/contratos")
+@Tag(name = "Contratos")
+@SecurityRequirement(name = "bearerAuth")
 public class ContratosController {
 
     @Autowired
     private ContratoService contratoService;
 
     @PostMapping
+    @Operation(summary = "Registrar contrato")
     public ResponseEntity registrar(@RequestBody @Valid DatosRegistroContrato datos, UriComponentsBuilder uriComponentsBuilder) {
         Contrato nuevoContrato = contratoService.registrarContrato(datos);
         var uri = uriComponentsBuilder.path("/contratos/{id}").buildAndExpand(nuevoContrato.getId()).toUri();
@@ -29,18 +35,21 @@ public class ContratosController {
     }
 
     @GetMapping(value = {"", "/"})
+    @Operation(summary = "Listar contratos")
     public ResponseEntity<List<DatosDetalleContrato>> contratosLista() {
         List<DatosDetalleContrato> lista = contratoService.listarContratos();
         return ResponseEntity.ok(lista);
     }
 
     @GetMapping("/{id}")
+    @Operation(summary = "Buscar contrato por ID")
     public ResponseEntity<DatosDetalleContrato> contratoBuscarId(@PathVariable String id) {
         DatosDetalleContrato contratoId = contratoService.buscarContratoId(id);
         return ResponseEntity.ok(contratoId);
     }
 
     @PatchMapping("/{id}")
+    @Operation(summary = "Actualizar contrato")
     public ResponseEntity<DatosDetalleContrato> actualizarContrato(@PathVariable String id, @Valid @RequestBody DatosActualizarContrato datos){
         DatosDetalleContrato actualizarContrato = contratoService.actualizarContratoId(id, datos);
         return ResponseEntity.ok(actualizarContrato);
@@ -48,6 +57,7 @@ public class ContratosController {
 
     @DeleteMapping("/{id}")
     @ResponseStatus(HttpStatus.NO_CONTENT)
+    @Operation(summary = "Eliminar contrato")
     public void eliminarContrato(@PathVariable String id){
          contratoService.eliminarContrato(id);
     }

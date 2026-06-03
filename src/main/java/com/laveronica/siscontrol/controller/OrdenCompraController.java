@@ -7,6 +7,9 @@ import com.laveronica.siscontrol.domain.ordencompra.dto.DatosDetalleOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosListarOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosRegistroOrdenCompra;
 import com.laveronica.siscontrol.services.OrdenCompraService;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
@@ -21,12 +24,15 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/orden_compra")
+@Tag(name = "Órdenes de Compra")
+@SecurityRequirement(name = "bearerAuth")
 public class OrdenCompraController {
 
     @Autowired
     private OrdenCompraService ordenCompraService;
 
     @PostMapping
+    @Operation(summary = "Registrar orden de compra")
     public ResponseEntity<DatosDetalleOrdenCompra> registrarOrdenCompra(@Valid @RequestBody DatosRegistroOrdenCompra datos, UriComponentsBuilder uri) {
         var ordenCompra = ordenCompraService.registrarOrdenCompra(datos);
         var url = uri.path("/ordencompras/${id}").buildAndExpand(ordenCompra.id()).toUri();
@@ -34,6 +40,7 @@ public class OrdenCompraController {
     }
 
     @GetMapping(path = {"", "/"})
+    @Operation(summary = "Listar órdenes de compra")
     public ResponseEntity<Page<DatosListarOrdenCompra>> listarOrdenCompra(@PageableDefault(size = 9, sort = "fechaInicioSemana") Pageable paginacion) {
         var paguina = ordenCompraService.listarOrdenesCompra(paginacion);
         return ResponseEntity.ok().body(paguina);
@@ -41,24 +48,28 @@ public class OrdenCompraController {
     }
 
     @GetMapping(path = "/{id}")
+    @Operation(summary = "Buscar orden de compra por ID")
     public ResponseEntity<DatosDetalleOrdenCompra> buscarOrdenCompraId(@PathVariable String id ){
         var ordenCompra = ordenCompraService.buscarOrdenCompraId(id);
         return ResponseEntity.ok().body(ordenCompra);
     }
 
     @PatchMapping(path = "/{id}")
+    @Operation(summary = "Actualizar orden de compra")
     public ResponseEntity<DatosDetalleOrdenCompra> actilizarOdrdenCompra(@PathVariable String id, @Valid @RequestBody DatosActulizarOrdenCompra datos) {
         var ordenCompraActualizada = ordenCompraService.actulizarOrdenCompraId(id, datos);
         return ResponseEntity.ok().body(ordenCompraActualizada);
     }
 
     @DeleteMapping("/{id}")
+    @Operation(summary = "Eliminar orden de compra")
     public ResponseEntity<Void> eliminarOrdenCompra(@PathVariable String id){
         ordenCompraService.eliminarOrdenCompra(id);
         return ResponseEntity.noContent().build();
     }
 
     @PostMapping("/{id}/confirmar")
+    @Operation(summary = "Confirmar orden de compra")
     public ResponseEntity<DatosDetalleOrdenCompra> confirmarOrdenCompra(@PathVariable String id) {
         String username = SecurityContextHolder.getContext().getAuthentication().getName();
         var ordenCompra = ordenCompraService.confirmarOrdenCompra(id, username);
@@ -66,12 +77,14 @@ public class OrdenCompraController {
     }
 
     @GetMapping("/{id}/notas")
+    @Operation(summary = "Listar notas por orden de compra")
     public ResponseEntity<List<DatosListarNota>> listarNotasPorOrden(@PathVariable String id) {
         var notas = ordenCompraService.listarNotasPorOrden(id);
         return ResponseEntity.ok(notas);
     }
 
     @PostMapping("/{id}/generar-notas")
+    @Operation(summary = "Generar todas las notas de orden")
     public ResponseEntity<List<DatosDetalleNota>> generarTodasNotas(@PathVariable String id) {
         var notas = ordenCompraService.generarTodasNotas(id);
         return ResponseEntity.ok(notas);

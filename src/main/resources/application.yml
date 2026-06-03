@@ -9,6 +9,11 @@ spring:
     username: ${DB_USER_NAME}
     password: ${DB_PASS}
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   mvc:
     throw-exception-if-no-handler-found: true
 
