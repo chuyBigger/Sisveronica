@@ -63,17 +63,18 @@ export class ProductoPreviewDialogComponent implements OnInit {
 
   editar(): void {
     this.cargando = true;
-    this.productoService.buscarPorId(this.producto.id).subscribe({
-      next: (detalle) => {
-        this.form.patchValue(detalle);
-        this.editMode = true;
-        this.cargando = false;
-      },
-      error: () => {
-        this.snackBar.open('Error al cargar producto', 'Cerrar', { duration: 3000 });
-        this.cargando = false;
-      },
+    const catId = this.producto.categoria && this.categorias.length > 0
+      ? this.categorias.find(c => c.nombre === this.producto.categoria)?.id ?? ''
+      : '';
+    this.form.patchValue({
+      nombre: this.producto.nombre,
+      partida: this.producto.partida,
+      categoriaId: catId,
+      codigo: this.producto.codigo,
+      precioVenta: this.producto.precioVenta,
     });
+    this.editMode = true;
+    this.cargando = false;
   }
 
   guardar(): void {

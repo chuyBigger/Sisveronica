@@ -18,6 +18,7 @@ import { ProductoService } from '../../services/producto.service';
 import { EnumsService } from '../../services/enums.service';
 import { DatosListarProductos } from '../../models/producto.model';
 import { ProductoPreviewDialogComponent } from './producto-preview-dialog.component';
+import { ProductoExcelDialogComponent } from './producto-excel-dialog.component';
 
 @Component({
   selector: 'app-producto-lista',
@@ -134,6 +135,19 @@ export class ProductoListaComponent implements AfterViewInit {
 
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'deleted' || result === 'updated') {
+        this.cargarProductos();
+      }
+    });
+  }
+
+  abrirExcelDialog(): void {
+    const dialogRef = this.dialog.open(ProductoExcelDialogComponent, {
+      width: '600px',
+      panelClass: 'producto-preview-dialog',
+    });
+
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'uploaded') {
         this.cargarProductos();
       }
     });

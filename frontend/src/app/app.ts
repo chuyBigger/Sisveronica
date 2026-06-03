@@ -1,4 +1,4 @@
-import { Component, OnInit, OnDestroy, inject } from '@angular/core';
+import { Component, OnInit, OnDestroy, inject, NgZone } from '@angular/core';
 import { Router, RouterOutlet, RouterModule } from '@angular/router';
 import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatListModule } from '@angular/material/list';
@@ -31,6 +31,7 @@ import { AuthService } from './services/auth.service';
 export class App implements OnInit, OnDestroy {
   authService = inject(AuthService);
   router = inject(Router);
+  private ngZone = inject(NgZone);
 
   fecha = '';
   hora = '';
@@ -52,7 +53,11 @@ export class App implements OnInit, OnDestroy {
     if (this.darkMode) document.body.classList.add('dark-mode');
     this.sidebarOpen = localStorage.getItem('sidebarOpen') !== 'false';
     this.actualizarReloj();
-    this.timerId = setInterval(() => this.actualizarReloj(), 1000);
+    this.ngZone.runOutsideAngular(() => {
+      this.timerId = setInterval(() => {
+        this.ngZone.run(() => this.actualizarReloj());
+      }, 1000);
+    });
   }
 
   ngOnDestroy(): void {

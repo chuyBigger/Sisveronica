@@ -22,7 +22,10 @@
           }
         </mat-form-field>
         <button mat-raised-button color="primary" routerLink="/productos/nuevo">
-          <mat-icon>add</mat-icon> Crear
+          <mat-icon>add</mat-icon> Registrar
+        </button>
+        <button mat-stroked-button (click)="abrirExcelDialog()">
+          <mat-icon>upload_file</mat-icon> Cargar Excel
         </button>
       </div>
     </mat-card-header>
