@@ -67,23 +67,13 @@ public class ProductoService {
     }
 
     public Page<DatosListarProductos> listaProductosPartida(Pageable paguinas, String partida) {
-
         Partida partidaEnum = partidaValidacionesHelper.validaPartidaExistaString(partida);
-        var page = productosRepository.findAllByPartidaAndActivoTrue(partidaEnum, paguinas).map(DatosListarProductos::new);
-        if (page.isEmpty()) {
-            throw new ResourceNotFoundException("No se encontraron productos activos para la partida.");
-        }
-        return page;
+        return productosRepository.findAllByPartidaAndActivoTrue(partidaEnum, paguinas).map(DatosListarProductos::new);
     }
 
     public Page<DatosListarProductos> listaProdictosCategoriaId(String id, Pageable paguinas) {
-
         Categoria categoria = categoriaValidacionesHelper.validarCategoriaActiva(id);
-        var page = productosRepository.findAllByCategoriaAndActivoTrue(categoria, paguinas).map(DatosListarProductos::new);
-        if (page.isEmpty()) {
-            throw new ResourceNotFoundException("No se encontraron productos activos para la Categoria.");
-        }
-        return page;
+        return productosRepository.findAllByCategoriaAndActivoTrue(categoria, paguinas).map(DatosListarProductos::new);
     }
 
 
@@ -101,7 +91,7 @@ public class ProductoService {
     public DatosDetalleProducto buscarProductoNombre(String nombre) {
         Producto productoEncontrado = productosRepository.findByNombreAndActivoTrue(nombre)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("No existe producto en el '" + nombre + "' registrado")
+                        () -> new ResourceNotFoundException("No se encontró ningún producto con el nombre '" + nombre + "'.")
                 );
         return new DatosDetalleProducto(productoEncontrado);
     }
@@ -109,21 +99,16 @@ public class ProductoService {
 
     public Page buscarProductosPorPalabra(String palabraBuscar, Pageable paguinas) {
         var palabra = palabraBuscar.toLowerCase().trim();
-        var productosEncontrados = productosRepository
+        return productosRepository
                 .findAllByNombreContainingAndActivoTrue(palabraBuscar, paguinas)
                 .map(DatosDetalleProducto::new);
-        if (productosEncontrados.isEmpty()) {
-            throw new ResourceNotFoundException("No existe coincidecias p productos que contengan '" + palabraBuscar + "' en el registro.");
-        }
-        return productosEncontrados;
-
     }
 
     @Transactional
     public DatosDetalleProducto actualizarProductoId(String id, DatosActualizarProducto datos) {
         Producto productoActualizado = productosRepository.findById(id)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("No existe producto con el id: " + id + " o esta mal escrito")
+                        () -> new ResourceNotFoundException("No se encontró ningún producto con el ID '" + id + "'.")
                 );
 
         if (datos.nombre() != null) {
@@ -158,7 +143,7 @@ public class ProductoService {
     public void eliminarProducto(String id) {
         Producto eliminar = productosRepository.findById(id)
                 .orElseThrow(
-                        () -> new ResourceNotFoundException("No hay un producto con el el id " + id + "registrado")
+                        () -> new ResourceNotFoundException("No se encontró ningún producto con el ID '" + id + "'.")
                 );
         eliminar.setActivo(false);
     }
