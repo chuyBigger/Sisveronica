@@ -38,65 +38,25 @@ export class NotaVentaPreviewDialogComponent {
   };
 
   imprimir(): void {
-    const printContent = document.getElementById('print-area');
-    if (!printContent) return;
-    const win = window.open('', '_blank');
-    if (!win) return;
-    win.document.write(`
-      <html>
-        <head>
-          <style>
-            @page { size: 21.59cm 13.97cm; margin: 0.5cm; }
-            * { box-sizing: border-box; margin: 0; padding: 0; }
-            body {
-              font-family: 'Courier New', Courier, monospace;
-              font-size: 11px;
-              color: #000;
-              padding: 0.3cm;
-            }
-            .nota-remision {
-              max-width: 100%;
-            }
-            .header { border-bottom: 2px solid #000; padding-bottom: 0.5rem; margin-bottom: 0.6rem; }
-            .header-top { display: flex; justify-content: space-between; align-items: flex-start; margin-bottom: 0.4rem; }
-            .header-left { display: flex; gap: 0.5rem; align-items: center; }
-            .logo-img { width: 50px; height: auto; }
-            .brand { }
-            .business-name { font-size: 1.1rem; font-weight: 700; text-transform: uppercase; }
-            .slogan { font-size: 0.7rem; color: #555; font-style: italic; }
-            .folio-box { text-align: center; border: 2px solid #000; padding: 0.3rem 0.8rem; min-width: 100px; }
-            .folio-label { display: block; font-size: 0.6rem; font-weight: 600; text-transform: uppercase; }
-            .folio-number { display: block; font-size: 1.3rem; font-weight: 700; }
-            .fiscal-info { font-size: 0.7rem; line-height: 1.4; }
-            .fiscal-info p { margin: 0; }
-            .control-section { border: 1px solid #000; padding: 0.4rem 0.6rem; margin-bottom: 0.6rem; }
-            .control-row { display: flex; gap: 0.3rem; margin-bottom: 0.15rem; font-size: 0.75rem; }
-            .control-label { font-weight: 600; min-width: 70px; }
-            .detalle-table { width: 100%; border-collapse: collapse; font-size: 0.75rem; margin-bottom: 0.6rem; }
-            .detalle-table th, .detalle-table td { border: 1px solid #000; padding: 4px 6px; text-align: left; }
-            .detalle-table th { background: #e8e8e8; font-weight: 700; text-transform: uppercase; font-size: 0.65rem; }
-            .detalle-table .col-no { width: 30px; text-align: center; }
-            .detalle-table .col-cantidad { text-align: center; }
-            .detalle-table .col-precio, .detalle-table .col-total { text-align: right; }
-            .detalle-table tfoot .total-row { background: #e0e0e0; font-weight: 700; }
-            .detalle-table tfoot .total-label { text-align: right; padding-right: 0.8rem; text-transform: uppercase; }
-            .detalle-table tfoot .total-amount { border: 2px solid #000; font-size: 0.85rem; }
-            .signature-section { border-top: 1px solid #000; padding-top: 0.8rem; margin-top: 0.8rem; }
-            .signature-label { font-weight: 600; font-size: 0.75rem; text-transform: uppercase; }
-            .signature-space { height: 40px; border-bottom: 1px solid #000; width: 50%; }
-            .signature-sub { font-size: 0.7rem; color: #555; margin-top: 0.15rem; }
-            @media print {
-              body { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
-            }
-          </style>
-        </head>
-        <body>
-          ${printContent.innerHTML}
-        </body>
-      </html>
-    `);
-    win.document.close();
-    setTimeout(() => { win.print(); win.close(); }, 500);
+    const count = this.nota?.detalles?.length ?? 0;
+    const size = count > 8 ? '108mm 186mm' : '108mm 140mm';
+    const fontSize = count > 10 ? 8 : count > 6 ? 9 : 10;
+
+    const style = document.createElement('style');
+    style.id = 'print-size';
+    style.textContent = `@page { size: ${size}; margin: 0.6cm; }
+#print-area, #print-area * { font-size: ${fontSize}px !important; }`;
+    document.head.appendChild(style);
+
+    document.body.classList.add('printing-dialog');
+    window.print();
+
+    const cleanup = () => {
+      document.body.classList.remove('printing-dialog');
+      document.getElementById('print-size')?.remove();
+      window.removeEventListener('afterprint', cleanup);
+    };
+    window.addEventListener('afterprint', cleanup);
   }
 
   editar(): void {

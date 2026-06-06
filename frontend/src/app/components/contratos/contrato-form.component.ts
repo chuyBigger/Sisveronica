@@ -58,13 +58,27 @@ export class ContratoFormComponent implements OnInit {
     presupuesto: ['', Validators.required],
   });
 
+  private marcarTocados(): void {
+    Object.values(this.form.controls).forEach(c => c.markAsTouched());
+  }
+
   ngOnInit(): void {
     this.clienteService.listar().subscribe((res) => (this.clientes = res));
     const idParam = this.route.snapshot.paramMap.get('id');
     if (idParam) {
       this.esEdicion = true;
       this.contratoId = idParam;
-      this.cargarContrato(this.contratoId);
+      const cached = this.contratoService.getFromCache(idParam);
+      if (cached) {
+        this.form.patchValue({
+          ...cached,
+          fechaInicio: new Date(cached.fechaInicio),
+          fechaTermino: new Date(cached.fechaTermino),
+        });
+        this.marcarTocados();
+      } else {
+        this.cargarContrato(idParam);
+      }
     }
   }
 
@@ -77,6 +91,7 @@ export class ContratoFormComponent implements OnInit {
           fechaInicio: new Date(c.fechaInicio),
           fechaTermino: new Date(c.fechaTermino),
         });
+        this.marcarTocados();
         this.cargando = false;
       },
       error: () => {
@@ -87,6 +102,7 @@ export class ContratoFormComponent implements OnInit {
   }
 
   guardar(): void {
+    this.marcarTocados();
     if (this.form.invalid) return;
     const raw = this.form.value;
     const datos = {

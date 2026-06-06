@@ -90,6 +90,7 @@ export class ProductoFormComponent implements OnInit {
     this.productoService.buscarPorId(id).subscribe({
       next: (producto) => {
         this.form.patchValue(producto);
+        this.marcarTocados();
         this.cargando = false;
       },
       error: () => {
@@ -99,7 +100,12 @@ export class ProductoFormComponent implements OnInit {
     });
   }
 
+  private marcarTocados(): void {
+    Object.values(this.form.controls).forEach(c => c.markAsTouched());
+  }
+
   guardar(): void {
+    this.marcarTocados();
     if (this.form.invalid) return;
 
     const datos = this.form.value;

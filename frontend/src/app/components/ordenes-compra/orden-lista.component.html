@@ -4,19 +4,21 @@
       <mat-card-title>Órdenes de Compra</mat-card-title>
       <div class="header-actions">
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
-          <mat-label>Partida</mat-label>
-          <mat-select [(ngModel)]="partidaSeleccionada" (selectionChange)="filtrar()">
-            <mat-option value="">Todas</mat-option>
-            @for (p of partidas; track p) {
-              <mat-option [value]="p">{{ p }}</mat-option>
-            }
-          </mat-select>
+          <mat-label>Periodo</mat-label>
+          <input matInput [matDatepicker]="picker" [(ngModel)]="fechaSeleccionada" (dateChange)="onFechaChange()" placeholder="Seleccionar fecha">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+          @if (fechaSeleccionada) {
+            <button matSuffix mat-icon-button (click)="limpiarBusqueda()">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
         </mat-form-field>
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Buscar orden</mat-label>
           <input matInput [(ngModel)]="searchQuery" (keyup.enter)="filtrar()" placeholder="Contrato, cliente o partida">
-          @if (searchQuery || partidaSeleccionada) {
-            <button matSuffix mat-icon-button (click)="limpiarBusqueda()">
+          @if (searchQuery) {
+            <button matSuffix mat-icon-button (click)="searchQuery = ''; filtrar()">
               <mat-icon>close</mat-icon>
             </button>
           }

@@ -27,17 +27,17 @@
         </div>
       </div>
 
-      <div class="control-section">
+      <div class="control-section compact">
         <div class="control-row">
           <span class="control-label">Fecha:</span>
           <span class="control-value">{{ nota.fecha | date:'fullDate' }}</span>
         </div>
         <div class="control-row">
-          <span class="control-label">Receptor:</span>
+          <span class="control-label">Cliente:</span>
           <span class="control-value">{{ nota.cliente }}</span>
         </div>
         <div class="control-row">
-          <span class="control-label">Ubicación:</span>
+          <span class="control-label">Domicilio:</span>
           <span class="control-value">Aguascalientes</span>
         </div>
       </div>
@@ -47,9 +47,9 @@
           <tr>
             <th class="col-no">No.</th>
             <th class="col-producto">Producto</th>
-            <th class="col-cantidad">Cantidad</th>
-            <th class="col-precio">C. Unit.</th>
-            <th class="col-total">Total</th>
+            <th class="col-cantidad">Cant.</th>
+            <th class="col-precio">Precio/U</th>
+            <th class="col-total">Sub Total</th>
           </tr>
         </thead>
         <tbody>
@@ -73,10 +73,8 @@
 
       <div class="signature-section">
         <div class="signature-line">
-          <span class="signature-label">Recibido a conformidad</span>
           <div class="signature-space"></div>
         </div>
-        <p class="signature-sub">Nombre y firma</p>
       </div>
     </div>
 

@@ -1,5 +1,5 @@
 import { Component, inject, ViewChild, AfterViewInit, ChangeDetectorRef } from '@angular/core';
-import { CommonModule } from '@angular/common';
+import { CommonModule, formatDate } from '@angular/common';
 import { Router, RouterModule } from '@angular/router';
 import { MatTableModule, MatTableDataSource } from '@angular/material/table';
 import { MatSortModule, MatSort } from '@angular/material/sort';
@@ -8,13 +8,13 @@ import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
 import { MatInputModule } from '@angular/material/input';
-import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatNativeDateModule } from '@angular/material/core';
 import { MatCardModule } from '@angular/material/card';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { FormsModule } from '@angular/forms';
 import { OrdenCompraService } from '../../services/ordencompra.service';
-import { EnumsService } from '../../services/enums.service';
 import { DatosListarOrdenCompra } from '../../models/ordencompra.model';
 
 @Component({
@@ -23,7 +23,8 @@ import { DatosListarOrdenCompra } from '../../models/ordencompra.model';
   imports: [
     CommonModule, RouterModule, FormsModule,
     MatTableModule, MatSortModule, MatPaginatorModule,
-    MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule, MatSelectModule,
+    MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule,
+    MatDatepickerModule, MatNativeDateModule,
     MatCardModule, MatTooltipModule, MatSnackBarModule,
   ],
   templateUrl: './orden-lista.component.html',
@@ -31,7 +32,6 @@ import { DatosListarOrdenCompra } from '../../models/ordencompra.model';
 })
 export class OrdenListaComponent implements AfterViewInit {
   private ordenService = inject(OrdenCompraService);
-  private enumsService = inject(EnumsService);
   private snackBar = inject(MatSnackBar);
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
@@ -40,8 +40,7 @@ export class OrdenListaComponent implements AfterViewInit {
   dataSource = new MatTableDataSource<DatosListarOrdenCompra>([]);
   totalElements = 0;
   searchQuery = '';
-  partidas: string[] = [];
-  partidaSeleccionada = '';
+  fechaSeleccionada: Date | null = null;
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -54,18 +53,17 @@ export class OrdenListaComponent implements AfterViewInit {
              data.cliente.toLowerCase().includes(q) ||
              data.partida.toLowerCase().includes(q);
     };
-    this.enumsService.getPartidas().subscribe((res) => {
-      this.partidas = res;
-      this.cdr.detectChanges();
-    });
     this.cargarOrdenes();
   }
 
   cargarOrdenes(): void {
     const page = this.paginator?.pageIndex ?? 0;
     const size = this.paginator?.pageSize ?? 10;
+    const fechaStr = this.fechaSeleccionada
+      ? formatDate(this.fechaSeleccionada, 'yyyy-MM-dd', 'en-US')
+      : undefined;
 
-    this.ordenService.listar(page, size).subscribe({
+    this.ordenService.listar(page, size, fechaStr).subscribe({
       next: (res) => {
         this.dataSource.data = res.content ?? res;
         this.totalElements = res.totalElements ?? (res.content ? res.content.length : res.length);
@@ -79,13 +77,17 @@ export class OrdenListaComponent implements AfterViewInit {
     this.cargarOrdenes();
   }
 
+  onFechaChange(): void {
+    if (this.paginator) {
+      this.paginator.firstPage();
+    }
+    this.cargarOrdenes();
+  }
+
   filtrar(): void {
     const parts: string[] = [];
     if (this.searchQuery.trim()) {
       parts.push(this.searchQuery.trim().toLowerCase());
-    }
-    if (this.partidaSeleccionada) {
-      parts.push(this.partidaSeleccionada.toLowerCase());
     }
     this.dataSource.filter = parts.join(' ');
     if (this.dataSource.paginator) {
@@ -95,11 +97,12 @@ export class OrdenListaComponent implements AfterViewInit {
 
   limpiarBusqueda(): void {
     this.searchQuery = '';
-    this.partidaSeleccionada = '';
+    this.fechaSeleccionada = null;
     this.dataSource.filter = '';
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
+    this.cargarOrdenes();
   }
 
   verOrden(id: string): void {

@@ -140,5 +140,59 @@ table {
 }
 
 @media print {
-  .notaventa-preview-dialog { display: none !important; }
+  /* === Detalle page: show only #print-area === */
+  body.printing-detalle, body.printing-detalle * { visibility: hidden; }
+  body.printing-detalle #print-area, body.printing-detalle #print-area * { visibility: visible; }
+  body.printing-detalle #print-area {
+    position: absolute; top: 0; left: 0; width: 100%; overflow: visible;
+    padding: 0.5cm 0.5cm;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  body.printing-detalle #print-area .detalle-table th,
+  body.printing-detalle #print-area .detalle-table td { padding: 1px 3px !important; }
+  body.printing-detalle #print-area .detalle-table th { background: #e8e8e8 !important; }
+  body.printing-detalle #print-area .detalle-table tbody tr:nth-child(even) { background: #f5f5f5 !important; }
+  body.printing-detalle #print-area .detalle-table tfoot .total-row { background: #e0e0e0 !important; }
+  body.printing-detalle #print-area .header { padding-bottom: 0.2rem; margin-bottom: 0.2rem; }
+  body.printing-detalle #print-area .header-top { margin-bottom: 0.2rem; }
+  body.printing-detalle #print-area .fiscal-info { line-height: 1.2; }
+  body.printing-detalle #print-area .logo-img { width: 28px; }
+  body.printing-detalle #print-area .folio-number { font-size: 1.3em !important; }
+  body.printing-detalle #print-area .folio-box { padding: 0.15rem 0.4rem; min-width: 70px; }
+  body.printing-detalle #print-area .control-section { padding: 0.15rem 0.3rem; margin-bottom: 0.2rem; }
+  body.printing-detalle #print-area .control-label { min-width: 50px; }
+  body.printing-detalle #print-area .signature-section { padding-top: 0.3rem; margin-top: 0.3rem; }
+  body.printing-detalle #print-area .signature-space { height: 20px; }
+
+  /* === Dialog: show only the dialog content === */
+  body.printing-dialog, body.printing-dialog * { visibility: hidden; }
+  body.printing-dialog .notaventa-preview-dialog,
+  body.printing-dialog .notaventa-preview-dialog * { visibility: visible; }
+  body.printing-dialog .notaventa-preview-dialog {
+    position: absolute !important; top: 0 !important; left: 0 !important;
+    width: 100% !important;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  body.printing-dialog .notaventa-preview-dialog .side-menu { display: none !important; }
+  body.printing-dialog .notaventa-preview-dialog .preview-area {
+    overflow: visible; padding: 0.5cm 0.5cm;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  body.printing-dialog .notaventa-preview-dialog .detalle-table th,
+  body.printing-dialog .notaventa-preview-dialog .detalle-table td { padding: 1px 3px !important; }
+  body.printing-dialog .notaventa-preview-dialog .detalle-table th { background: #e8e8e8 !important; }
+  body.printing-dialog .notaventa-preview-dialog .detalle-table tbody tr:nth-child(even) { background: #f5f5f5 !important; }
+  body.printing-dialog .notaventa-preview-dialog .detalle-table tfoot .total-row { background: #e0e0e0 !important; }
+  body.printing-dialog .notaventa-preview-dialog .header { padding-bottom: 0.2rem; margin-bottom: 0.2rem; }
+  body.printing-dialog .notaventa-preview-dialog .header-top { margin-bottom: 0.2rem; }
+  body.printing-dialog .notaventa-preview-dialog .fiscal-info { line-height: 1.2; }
+  body.printing-dialog .notaventa-preview-dialog .logo-img { width: 28px; }
+  body.printing-dialog .notaventa-preview-dialog .folio-number { font-size: 1.3em !important; }
+  body.printing-dialog .notaventa-preview-dialog .folio-box { padding: 0.15rem 0.4rem; min-width: 70px; }
+  body.printing-dialog .notaventa-preview-dialog .control-section { padding: 0.15rem 0.3rem; margin-bottom: 0.2rem; }
+  body.printing-dialog .notaventa-preview-dialog .control-label { min-width: 50px; }
+  body.printing-dialog .notaventa-preview-dialog .signature-section { padding-top: 0.3rem; margin-top: 0.3rem; }
+  body.printing-dialog .notaventa-preview-dialog .signature-space { height: 20px; }
+
+  .cdk-overlay-backdrop { visibility: hidden !important; }
 }

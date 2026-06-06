@@ -56,7 +56,13 @@ export class ClienteFormComponent implements OnInit {
     if (idParam) {
       this.esEdicion = true;
       this.clienteId = idParam;
-      this.cargarCliente(this.clienteId);
+      const cached = this.clienteService.getFromCache(idParam);
+      if (cached) {
+        this.form.patchValue(cached);
+        this.marcarTocados();
+      } else {
+        this.cargarCliente(idParam);
+      }
     }
   }
 
@@ -65,6 +71,7 @@ export class ClienteFormComponent implements OnInit {
     this.clienteService.buscarPorId(id).subscribe({
       next: (cliente) => {
         this.form.patchValue(cliente);
+        this.marcarTocados();
         this.cargando = false;
       },
       error: () => {
@@ -74,7 +81,12 @@ export class ClienteFormComponent implements OnInit {
     });
   }
 
+  private marcarTocados(): void {
+    Object.values(this.form.controls).forEach(c => c.markAsTouched());
+  }
+
   guardar(): void {
+    this.marcarTocados();
     if (this.form.invalid) return;
     const datos = this.form.value;
 

@@ -73,11 +73,17 @@ export class ProductoPreviewDialogComponent implements OnInit {
       codigo: this.producto.codigo,
       precioVenta: this.producto.precioVenta,
     });
+    this.marcarTocados();
     this.editMode = true;
     this.cargando = false;
   }
 
+  private marcarTocados(): void {
+    Object.values(this.form.controls).forEach(c => c.markAsTouched());
+  }
+
   guardar(): void {
+    this.marcarTocados();
     if (this.form.invalid) return;
     this.cargando = true;
     this.productoService.actualizar(this.producto.id, this.form.value).subscribe({
