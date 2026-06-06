@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DatosRegistroContrato, DatosDetalleContrato, DatosActualizarContrato } from '../models/contrato.model';
 
 @Injectable({ providedIn: 'root' })
 export class ContratoService {
   private apiUrl = `${environment.apiUrl}/contratos`;
+  private cache: DatosDetalleContrato[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -15,7 +16,13 @@ export class ContratoService {
   }
 
   listar(): Observable<DatosDetalleContrato[]> {
-    return this.http.get<DatosDetalleContrato[]>(this.apiUrl);
+    return this.http.get<DatosDetalleContrato[]>(this.apiUrl).pipe(
+      tap(contratos => this.cache = contratos)
+    );
+  }
+
+  getFromCache(id: string): DatosDetalleContrato | undefined {
+    return this.cache.find(c => c.id === id);
   }
 
   buscarPorId(id: string): Observable<DatosDetalleContrato> {

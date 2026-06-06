@@ -11,6 +11,8 @@ import com.laveronica.siscontrol.utils.helpers.PartidaValidacionesHelper;
 import lombok.RequiredArgsConstructor;
 import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -23,95 +25,98 @@ import java.util.List;
 @RequiredArgsConstructor
 public class ProductoExcelService {
 
+    private static final Logger LOG = LoggerFactory.getLogger(ProductoExcelService.class);
+
     private final ProductosRepository productosRepository;
     private final PartidaValidacionesHelper partidaValidacionesHelper;
     private final CategoriaValidacionesHelper categoriaValidacionesHelper;
 
-    public DatosReporteCargaProductos cargarProductosDesdeExcel(MultipartFile archivo) throws IOException {
+    public DatosReporteCargaProductos cargarProductosDesdeExcel(MultipartFile archivo) {
+        validarArchivo(archivo);
+
         List<String> duplicados = new ArrayList<>();
         List<String> sinPrecio = new ArrayList<>();
         int exitosos = 0;
         int totalProcesados = 0;
 
         try (Workbook workbook = new XSSFWorkbook(archivo.getInputStream())) {
-            Sheet sheet = workbook.getSheetAt(0);
+            return procesarWorkbook(workbook, duplicados, sinPrecio, exitosos, totalProcesados);
+        } catch (IOException e) {
+            LOG.error("Error al leer el archivo Excel", e);
+            throw new RuntimeException("Error al leer el archivo Excel", e);
+        }
+    }
 
-            for (int i = 1; i <= sheet.getLastRowNum(); i++) {
-                Row row = sheet.getRow(i);
-                if (row == null) continue;
+    private DatosReporteCargaProductos procesarWorkbook(Workbook workbook, List<String> duplicados, List<String> sinPrecio, int exitosos, int totalProcesados) {
+        Sheet sheet = workbook.getSheetAt(0);
 
-                totalProcesados++;
+        for (int i = 1; i <= sheet.getLastRowNum(); i++) {
+            Row row = sheet.getRow(i);
+            if (row == null) continue;
 
-                String nombre = getCellValue(row, 0);
-                String partidaStr = getCellValue(row, 1);
-                String categoriaNombre = getCellValue(row, 2);
-                String codigo = getCellValue(row, 3);
-                String unidadMedidaStr = getCellValue(row, 4);
-                String precioCompraStr = getCellValue(row, 5);
-                String precioVentaStr = getCellValue(row, 6);
+            totalProcesados++;
 
-                if (nombre == null || nombre.isBlank()) {
-                    continue;
-                }
+            String nombre = getCellValue(row, 0);
+            String partidaStr = getCellValue(row, 1);
+            String categoriaNombre = getCellValue(row, 2);
+            String codigo = getCellValue(row, 3);
+            String unidadMedidaStr = getCellValue(row, 4);
+            String precioCompraStr = getCellValue(row, 5);
+            String precioVentaStr = getCellValue(row, 6);
 
-                // Validar precio de venta
-                BigDecimal precioVenta = parseBigDecimal(precioVentaStr);
-                if (precioVenta == null || precioVenta.compareTo(BigDecimal.ZERO) <= 0) {
-                    sinPrecio.add("Fila " + (i + 1) + ": " + nombre + " (sin precio de venta)");
-                    continue;
-                }
+            if (nombre == null || nombre.isBlank()) {
+                continue;
+            }
 
-                // Verificar duplicado por nombre
-                if (productosRepository.existsByNombre(nombre.trim().toLowerCase())) {
-                    duplicados.add("Fila " + (i + 1) + ": " + nombre + " (ya existe)");
-                    continue;
-                }
+            BigDecimal precioVenta = parseBigDecimal(precioVentaStr);
+            if (precioVenta == null || precioVenta.compareTo(BigDecimal.ZERO) <= 0) {
+                sinPrecio.add("Fila " + (i + 1) + ": " + nombre + " (sin precio de venta)");
+                continue;
+            }
 
-                try {
-                    // Validar partida
-                    Partida partida = partidaValidacionesHelper.validaPartidaExistaString(partidaStr);
+            if (productosRepository.existsByNombre(nombre.trim().toLowerCase())) {
+                duplicados.add("Fila " + (i + 1) + ": " + nombre + " (ya existe)");
+                continue;
+            }
 
-                    // Buscar o usar categoría por defecto
-                    Categoria categoria = null;
-                    if (categoriaNombre != null && !categoriaNombre.isBlank()) {
-                        try {
-                            categoria = categoriaValidacionesHelper.validarCategoriaActiva(categoriaNombre);
-                        } catch (Exception e) {
-                            // Si no encuentra la categoría, usar la primera disponible
-                            categoria = null;
-                        }
+            try {
+                Partida partida = partidaValidacionesHelper.validaPartidaExistaString(partidaStr);
+
+                Categoria categoria = null;
+                if (categoriaNombre != null && !categoriaNombre.isBlank()) {
+                    try {
+                        categoria = categoriaValidacionesHelper.validarCategoriaActiva(categoriaNombre);
+                    } catch (Exception e) {
+                        categoria = null;
                     }
-
-                    // Parsear unidad de medida
-                    UnidadMedida unidadMedida = UnidadMedida.KILO;
-                    if (unidadMedidaStr != null && !unidadMedidaStr.isBlank()) {
-                        try {
-                            unidadMedida = UnidadMedida.valueOf(unidadMedidaStr.trim().toUpperCase());
-                        } catch (IllegalArgumentException e) {
-                            unidadMedida = UnidadMedida.KILO;
-                        }
-                    }
-
-                    // Parsear precio de compra
-                    BigDecimal precioCompra = parseBigDecimal(precioCompraStr);
-
-                    // Crear producto
-                    Producto producto = new Producto();
-                    producto.setNombre(nombre.trim().toLowerCase());
-                    producto.setPartida(partida);
-                    producto.setCategoria(categoria);
-                    producto.setCodigo(codigo != null && !codigo.isBlank() ? codigo.trim().toUpperCase() : "PROD-" + System.currentTimeMillis());
-                    producto.setUnidadMedida(unidadMedida);
-                    producto.setPrecioCompra(precioCompra);
-                    producto.setPrecioVenta(precioVenta);
-                    producto.setActivo(true);
-
-                    productosRepository.save(producto);
-                    exitosos++;
-
-                } catch (Exception e) {
-                    duplicados.add("Fila " + (i + 1) + ": " + nombre + " (error: " + e.getMessage() + ")");
                 }
+
+                UnidadMedida unidadMedida = UnidadMedida.KILO;
+                if (unidadMedidaStr != null && !unidadMedidaStr.isBlank()) {
+                    try {
+                        unidadMedida = UnidadMedida.valueOf(unidadMedidaStr.trim().toUpperCase());
+                    } catch (IllegalArgumentException e) {
+                        unidadMedida = UnidadMedida.KILO;
+                    }
+                }
+
+                BigDecimal precioCompra = parseBigDecimal(precioCompraStr);
+
+                Producto producto = new Producto();
+                producto.setNombre(nombre.trim().toLowerCase());
+                producto.setPartida(partida);
+                producto.setCategoria(categoria);
+                producto.setCodigo(codigo != null && !codigo.isBlank() ? codigo.trim().toUpperCase() : "PROD-" + System.currentTimeMillis());
+                producto.setUnidadMedida(unidadMedida);
+                producto.setPrecioCompra(precioCompra);
+                producto.setPrecioVenta(precioVenta);
+                producto.setActivo(true);
+
+                productosRepository.save(producto);
+                exitosos++;
+
+            } catch (Exception e) {
+                duplicados.add("Fila " + (i + 1) + ": " + nombre + " (error: " + e.getMessage() + ")");
             }
         }
 
@@ -125,7 +130,7 @@ public class ProductoExcelService {
         );
     }
 
-    public byte[] generarPlantillaExcel() throws IOException {
+    public byte[] generarPlantillaExcel() {
         try (Workbook workbook = new XSSFWorkbook()) {
             Sheet sheet = workbook.createSheet("Productos");
 
@@ -164,6 +169,19 @@ public class ProductoExcelService {
             java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
             workbook.write(outputStream);
             return outputStream.toByteArray();
+        } catch (IOException e) {
+            LOG.error("Error al generar plantilla Excel", e);
+            throw new RuntimeException("Error al generar la plantilla Excel", e);
+        }
+    }
+
+    private void validarArchivo(MultipartFile archivo) {
+        if (archivo == null || archivo.isEmpty()) {
+            throw new IllegalArgumentException("El archivo está vacío");
+        }
+        String filename = archivo.getOriginalFilename();
+        if (filename == null || !filename.endsWith(".xlsx")) {
+            throw new IllegalArgumentException("Formato inválido. Solo se permiten archivos .xlsx");
         }
     }
 

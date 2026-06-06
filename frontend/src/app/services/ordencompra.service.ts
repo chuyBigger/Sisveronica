@@ -14,8 +14,11 @@ export class OrdenCompraService {
     return this.http.post<DatosDetalleOrdenCompra>(this.apiUrl, datos);
   }
 
-  listar(page = 0, size = 9): Observable<any> {
-    const params = new HttpParams().set('page', page).set('size', size);
+  listar(page = 0, size = 9, fecha?: string): Observable<any> {
+    let params = new HttpParams().set('page', page).set('size', size);
+    if (fecha) {
+      params = params.set('fecha', fecha);
+    }
     return this.http.get<any>(this.apiUrl, { params });
   }
 

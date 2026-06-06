@@ -15,11 +15,13 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
+import org.springframework.format.annotation.DateTimeFormat;
 import org.springframework.http.ResponseEntity;
 import org.springframework.security.core.context.SecurityContextHolder;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.time.LocalDate;
 import java.util.List;
 
 @RestController
@@ -41,10 +43,16 @@ public class OrdenCompraController {
 
     @GetMapping(path = {"", "/"})
     @Operation(summary = "Listar órdenes de compra")
-    public ResponseEntity<Page<DatosListarOrdenCompra>> listarOrdenCompra(@PageableDefault(size = 9, sort = "fechaInicioSemana") Pageable paginacion) {
-        var paguina = ordenCompraService.listarOrdenesCompra(paginacion);
-        return ResponseEntity.ok().body(paguina);
-
+    public ResponseEntity<Page<DatosListarOrdenCompra>> listarOrdenCompra(
+            @RequestParam(required = false) @DateTimeFormat(iso = DateTimeFormat.ISO.DATE) LocalDate fecha,
+            @PageableDefault(size = 9, sort = "fechaInicioSemana") Pageable paginacion) {
+        Page<DatosListarOrdenCompra> pagina;
+        if (fecha != null) {
+            pagina = ordenCompraService.listarOrdenesCompraPorFecha(fecha, paginacion);
+        } else {
+            pagina = ordenCompraService.listarOrdenesCompra(paginacion);
+        }
+        return ResponseEntity.ok(pagina);
     }
 
     @GetMapping(path = "/{id}")

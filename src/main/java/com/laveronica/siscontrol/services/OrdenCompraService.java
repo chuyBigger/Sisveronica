@@ -77,6 +77,11 @@ public class OrdenCompraService {
                 .map(DatosListarOrdenCompra::new);
     }
 
+    public Page<DatosListarOrdenCompra> listarOrdenesCompraPorFecha(LocalDate fecha, Pageable paginacion) {
+        return ordenCompraRespository.findByFechaInPeriodo(fecha, paginacion)
+                .map(DatosListarOrdenCompra::new);
+    }
+
     public DatosDetalleOrdenCompra buscarOrdenCompraId(String id) {
         return new DatosDetalleOrdenCompra(ordenCompraValidacionesHelper.buscarOrdenCompraId(id));
     }

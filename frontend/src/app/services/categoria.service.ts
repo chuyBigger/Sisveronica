@@ -1,12 +1,13 @@
 import { Injectable } from '@angular/core';
 import { HttpClient } from '@angular/common/http';
-import { Observable } from 'rxjs';
+import { Observable, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DatosRegistroCategoria, DatosDetalleCategoria, DatosActualizarCategoria } from '../models/categoria.model';
 
 @Injectable({ providedIn: 'root' })
 export class CategoriaService {
   private apiUrl = `${environment.apiUrl}/categorias`;
+  private cache: DatosDetalleCategoria[] = [];
 
   constructor(private http: HttpClient) {}
 
@@ -15,7 +16,13 @@ export class CategoriaService {
   }
 
   listar(): Observable<DatosDetalleCategoria[]> {
-    return this.http.get<DatosDetalleCategoria[]>(this.apiUrl);
+    return this.http.get<DatosDetalleCategoria[]>(this.apiUrl).pipe(
+      tap(cats => this.cache = cats)
+    );
+  }
+
+  getFromCache(id: string): DatosDetalleCategoria | undefined {
+    return this.cache.find(c => c.id === id);
   }
 
   buscarPorId(id: string): Observable<DatosDetalleCategoria> {

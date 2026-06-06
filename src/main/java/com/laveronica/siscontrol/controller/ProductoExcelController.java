@@ -14,8 +14,6 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
-import java.io.IOException;
-
 @RestController
 @RequestMapping("/productos/excel")
 @RequiredArgsConstructor
@@ -30,40 +28,23 @@ public class ProductoExcelController {
     @ApiResponse(responseCode = "400", description = "Archivo vacío o formato inválido", content = @Content)
     @ApiResponse(responseCode = "500", description = "Error interno al procesar el archivo", content = @Content)
     public ResponseEntity<DatosReporteCargaProductos> cargarProductos(@RequestParam("archivo") MultipartFile archivo) {
-        if (archivo.isEmpty()) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        String filename = archivo.getOriginalFilename();
-        if (filename == null || !filename.endsWith(".xlsx")) {
-            return ResponseEntity.badRequest().build();
-        }
-
-        try {
-            DatosReporteCargaProductos reporte = productoExcelService.cargarProductosDesdeExcel(archivo);
-            return ResponseEntity.ok(reporte);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        DatosReporteCargaProductos reporte = productoExcelService.cargarProductosDesdeExcel(archivo);
+        return ResponseEntity.ok(reporte);
     }
 
     @GetMapping("/plantilla")
     @Operation(summary = "Descargar plantilla Excel")
     @ApiResponse(responseCode = "500", description = "Error interno al generar la plantilla", content = @Content)
     public ResponseEntity<byte[]> descargarPlantilla() {
-        try {
-            byte[] plantilla = productoExcelService.generarPlantillaExcel();
+        byte[] plantilla = productoExcelService.generarPlantillaExcel();
 
-            HttpHeaders headers = new HttpHeaders();
-            headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
-            headers.setContentDispositionFormData("attachment", "plantilla_productos.xlsx");
-            headers.setContentLength(plantilla.length);
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", "plantilla_productos.xlsx");
+        headers.setContentLength(plantilla.length);
 
-            return ResponseEntity.ok()
-                    .headers(headers)
-                    .body(plantilla);
-        } catch (IOException e) {
-            return ResponseEntity.internalServerError().build();
-        }
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(plantilla);
     }
 }

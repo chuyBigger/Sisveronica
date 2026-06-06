@@ -9,6 +9,7 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
+import lombok.RequiredArgsConstructor;
 import org.springframework.beans.factory.annotation.Autowired;
 import jakarta.validation.Valid;
 import org.springframework.http.ResponseEntity;
@@ -21,15 +22,15 @@ import java.util.List;
 @RequestMapping("/clientes")
 @Tag(name = "Clientes")
 @SecurityRequirement(name = "bearerAuth")
+@RequiredArgsConstructor
 public class ClienteController {
 
-    @Autowired
-    private ClienteService clienteService;
+    private final ClienteService clienteService;
 
     @PostMapping
     @Operation(summary = "Registrar cliente")
     public ResponseEntity registrar(@RequestBody @Valid DatosRegistroCliente datos, UriComponentsBuilder uriComponentsBuilder) {
-        Cliente nuevoCliente = clienteService.registarCliente(datos);
+        var nuevoCliente = clienteService.registarCliente(datos);
         var uri = uriComponentsBuilder.path("/clientes/{id}").buildAndExpand(nuevoCliente.getId()).toUri();
         return ResponseEntity.created(uri).body("✅ Usuario registrado Exitosamente:");
     }
