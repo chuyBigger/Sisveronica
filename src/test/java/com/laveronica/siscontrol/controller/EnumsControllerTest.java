@@ -2,9 +2,12 @@ package com.laveronica.siscontrol.controller;
 
 import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.enums.UnidadMedida;
+import com.laveronica.siscontrol.infra.security.JwtUtil;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -17,8 +20,12 @@ class EnumsControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
+    @MockBean
+    private JwtUtil jwtUtil;
+
     @Test
-    void listarPartidas() throws Exception {
+    @WithMockUser
+    void listarPartidas_DeberiaRetornar200() throws Exception {
         var partidas = Arrays.stream(Partida.values()).map(Enum::name).toList();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/enums/partidas"))
@@ -28,7 +35,8 @@ class EnumsControllerTest {
     }
 
     @Test
-    void listarUnidadesMedida() throws Exception {
+    @WithMockUser
+    void listarUnidadesMedida_DeberiaRetornar200() throws Exception {
         var unidades = Arrays.stream(UnidadMedida.values()).map(Enum::name).toList();
 
         mockMvc.perform(MockMvcRequestBuilders.get("/enums/unidades-medida"))

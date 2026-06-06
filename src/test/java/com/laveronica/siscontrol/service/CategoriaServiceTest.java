@@ -49,6 +49,7 @@ class CategoriaServiceTest {
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo("1");
         assertThat(result.getNombre()).isEqualTo("Lacteos");
+        assertThat(result.getPartida()).isEqualTo(Partida.LACTEOS);
     }
 
     @Test
@@ -60,6 +61,15 @@ class CategoriaServiceTest {
         assertThatThrownBy(() -> categoriaService.registrarCategoria(datos))
                 .isInstanceOf(RecursoExistenteException.class)
                 .hasMessageContaining("ya existe");
+    }
+
+    @Test
+    void registrarCategoriaPartidaNullThrowsIllegalArgumentException() {
+        var datos = new DatosRegistroCategoria("Test", null);
+
+        assertThatThrownBy(() -> categoriaService.registrarCategoria(datos))
+                .isInstanceOf(IllegalArgumentException.class)
+                .hasMessageContaining("partida");
     }
 
     @Test
@@ -76,16 +86,79 @@ class CategoriaServiceTest {
         cat2.setPartida(Partida.CARNES);
         cat2.setActivo(true);
 
-        given(categoriaRepository.findAll()).willReturn(List.of(cat1, cat2));
+        Categoria cat3 = new Categoria();
+        cat3.setId("3");
+        cat3.setNombre("Inactiva");
+        cat3.setPartida(Partida.VARIOS);
+        cat3.setActivo(false);
+
+        given(categoriaRepository.findAll()).willReturn(List.of(cat1, cat2, cat3));
 
         List<DatosDetalleCategoria> result = categoriaService.listaCategorias();
 
         assertThat(result).hasSize(2);
         assertThat(result.get(0).nombre()).isEqualTo("Lacteos");
+        assertThat(result.get(1).nombre()).isEqualTo("Carnes");
     }
 
     @Test
-    void eliminarCategoriaSetsActivoFalse() {
+    void buscarCategoriaIdFound() {
+        Categoria categoria = new Categoria();
+        categoria.setId("1");
+        categoria.setNombre("Lacteos");
+        categoria.setPartida(Partida.LACTEOS);
+        categoria.setActivo(true);
+
+        given(categoriaRepository.findById("1")).willReturn(Optional.of(categoria));
+
+        Categoria result = categoriaService.buscarCategoriaId("1");
+
+        assertThat(result).isNotNull();
+        assertThat(result.getId()).isEqualTo("1");
+        assertThat(result.getNombre()).isEqualTo("Lacteos");
+    }
+
+    @Test
+    void buscarCategoriaIdThrowsEntityNotFoundException() {
+        given(categoriaRepository.findById("bad-id")).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> categoriaService.buscarCategoriaId("bad-id"))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("no existe");
+    }
+
+    @Test
+    void actualizarCategoriaSuccess() {
+        Categoria categoria = new Categoria();
+        categoria.setId("1");
+        categoria.setNombre("Lacteos");
+        categoria.setPartida(Partida.LACTEOS);
+        categoria.setActivo(true);
+
+        var datos = new DatosActualizarCategoria("Carnes Frias", Partida.CARNES);
+
+        given(categoriaRepository.findByIdAndActivoTrue("1")).willReturn(Optional.of(categoria));
+
+        Categoria result = categoriaService.actualizarCategoria("1", datos);
+
+        assertThat(result).isNotNull();
+        assertThat(result.getNombre()).isEqualTo("Carnes Frias");
+        assertThat(result.getPartida()).isEqualTo(Partida.CARNES);
+    }
+
+    @Test
+    void actualizarCategoriaThrowsEntityNotFoundException() {
+        var datos = new DatosActualizarCategoria("Nuevo", Partida.VARIOS);
+
+        given(categoriaRepository.findByIdAndActivoTrue("bad-id")).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> categoriaService.actualizarCategoria("bad-id", datos))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("no existe");
+    }
+
+    @Test
+    void eliminarCategoriaSuccess() {
         Categoria categoria = new Categoria();
         categoria.setId("1");
         categoria.setNombre("Lacteos");
@@ -97,5 +170,14 @@ class CategoriaServiceTest {
 
         assertThat(categoria.getActivo()).isFalse();
         verify(categoriaRepository).findById("1");
+    }
+
+    @Test
+    void eliminarCategoriaThrowsEntityNotFoundException() {
+        given(categoriaRepository.findById("bad-id")).willReturn(Optional.empty());
+
+        assertThatThrownBy(() -> categoriaService.eliminarCategoria("bad-id"))
+                .isInstanceOf(EntityNotFoundException.class)
+                .hasMessageContaining("no existe");
     }
 }

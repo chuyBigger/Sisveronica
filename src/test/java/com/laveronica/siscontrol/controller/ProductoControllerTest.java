@@ -7,8 +7,8 @@ import com.laveronica.siscontrol.domain.productos.dto.DatosDetalleProducto;
 import com.laveronica.siscontrol.domain.productos.dto.DatosListarProductos;
 import com.laveronica.siscontrol.domain.productos.dto.DatosRegistroProducto;
 import com.laveronica.siscontrol.enums.UnidadMedida;
+import com.laveronica.siscontrol.infra.security.JwtUtil;
 import com.laveronica.siscontrol.services.ProductoService;
-import org.junit.jupiter.api.BeforeEach;
 import org.junit.jupiter.api.Test;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
@@ -17,6 +17,7 @@ import org.springframework.data.domain.Page;
 import org.springframework.data.domain.PageImpl;
 import org.springframework.data.domain.PageRequest;
 import org.springframework.http.MediaType;
+import org.springframework.security.test.context.support.WithMockUser;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
@@ -26,6 +27,7 @@ import java.util.List;
 
 import static org.mockito.ArgumentMatchers.any;
 import static org.mockito.BDDMockito.given;
+import static org.springframework.security.test.web.servlet.request.SecurityMockMvcRequestPostProcessors.csrf;
 import static org.mockito.Mockito.doNothing;
 
 @WebMvcTest(ProductoController.class)
@@ -34,34 +36,32 @@ class ProductoControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @Autowired
-    private ObjectMapper objectMapper;
-
     @MockBean
     private ProductoService productoService;
 
-    @BeforeEach
-    void setup() {
-        objectMapper.registerModule(new JavaTimeModule());
-    }
+    @MockBean
+    private JwtUtil jwtUtil;
 
     @Test
-    void registrar() throws Exception {
+    @WithMockUser
+    void registrar_DeberiaRetornar201() throws Exception {
         var request = new DatosRegistroProducto("Leche Entera", "LACTEOS", "1", UnidadMedida.LITRO, BigDecimal.valueOf(15), BigDecimal.valueOf(22), null);
         var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
 
         given(productoService.registrarProducto(any())).willReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.post("/productos")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(MockMvcResultMatchers.status().isCreated())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("uuid-1"))
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value("leche entera"));
     }
 
     @Test
-    void listarPodructo() throws Exception {
+    @WithMockUser
+    void listarProductos_DeberiaRetornar200() throws Exception {
         var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22));
         Page<DatosListarProductos> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 9), 1);
 
@@ -73,18 +73,8 @@ class ProductoControllerTest {
     }
 
     @Test
-    void buscarProductoId() throws Exception {
-        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
-
-        given(productoService.buscarProductoId("uuid-1")).willReturn(response);
-
-        mockMvc.perform(MockMvcRequestBuilders.get("/productos/uuid-1"))
-                .andExpect(MockMvcResultMatchers.status().isOk())
-                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("uuid-1"));
-    }
-
-    @Test
-    void listarProductosPartida() throws Exception {
+    @WithMockUser
+    void listarProductosPartida_DeberiaRetornar200() throws Exception {
         var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22));
         Page<DatosListarProductos> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 10), 1);
 
@@ -96,7 +86,8 @@ class ProductoControllerTest {
     }
 
     @Test
-    void listarProductoCategoria() throws Exception {
+    @WithMockUser
+    void listarProductosCategoria_DeberiaRetornar200() throws Exception {
         var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22));
         Page<DatosListarProductos> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 10), 1);
 
@@ -108,7 +99,32 @@ class ProductoControllerTest {
     }
 
     @Test
-    void buscarProductosPorPalabra() throws Exception {
+    @WithMockUser
+    void buscarProductoId_DeberiaRetornar200() throws Exception {
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+
+        given(productoService.buscarProductoId("uuid-1")).willReturn(response);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/productos/uuid-1"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.id").value("uuid-1"));
+    }
+
+    @Test
+    @WithMockUser
+    void buscarProductoNombre_DeberiaRetornar200() throws Exception {
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+
+        given(productoService.buscarProductoNombre("leche")).willReturn(response);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/productos/buscar/leche"))
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value("leche entera"));
+    }
+
+    @Test
+    @WithMockUser
+    void buscarProductosPorPalabra_DeberiaRetornar200() throws Exception {
         var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
         Page<DatosDetalleProducto> page = new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
 
@@ -120,24 +136,28 @@ class ProductoControllerTest {
     }
 
     @Test
-    void actualizarProductoId() throws Exception {
+    @WithMockUser
+    void actualizarProducto_DeberiaRetornar200() throws Exception {
         var request = new DatosActualizarProducto("Leche Deslactosada", null, null, null, null, null, null);
         var response = new DatosDetalleProducto("uuid-1", "leche deslactosada", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
 
         given(productoService.actualizarProductoId(any(), any())).willReturn(response);
 
-        mockMvc.perform(MockMvcRequestBuilders.patch("/productos/1")
+        mockMvc.perform(MockMvcRequestBuilders.patch("/productos/uuid-1")
+                        .with(csrf())
                         .contentType(MediaType.APPLICATION_JSON)
-                        .content(objectMapper.writeValueAsString(request)))
+                        .content(new ObjectMapper().writeValueAsString(request)))
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("$.nombre").value("leche deslactosada"));
     }
 
     @Test
-    void eliminarProducto() throws Exception {
+    @WithMockUser
+    void eliminarProducto_DeberiaRetornar204() throws Exception {
         doNothing().when(productoService).eliminarProducto("uuid-1");
 
-        mockMvc.perform(MockMvcRequestBuilders.delete("/productos/uuid-1"))
+        mockMvc.perform(MockMvcRequestBuilders.delete("/productos/uuid-1")
+                        .with(csrf()))
                 .andExpect(MockMvcResultMatchers.status().isNoContent());
     }
 }

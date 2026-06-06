@@ -2,6 +2,7 @@ package com.laveronica.siscontrol.service;
 
 import com.laveronica.siscontrol.domain.clientes.Cliente;
 import com.laveronica.siscontrol.domain.contratos.Contrato;
+import com.laveronica.siscontrol.domain.contratos.dto.DatosActualizarContrato;
 import com.laveronica.siscontrol.domain.contratos.dto.DatosDetalleContrato;
 import com.laveronica.siscontrol.domain.contratos.dto.DatosRegistroContrato;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
@@ -62,6 +63,21 @@ class ContratoServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo("1");
+        assertThat(result.getContrato()).isEqualTo("CON-001");
+        assertThat(result.getCliente()).isEqualTo(cliente);
+        verify(contratoRepository).save(any());
+    }
+
+    @Test
+    void registrarContratoThrowsResourceNotFoundExceptionWhenClienteNotFound() {
+        var datos = new DatosRegistroContrato("CON-001", "bad-id", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+
+        given(clienteValidacionesHelper.validaClienteExistaId("bad-id"))
+                .willThrow(new ResourceNotFoundException("Cliente no encontrado"));
+
+        assertThatThrownBy(() -> contratoService.registrarContrato(datos))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Cliente no encontrado");
     }
 
     @Test
@@ -85,6 +101,16 @@ class ContratoServiceTest {
 
         assertThat(result).hasSize(1);
         assertThat(result.get(0).contrato()).isEqualTo("CON-001");
+        assertThat(result.get(0).cliente()).isEqualTo("Cliente Test");
+    }
+
+    @Test
+    void listarContratosReturnsEmptyList() {
+        given(contratoRepository.findAllByActivoTrue()).willReturn(List.of());
+
+        List<DatosDetalleContrato> result = contratoService.listarContratos();
+
+        assertThat(result).isEmpty();
     }
 
     @Test
@@ -97,10 +123,68 @@ class ContratoServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.id()).isEqualTo("1");
+        assertThat(result.contrato()).isEqualTo("CON-001");
     }
 
     @Test
-    void eliminarContratoSetsActivoFalse() {
+    void buscarContratoIdThrowsResourceNotFoundException() {
+        given(contratoValidacionesHelper.buscarContratoExisteId("bad-id"))
+                .willThrow(new ResourceNotFoundException("Contrato no encontrado"));
+
+        assertThatThrownBy(() -> contratoService.buscarContratoId("bad-id"))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Contrato no encontrado");
+    }
+
+    @Test
+    void actualizarContratoSuccess() {
+        Cliente clienteOriginal = new Cliente();
+        clienteOriginal.setId("1");
+        clienteOriginal.setNombre("Cliente Original");
+
+        Cliente clienteNuevo = new Cliente();
+        clienteNuevo.setId("2");
+        clienteNuevo.setNombre("Cliente Nuevo");
+
+        Contrato contrato = new Contrato();
+        contrato.setId("1");
+        contrato.setContrato("CON-001");
+        contrato.setCliente(clienteOriginal);
+        contrato.setFechaInicio(LocalDate.now());
+        contrato.setFechaTermino(LocalDate.now().plusDays(30));
+        contrato.setPresupuesto(BigDecimal.valueOf(5000));
+        contrato.setActivo(true);
+
+        var datos = new DatosActualizarContrato("2", LocalDate.now().plusDays(1), LocalDate.now().plusDays(60), BigDecimal.valueOf(10000));
+
+        given(contratoValidacionesHelper.validaContratoExisteId("1")).willReturn(contrato);
+        given(clienteValidacionesHelper.validaClienteExistaId("2")).willReturn(clienteNuevo);
+        given(contratoRepository.save(contrato)).willReturn(contrato);
+
+        DatosDetalleContrato result = contratoService.actualizarContratoId("1", datos);
+
+        assertThat(result).isNotNull();
+        assertThat(contrato.getCliente()).isEqualTo(clienteNuevo);
+        assertThat(contrato.getFechaInicio()).isEqualTo(LocalDate.now().plusDays(1));
+        assertThat(contrato.getFechaTermino()).isEqualTo(LocalDate.now().plusDays(60));
+        assertThat(contrato.getPresupuesto()).isEqualTo(BigDecimal.valueOf(10000));
+        verify(contratoRepository).save(contrato);
+    }
+
+    @Test
+    void actualizarContratoThrowsResourceNotFoundException() {
+        var datos = new DatosActualizarContrato(null, null, null, null);
+
+        given(contratoValidacionesHelper.validaContratoExisteId("bad-id"))
+                .willThrow(new ResourceNotFoundException("Contrato no encontrado"));
+
+        assertThatThrownBy(() -> contratoService.actualizarContratoId("bad-id", datos))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Contrato no encontrado");
+    }
+
+    @Test
+    void eliminarContratoSuccess() {
         Cliente cliente = new Cliente();
         cliente.setId("1");
         cliente.setNombre("Cliente Test");
@@ -117,5 +201,15 @@ class ContratoServiceTest {
 
         assertThat(contrato.getActivo()).isFalse();
         verify(contratoValidacionesHelper).validaContratoExisteId("1");
+    }
+
+    @Test
+    void eliminarContratoThrowsResourceNotFoundException() {
+        given(contratoValidacionesHelper.validaContratoExisteId("bad-id"))
+                .willThrow(new ResourceNotFoundException("Contrato no encontrado"));
+
+        assertThatThrownBy(() -> contratoService.eliminarContrato("bad-id"))
+                .isInstanceOf(ResourceNotFoundException.class)
+                .hasMessageContaining("Contrato no encontrado");
     }
 }
