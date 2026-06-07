@@ -13,6 +13,14 @@
           </mat-select>
         </mat-form-field>
         <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Calidad</mat-label>
+          <mat-select [(ngModel)]="filtroDetalle" (selectionChange)="filtrar()">
+            <mat-option value="">Todas</mat-option>
+            <mat-option value="con">Con detalle</mat-option>
+            <mat-option value="sin">Sin detalle</mat-option>
+          </mat-select>
+        </mat-form-field>
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
           <mat-label>Buscar nota</mat-label>
           <input matInput [(ngModel)]="searchQuery" (keyup.enter)="filtrar()" placeholder="Folio, cliente o partida">
           @if (searchQuery || partidaSeleccionada) {
@@ -49,9 +57,29 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Total</th>
             <td mat-cell *matCellDef="let row">{{ row.totalGeneral | currency }}</td>
           </ng-container>
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let row">
+              @if (row.firmada) {
+                <mat-icon class="estado-icon firmada" matTooltip="Firmada">check_circle</mat-icon>
+              } @else if (row.detalle) {
+                <mat-icon class="estado-icon alerta" matTooltip="{{ row.detalle }}">warning</mat-icon>
+              } @else {
+                <mat-icon class="estado-icon pendiente" matTooltip="Pendiente">schedule</mat-icon>
+              }
+            </td>
+          </ng-container>
           <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef>Acciones</th>
             <td mat-cell *matCellDef="let row">
+              @if (!row.firmada) {
+                <button mat-icon-button color="primary" (click)="firmarNota(row.id, $event)" matTooltip="Firmar">
+                  <mat-icon>thumb_up</mat-icon>
+                </button>
+              }
+              <button mat-icon-button color="accent" (click)="editarDetalle(row, $event)" matTooltip="Detalle">
+                <mat-icon>edit_note</mat-icon>
+              </button>
               <button mat-icon-button color="warn" (click)="$event.stopPropagation(); confirmarEliminar(row.id)" matTooltip="Eliminar">
                 <mat-icon>delete</mat-icon>
               </button>
@@ -60,6 +88,8 @@
 
           <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
           <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            [class.row-firmada]="row.firmada"
+            [class.row-alerta]="!row.firmada && row.detalle"
             class="data-row"
             (click)="abrirPreview(row)">
           </tr>

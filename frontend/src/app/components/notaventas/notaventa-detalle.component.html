@@ -78,13 +78,32 @@
       </div>
     </div>
 
-    <div class="side-menu no-print">
+    <div class="side-menu no-print" [class.nota-firmada]="nota.firmada" [class.nota-alerta]="!nota.firmada && nota.detalle">
       <div class="menu-header">
         <mat-icon>receipt</mat-icon>
         <span>Nota #{{ nota.folio }}</span>
+        @if (nota.firmada) {
+          <mat-icon class="status-badge firmada" matTooltip="Firmada">check_circle</mat-icon>
+        } @else if (nota.detalle) {
+          <mat-icon class="status-badge alerta" matTooltip="{{ nota.detalle }}">warning</mat-icon>
+        }
       </div>
+      @if (nota.detalle && !nota.firmada) {
+        <div class="detalle-preview">
+          <mat-icon>info</mat-icon>
+          <span>{{ nota.detalle }}</span>
+        </div>
+      }
       <mat-divider></mat-divider>
       <div class="menu-actions">
+        @if (!nota.firmada) {
+          <button mat-stroked-button class="menu-btn firmar-btn" (click)="firmarNota()">
+            <mat-icon>thumb_up</mat-icon> Firmada
+          </button>
+        }
+        <button mat-stroked-button class="menu-btn" (click)="editarDetalle()">
+          <mat-icon>edit_note</mat-icon> Detalle
+        </button>
         <button mat-stroked-button class="menu-btn" (click)="editar()">
           <mat-icon>edit</mat-icon> Editar
         </button>

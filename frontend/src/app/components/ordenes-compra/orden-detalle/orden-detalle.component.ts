@@ -7,19 +7,22 @@ import { MatCardModule } from '@angular/material/card';
 import { MatDividerModule } from '@angular/material/divider';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDialog, MatDialogModule } from '@angular/material/dialog';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { OrdenCompraService } from '../../../services/ordencompra.service';
 import { CancelacionService } from '../../../services/cancelacion.service';
 import { DatosDetalleOrdenCompra } from '../../../models/ordencompra.model';
 import { DatosListarCancelacion } from '../../../models/cancelacion.model';
 import { NotaVentaPreviewDialogComponent } from '../../notaventas/notaventa-preview-dialog.component';
 import { CancelacionFormDialogComponent, CancelacionFormData } from '../cancelacion-form-dialog.component';
+import { FacturaService } from '../../../services/factura.service';
+import { Factura } from '../../../models/factura.model';
 
 @Component({
   selector: 'app-orden-detalle',
   standalone: true,
   imports: [
     CommonModule, RouterModule, MatButtonModule, MatIconModule,
-    MatCardModule, MatDividerModule, MatSnackBarModule, MatDialogModule,
+    MatCardModule, MatDividerModule, MatSnackBarModule, MatDialogModule, MatTooltipModule,
   ],
   templateUrl: './orden-detalle.component.html',
   styleUrl: './orden-detalle.component.scss',
@@ -29,6 +32,7 @@ export class OrdenDetalleComponent implements OnInit {
   private router = inject(Router);
   private ordenService = inject(OrdenCompraService);
   private cancelacionService = inject(CancelacionService);
+  private facturaService = inject(FacturaService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
   private cdr = inject(ChangeDetectorRef);
@@ -36,12 +40,15 @@ export class OrdenDetalleComponent implements OnInit {
   orden!: DatosDetalleOrdenCompra;
   notas: any[] = [];
   cancelaciones: DatosListarCancelacion[] = [];
+  factura: Factura | null = null;
   cargando = true;
   generando = false;
+  generandoFactura = false;
   reconstruyendo = false;
 
   readonly dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
   readonly diasCorto = ['Lu', 'Ma', 'Mi', 'Ju', 'Vi', 'Sá', 'Do'];
+  readonly ordenDias = ['martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo', 'lunes'];
 
   ngOnInit(): void {
     const id = this.route.snapshot.paramMap.get('id');
@@ -49,6 +56,7 @@ export class OrdenDetalleComponent implements OnInit {
       this.cargarOrden(id);
       this.cargarNotas(id);
       this.cargarCancelaciones(id);
+      this.cargarFactura(id);
     }
   }
 
@@ -69,7 +77,9 @@ export class OrdenDetalleComponent implements OnInit {
   private cargarNotas(id: string): void {
     this.ordenService.listarNotasPorOrden(id).subscribe({
       next: (res) => {
-        this.notas = res ?? [];
+        this.notas = (res ?? []).sort(
+          (a: any, b: any) => this.ordenDias.indexOf(a.dia) - this.ordenDias.indexOf(b.dia)
+        );
         this.cdr.detectChanges();
       },
     });
@@ -138,11 +148,10 @@ export class OrdenDetalleComponent implements OnInit {
   abrirNota(nota: any): void {
     this.dialog.open(NotaVentaPreviewDialogComponent, {
       data: nota,
-      width: 'auto',
-      height: 'auto',
-      maxWidth: '100vw',
-      maxHeight: '100vh',
-      panelClass: 'nota-preview-dialog',
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'notaventa-preview-dialog',
     });
   }
 
@@ -161,8 +170,9 @@ export class OrdenDetalleComponent implements OnInit {
     if (confirm('¿Validar esta cancelación? Esta acción no se puede deshacer.')) {
       this.cancelacionService.validar(id).subscribe({
         next: () => {
-          this.snackBar.open('Cancelación validada', 'Cerrar', { duration: 2000 });
+          this.snackBar.open('Cancelación validada — nota actualizada', 'Cerrar', { duration: 2000 });
           this.cargarCancelaciones(this.orden.id);
+          this.cargarNotas(this.orden.id);
         },
         error: () => this.snackBar.open('Error al validar cancelación', 'Cerrar', { duration: 3000 }),
       });
@@ -199,9 +209,59 @@ export class OrdenDetalleComponent implements OnInit {
     });
   }
 
+  private cargarFactura(id: string): void {
+    this.facturaService.obtenerPorOrdenCompraId(id).subscribe({
+      next: (res) => {
+        this.factura = res;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.factura = null;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  get puedeGenerarFactura(): boolean {
+    if (!this.orden?.confirmadoPor) return false;
+    if (this.notas.length === 0) return false;
+    const todasFirmadas = this.notas.every(n => n.firmada);
+    const cancelacionesValidadas = this.cancelaciones.every(c => !!c.validadoPor);
+    return todasFirmadas && cancelacionesValidadas;
+  }
+
+  generarFactura(): void {
+    if (this.generandoFactura || !this.puedeGenerarFactura) return;
+    if (!confirm('¿Generar factura/prefactura para esta orden de compra?')) return;
+    this.generandoFactura = true;
+    this.facturaService.generar({ ordenCompraId: this.orden.id }).subscribe({
+      next: (res) => {
+        this.factura = res;
+        this.snackBar.open(`Factura #${res.folio} generada exitosamente`, 'Cerrar', { duration: 3000 });
+        this.generandoFactura = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        const msg = err.error?.message || 'Error al generar factura';
+        this.snackBar.open(msg, 'Cerrar', { duration: 5000 });
+        this.generandoFactura = false;
+      },
+    });
+  }
+
   notaTieneCancelacion(nota: any): boolean {
     if (!nota.dia) return false;
     return this.cancelaciones.some(c => c.dia === nota.dia && !!c.validadoPor);
+  }
+
+  getNotaClase(nota: any): string {
+    if (nota.firmada) return 'nota-firmada';
+    if (nota.detalle) return 'nota-vencida';
+    const fechaNota = new Date(nota.fecha);
+    const hoy = new Date();
+    hoy.setHours(0, 0, 0, 0);
+    if (fechaNota < hoy) return 'nota-vencida';
+    return '';
   }
 
   getValor(detalle: any, dia: string): string {

@@ -7,8 +7,11 @@ import { MatCardModule } from '@angular/material/card';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotaVentaService } from '../../services/notaventa.service';
 import { DatosDetalleNota } from '../../models/notaventa.model';
+import { DetalleDialogComponent, DetalleDialogData } from './detalle-dialog.component';
+import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 
 @Component({
   selector: 'app-notaventa-detalle',
@@ -16,7 +19,7 @@ import { DatosDetalleNota } from '../../models/notaventa.model';
   imports: [
     CommonModule, RouterModule,
     MatButtonModule, MatIconModule, MatCardModule,
-    MatSnackBarModule, MatProgressSpinnerModule, MatDividerModule,
+    MatSnackBarModule, MatProgressSpinnerModule, MatDividerModule, MatDialogModule, MatTooltipModule,
   ],
   templateUrl: './notaventa-detalle.component.html',
   styleUrl: './notaventa-detalle.component.scss',
@@ -26,6 +29,7 @@ export class NotaVentaDetalleComponent implements OnInit {
   private router = inject(Router);
   private notaventaService = inject(NotaVentaService);
   private snackBar = inject(MatSnackBar);
+  private dialog = inject(MatDialog);
 
   nota: DatosDetalleNota | null = null;
   cargando = true;
@@ -100,5 +104,35 @@ export class NotaVentaDetalleComponent implements OnInit {
       window.removeEventListener('afterprint', cleanup);
     };
     window.addEventListener('afterprint', cleanup);
+  }
+
+  firmarNota(): void {
+    if (!this.nota) return;
+    this.notaventaService.firmar(this.nota.id).subscribe({
+      next: () => {
+        if (this.nota) this.nota.firmada = true;
+        this.snackBar.open('Nota firmada', 'Cerrar', { duration: 2000 });
+      },
+      error: () => this.snackBar.open('Error al firmar nota', 'Cerrar', { duration: 3000 }),
+    });
+  }
+
+  editarDetalle(): void {
+    if (!this.nota) return;
+    const dialogRef = this.dialog.open(DetalleDialogComponent, {
+      width: '500px',
+      data: { detalleActual: this.nota.detalle, folio: this.nota.folio } as DetalleDialogData,
+    });
+    dialogRef.afterClosed().subscribe((detalle) => {
+      if (detalle !== undefined && this.nota) {
+        this.notaventaService.actualizarDetalle(this.nota.id, detalle).subscribe({
+          next: () => {
+            if (this.nota) this.nota.detalle = detalle;
+            this.snackBar.open('Detalle actualizado', 'Cerrar', { duration: 2000 });
+          },
+          error: () => this.snackBar.open('Error al actualizar detalle', 'Cerrar', { duration: 3000 }),
+        });
+      }
+    });
   }
 }

@@ -250,3 +250,52 @@
   @media print { display: none !important; }
 }
 
+.firmar-btn {
+  color: #2e7d32 !important;
+  border-color: #2e7d32 !important;
+}
+
+.status-badge {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+}
+
+.status-badge.firmada {
+  color: #4caf50;
+}
+
+.status-badge.alerta {
+  color: #ff9800;
+}
+
+.detalle-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 6px 8px;
+  margin: 4px 0;
+  background: #fff3e0;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #e65100;
+  line-height: 1.3;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+}
+
+.nota-firmada {
+  border-left: 3px solid #4caf50;
+}
+
+.nota-alerta {
+  border-left: 3px solid #ff9800;
+}
+

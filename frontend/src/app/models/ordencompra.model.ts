@@ -50,6 +50,14 @@ export interface DatosListarOrdenCompra {
   partida: string;
   fechaInicioSemana: string;
   detalles: DatosListarDetalleOrdenCompraDetalle[];
+  confirmadoPor?: string;
+  fechaConfirmacion?: string;
+  tieneFactura?: boolean;
+  estado?: string;
+  totalNotas?: number;
+  notasFirmadas?: number;
+  totalCancelaciones?: number;
+  cancelacionesValidadas?: number;
 }
 
 export interface DatosDetalleOrdenCompra {

@@ -19,6 +19,7 @@ import { EnumsService } from '../../services/enums.service';
 import { DatosListarNota } from '../../models/notaventa.model';
 import { NotaVentaPreviewDialogComponent } from './notaventa-preview-dialog.component';
 import { NotaVentaFormDialogComponent, NotaVentaFormData } from './notaventa-form-dialog.component';
+import { DetalleDialogComponent, DetalleDialogData } from './detalle-dialog.component';
 
 @Component({
   selector: 'app-notaventa-lista',
@@ -39,12 +40,13 @@ export class NotaVentaListaComponent implements AfterViewInit {
   private cdr = inject(ChangeDetectorRef);
   private dialog = inject(MatDialog);
 
-  displayedColumns: string[] = ['folio', 'fecha', 'cliente', 'partida', 'totalGeneral', 'acciones'];
+  displayedColumns: string[] = ['folio', 'fecha', 'cliente', 'partida', 'totalGeneral', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<DatosListarNota>([]);
   totalElements = 0;
   searchQuery = '';
   partidas: string[] = [];
   partidaSeleccionada = '';
+  filtroDetalle = '';
 
   @ViewChild(MatPaginator) paginator!: MatPaginator;
   @ViewChild(MatSort) sort!: MatSort;
@@ -52,11 +54,17 @@ export class NotaVentaListaComponent implements AfterViewInit {
   ngAfterViewInit(): void {
     this.dataSource.sort = this.sort;
     this.dataSource.filterPredicate = (data, filter) => {
-      const q = filter.toLowerCase();
-      const folioMatch = data.folio?.toString().includes(q) ?? false;
-      return folioMatch ||
-             data.cliente.toLowerCase().includes(q) ||
-             data.partida.toLowerCase().includes(q);
+      const parts = filter.split('|');
+      const q = parts[0]?.toLowerCase() || '';
+      const detalleFilter = parts[1] || '';
+      const matchSearch = !q ||
+        (data.folio?.toString().includes(q) ?? false) ||
+        data.cliente.toLowerCase().includes(q) ||
+        data.partida.toLowerCase().includes(q);
+      if (!matchSearch) return false;
+      if (detalleFilter === 'con') return !!data.detalle;
+      if (detalleFilter === 'sin') return !data.detalle;
+      return true;
     };
     this.enumsService.getPartidas().subscribe((res) => {
       this.partidas = res;
@@ -85,13 +93,9 @@ export class NotaVentaListaComponent implements AfterViewInit {
 
   filtrar(): void {
     const parts: string[] = [];
-    if (this.searchQuery.trim()) {
-      parts.push(this.searchQuery.trim().toLowerCase());
-    }
-    if (this.partidaSeleccionada) {
-      parts.push(this.partidaSeleccionada.toLowerCase());
-    }
-    this.dataSource.filter = parts.join(' ');
+    parts.push(this.searchQuery.trim().toLowerCase());
+    parts.push(this.filtroDetalle);
+    this.dataSource.filter = parts.join('|');
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
     }
@@ -100,6 +104,7 @@ export class NotaVentaListaComponent implements AfterViewInit {
   limpiarBusqueda(): void {
     this.searchQuery = '';
     this.partidaSeleccionada = '';
+    this.filtroDetalle = '';
     this.dataSource.filter = '';
     if (this.dataSource.paginator) {
       this.dataSource.paginator.firstPage();
@@ -156,5 +161,41 @@ export class NotaVentaListaComponent implements AfterViewInit {
         error: () => this.snackBar.open('Error al eliminar nota de venta', 'Cerrar', { duration: 3000 }),
       });
     }
+  }
+
+  firmarNota(id: string, event: Event): void {
+    event.stopPropagation();
+    this.notaventaService.firmar(id).subscribe({
+      next: () => {
+        this.snackBar.open('Nota firmada', 'Cerrar', { duration: 2000 });
+        this.cargarNotas();
+      },
+      error: () => this.snackBar.open('Error al firmar nota', 'Cerrar', { duration: 3000 }),
+    });
+  }
+
+  editarDetalle(row: DatosListarNota, event: Event): void {
+    event.stopPropagation();
+    const dialogRef = this.dialog.open(DetalleDialogComponent, {
+      width: '500px',
+      data: { detalleActual: row.detalle, folio: row.folio } as DetalleDialogData,
+    });
+    dialogRef.afterClosed().subscribe((detalle) => {
+      if (detalle !== undefined) {
+        this.notaventaService.actualizarDetalle(row.id, detalle).subscribe({
+          next: () => {
+            this.snackBar.open('Detalle actualizado', 'Cerrar', { duration: 2000 });
+            this.cargarNotas();
+          },
+          error: () => this.snackBar.open('Error al actualizar detalle', 'Cerrar', { duration: 3000 }),
+        });
+      }
+    });
+  }
+
+  getRowClass(row: DatosListarNota): string {
+    if (row.firmada) return 'row-firmada';
+    if (row.detalle) return 'row-alerta';
+    return '';
   }
 }

@@ -16,4 +16,12 @@ export class EnumsService {
   getUnidadesMedida(): Observable<string[]> {
     return this.http.get<string[]>(`${this.apiUrl}/unidades-medida`);
   }
+
+  getModulos(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/modulos`);
+  }
+
+  getAcciones(): Observable<string[]> {
+    return this.http.get<string[]>(`${this.apiUrl}/acciones`);
+  }
 }

@@ -25,6 +25,8 @@ export interface DatosListarNota {
   detalles: NotaVentaListarDetalle[];
   totalGeneral: number;
   dia?: string;
+  firmada?: boolean;
+  detalle?: string;
 }
 
 export interface DatosDetalleNota {
@@ -36,6 +38,8 @@ export interface DatosDetalleNota {
   detalles: NotaVentaListarDetalle[];
   totalGeneral: number;
   dia?: string;
+  firmada?: boolean;
+  detalle?: string;
 }
 
 export interface NotaVentaActualizarDetalle {

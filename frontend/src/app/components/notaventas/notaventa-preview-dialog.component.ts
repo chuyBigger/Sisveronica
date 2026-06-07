@@ -2,21 +2,23 @@ import { Component, inject, Inject } from '@angular/core';
 import { CommonModule } from '@angular/common';
 import { Router } from '@angular/router';
 import {
-  MAT_DIALOG_DATA, MatDialogRef, MatDialogModule,
+  MAT_DIALOG_DATA, MatDialogRef, MatDialogModule, MatDialog,
 } from '@angular/material/dialog';
 import { MatButtonModule } from '@angular/material/button';
 import { MatIconModule } from '@angular/material/icon';
 import { MatSnackBarModule, MatSnackBar } from '@angular/material/snack-bar';
 import { MatDividerModule } from '@angular/material/divider';
+import { MatTooltipModule } from '@angular/material/tooltip';
 import { NotaVentaService } from '../../services/notaventa.service';
 import { DatosListarNota } from '../../models/notaventa.model';
+import { DetalleDialogComponent, DetalleDialogData } from './detalle-dialog.component';
 
 @Component({
   selector: 'app-notaventa-preview-dialog',
   standalone: true,
   imports: [
     CommonModule, MatDialogModule, MatButtonModule, MatIconModule,
-    MatSnackBarModule, MatDividerModule,
+    MatSnackBarModule, MatDividerModule, MatTooltipModule,
   ],
   templateUrl: './notaventa-preview-dialog.component.html',
   styleUrl: './notaventa-preview-dialog.component.scss',
@@ -26,6 +28,7 @@ export class NotaVentaPreviewDialogComponent {
   private notaventaService = inject(NotaVentaService);
   private snackBar = inject(MatSnackBar);
   private dialogRef = inject(MatDialogRef<NotaVentaPreviewDialogComponent>);
+  private dialog = inject(MatDialog);
 
   constructor(@Inject(MAT_DIALOG_DATA) public nota: DatosListarNota) {}
 
@@ -77,5 +80,33 @@ export class NotaVentaPreviewDialogComponent {
 
   cerrar(): void {
     this.dialogRef.close();
+  }
+
+  firmarNota(): void {
+    this.notaventaService.firmar(this.nota.id).subscribe({
+      next: () => {
+        this.nota.firmada = true;
+        this.snackBar.open('Nota firmada', 'Cerrar', { duration: 2000 });
+      },
+      error: () => this.snackBar.open('Error al firmar nota', 'Cerrar', { duration: 3000 }),
+    });
+  }
+
+  editarDetalle(): void {
+    const dialogRef = this.dialog.open(DetalleDialogComponent, {
+      width: '500px',
+      data: { detalleActual: this.nota.detalle, folio: this.nota.folio } as DetalleDialogData,
+    });
+    dialogRef.afterClosed().subscribe((detalle) => {
+      if (detalle !== undefined) {
+        this.notaventaService.actualizarDetalle(this.nota.id, detalle).subscribe({
+          next: () => {
+            this.nota.detalle = detalle;
+            this.snackBar.open('Detalle actualizado', 'Cerrar', { duration: 2000 });
+          },
+          error: () => this.snackBar.open('Error al actualizar detalle', 'Cerrar', { duration: 3000 }),
+        });
+      }
+    });
   }
 }

@@ -34,4 +34,12 @@ export class NotaVentaService {
   eliminar(id: string): Observable<void> {
     return this.http.delete<void>(`${this.apiUrl}/${id}`);
   }
+
+  firmar(id: string): Observable<DatosDetalleNota> {
+    return this.http.post<DatosDetalleNota>(`${this.apiUrl}/${id}/firmar`, {});
+  }
+
+  actualizarDetalle(id: string, detalle: string): Observable<DatosDetalleNota> {
+    return this.http.patch<DatosDetalleNota>(`${this.apiUrl}/${id}/detalle`, { detalle });
+  }
 }

@@ -47,9 +47,40 @@
             <th mat-header-cell *matHeaderCellDef mat-sort-header>Fecha Inicio Semana</th>
             <td mat-cell *matCellDef="let row">{{ row.fechaInicioSemana | date }}</td>
           </ng-container>
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef>Estado</th>
+            <td mat-cell *matCellDef="let row">
+              @if (row.estado === 'PREFACTURA') {
+                <span class="factura-badge prefactura">
+                  <mat-icon>description</mat-icon> Prefactura
+                </span>
+              } @else if (row.estado === 'LISTO') {
+                <span class="factura-badge listo">
+                  <mat-icon>check_circle</mat-icon> Listo
+                </span>
+              } @else if (row.estado === 'FIRMAS_PENDIENTES') {
+                <span class="factura-badge firmas-pendientes">
+                  <mat-icon>signature</mat-icon> {{ row.notasFirmadas }}/{{ row.totalNotas }} firmadas
+                </span>
+              } @else if (row.estado === 'CANCELACIONES_PENDIENTES') {
+                <span class="factura-badge cancel-pendientes">
+                  <mat-icon>fact_check</mat-icon> {{ row.cancelacionesValidadas }}/{{ row.totalCancelaciones }} validadas
+                </span>
+              } @else {
+                <span class="factura-badge pendiente">
+                  <mat-icon>schedule</mat-icon> Pendiente
+                </span>
+              }
+            </td>
+          </ng-container>
           <ng-container matColumnDef="acciones">
             <th mat-header-cell *matHeaderCellDef>Acciones</th>
             <td mat-cell *matCellDef="let row">
+              @if (row.estado === 'LISTO') {
+                <button mat-icon-button class="btn-facturar" (click)="$event.stopPropagation(); verOrden(row.id)" matTooltip="Generar factura">
+                  <mat-icon>receipt</mat-icon>
+                </button>
+              }
               <button mat-icon-button color="primary" [routerLink]="['/ordenes-compra', row.id]" (click)="$event.stopPropagation()" matTooltip="Editar">
                 <mat-icon>edit</mat-icon>
               </button>

@@ -25,7 +25,8 @@
 
 .orden-card,
 .cancelaciones-card,
-.notas-card {
+.notas-card,
+.factura-card {
   margin-bottom: 20px;
 }
 
@@ -161,15 +162,41 @@ tfoot th {
   flex-shrink: 0;
   cursor: pointer;
   transition: box-shadow 0.2s;
-  border-left: 4px solid transparent;
+  position: relative;
+  overflow: hidden;
 }
 
 .nota-mini.tiene-cancelacion {
-  border-left-color: #ff9800;
+  border-left: 4px solid #ff9800;
+}
+
+.nota-mini.tiene-detalle {
+  border-left: 4px solid #f44336;
 }
 
 .nota-mini:hover {
   box-shadow: 0 4px 12px rgba(0,0,0,0.15);
+}
+
+.nota-indicator {
+  position: absolute;
+  bottom: 4px;
+  right: 4px;
+  line-height: 1;
+}
+
+.indi-firmada {
+  color: #4caf50;
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
+}
+
+.indi-vencida {
+  color: #f44336;
+  font-size: 26px;
+  width: 26px;
+  height: 26px;
 }
 
 .nota-mini mat-card-header {
@@ -187,6 +214,86 @@ tfoot th {
   font-weight: 700;
   color: #2e7d32;
   margin: 8px 0 0;
+}
+
+.factura-card mat-card-header {
+  flex-wrap: wrap;
+  gap: 8px;
+}
+
+.factura-info {
+  margin-top: 8px;
+}
+
+.factura-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 8px 0;
+}
+
+.factura-folio {
+  font-size: 1.1rem;
+  font-weight: 700;
+  color: #1565c0;
+}
+
+.factura-fecha {
+  font-size: 0.85rem;
+  color: #888;
+}
+
+.col-cant {
+  min-width: 80px;
+}
+
+.col-precio {
+  min-width: 100px;
+}
+
+.col-subtotal {
+  min-width: 120px;
+  font-weight: 600;
+}
+
+.factura-pendiente {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  color: #e65100;
+}
+
+.header-actions {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+}
+
+.indi-bloqueada {
+  color: #9e9e9e;
+  font-size: 22px;
+  width: 22px;
+  height: 22px;
+}
+
+.bloqueado-badge {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  color: #9e9e9e !important;
+  font-weight: 500;
+}
+
+.bloqueado-badge mat-icon {
+  font-size: 16px;
+  width: 16px;
+  height: 16px;
+}
+
+.notas-bloqueadas .nota-mini,
+.cancelaciones-bloqueadas .cancelacion-mini {
+  opacity: 0.85;
 }
 
 :host-context(body.dark-mode) {

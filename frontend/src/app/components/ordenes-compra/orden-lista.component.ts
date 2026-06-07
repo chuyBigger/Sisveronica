@@ -36,7 +36,7 @@ export class OrdenListaComponent implements AfterViewInit {
   private cdr = inject(ChangeDetectorRef);
   private router = inject(Router);
 
-  displayedColumns: string[] = ['contrato', 'cliente', 'partida', 'fechaInicioSemana', 'acciones'];
+  displayedColumns: string[] = ['contrato', 'cliente', 'partida', 'fechaInicioSemana', 'estado', 'acciones'];
   dataSource = new MatTableDataSource<DatosListarOrdenCompra>([]);
   totalElements = 0;
   searchQuery = '';
