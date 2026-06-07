@@ -55,7 +55,7 @@ spring.datasource.password=Admin.1516
 .\mvnw.cmd clean spring-boot:run
 ```
 
-Flyway ejecuta las 18 migraciones automáticamente (V1–V20).
+Flyway ejecuta las 22 migraciones automáticamente (V1–V22).
 
 ### Ejecutar frontend
 
@@ -184,6 +184,23 @@ Frontend en `http://localhost:4200`, Backend en `http://localhost:8080`.
 
 ---
 
+### 5.1 Carga masiva de Productos (Excel)
+
+- Subir archivo `.xlsx` con productos
+- Columnas esperadas: código, nombre, partida, categoría, precio compra, precio venta
+- **Validaciones**: archivo no vacío, extensión `.xlsx`, categoría existente
+- **Reporte de resultados**: filas insertadas, duplicados omitidos, precios faltantes
+- Multipart max 10MB
+- Apache POI 5.2.5
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/productos/excel/importar` | Importar productos desde Excel |
+
+---
+
 ### 6. Órdenes de Compra
 
 - CRUD completo
@@ -193,11 +210,21 @@ Frontend en `http://localhost:4200`, Backend en `http://localhost:8080`.
   - Badge de confirmación
   - Sección de cancelaciones
   - Mini-cards de notas de venta asociadas
+  - **Indicadores en notas**: estrella verde SVG 15 puntas (firmada), `warning_amber` (vencida sin firmar), candado gris (bloqueada por factura)
+  - **Sección Factura**: botón "Generar Factura" + tabla de detalle de prefactura
+  - **Inmutabilidad post-factura**: notas y cancelaciones bloqueadas (candado gris, botones deshabilitados)
 - **Formulario de creación**: selección cliente → contrato → partida → tabla editable producto×día
 - **Confirmación**: registro de quién confirmó y fecha
 - **Unicidad**: validación de (cliente + partida + semana) para duplicados
 - **Generación de notas**: generar todas las notas de venta desde la orden
 - **Partida GENERAL**: carga todos los productos (no filtrados por partida)
+- **Filtro por Periodo**: filtro de fecha en la lista de OC (reemplazó filtro por Partida)
+- **Badges de estado en lista**:
+  - 🔵 `Prefactura` — factura generada
+  - 🟢 `Listo` — confirmada, todas firmadas, todas validadas
+  - 🟠 `X/Y firmadas` — faltan firmas
+  - 🔴 `X/Y validadas` — cancelaciones pendientes
+  - ⚪ `Pendiente` — no confirmada
 
 **Endpoints:**
 
@@ -220,13 +247,20 @@ Frontend en `http://localhost:4200`, Backend en `http://localhost:8080`.
 - **Folio secuencial automático**: `COALESCE(MAX(folio), 0) + 1`
 - **Generación desde orden**: crear nota individual desde una orden de compra por día
 - **Preview**: vista previa estilo remisión con logo, datos fiscales, tabla de productos, total
-- **Impresión**: formato carta (21.59cm × 13.97cm)
+- **Impresión**: 1/4 carta (≤8 productos) o 1/3 carta (>8). `window.print()` en la misma página con `@media print`
 - **Detalle completo** (`/notaventas/:id/ver`): vista read-only con menú lateral
 - **Indicador visual**: borde naranja en notas que tienen cancelaciones asociadas
 - **Campo `dia`**: día de la semana asociado a la nota
+- **Firma de notas**:
+  - Columna `firmada` (boolean) y `detalle` (texto) en BD
+  - POST `/{id}/firmar`: marca la nota como firmada (no reversible)
+  - PATCH `/{id}/detalle`: actualiza el detalle/anotación de la nota
+  - **Indicadores visuales** en lista y detalle: estrella verde SVG de 15 puntas (firmada), `warning_amber` amarillo (atrasada), candado gris (bloqueada por factura)
+  - Filas coloreadas en la lista: verde si firmada, naranja si vencida sin firmar
 
 **Popup de nota de venta:**
-- Menú lateral con: Editar, Imprimir, Borrar, Cerrar
+- Menú lateral con: Editar, Imprimir, Firmar, Detalle, Borrar, Cerrar
+- Badge de estado: firmada / pendiente / vencida
 - Vista previa estilo remisión fiscal
 
 **Endpoints:**
@@ -239,6 +273,8 @@ Frontend en `http://localhost:4200`, Backend en `http://localhost:8080`.
 | GET | `/notaventas/{id}` | Buscar por UUID |
 | PATCH | `/notaventas/{id}` | Actualizar nota |
 | DELETE | `/notaventas/{id}` | Eliminar (baja lógica) |
+| POST | `/notaventas/{id}/firmar` | Firmar nota |
+| PATCH | `/notaventas/{id}/detalle` | Actualizar detalle |
 
 ---
 
@@ -268,7 +304,40 @@ Frontend en `http://localhost:4200`, Backend en `http://localhost:8080`.
 
 ---
 
-### 9. Administración de Usuarios
+### 9. Factura / Prefactura
+
+- **Generación automática** desde una Orden de Compra confirmada
+- **Validaciones** antes de generar:
+  - La OC debe estar confirmada
+  - Todas las Notas de Venta deben estar firmadas (`firmada = true`)
+  - Todas las Cancelaciones deben estar validadas (`validadoPor != null`)
+  - No debe existir otra factura activa para la misma OC
+- **Cálculo**: suma cantidades por producto de todas las notas firmadas, resta las cancelaciones validadas
+- **Folio secuencial**: `COALESCE(MAX(folio), 0) + 1`
+- **Detalles**: tabla producto × (cantidad total, precio/venta, subtotal), total general
+- **Inmutabilidad post-factura**: al generar la factura, las Notas de Venta y Cancelaciones de la OC quedan bloqueadas:
+  - No se pueden editar ni eliminar notas
+  - No se pueden crear nuevas notas
+  - No se pueden crear/validar/eliminar cancelaciones
+  - Las mini-cards muestran candado gris como indicador
+
+**Sección en OrdenDetalle:**
+- Botón "Generar Factura" (solo cuando estado = LISTO: confirmada + todas firmadas + todas validadas)
+- Tabla de detalle con producto, cantidad total, precio unitario, subtotal
+- Badge "Prefactura" con folio y fecha de creación
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/facturas` | Generar factura para una OC |
+| GET | `/facturas` | Listar todas las facturas |
+| GET | `/facturas/{id}` | Buscar por UUID |
+| GET | `/facturas/por-orden/{ordenCompraId}` | Buscar por OC |
+
+---
+
+### 10. Administración de Usuarios
 
 - CRUD de usuarios (solo ADMIN)
 - Asignación de permisos granulares por módulo × acción
@@ -287,7 +356,7 @@ Frontend en `http://localhost:4200`, Backend en `http://localhost:8080`.
 
 ---
 
-### 10. Enums
+### 11. Enums
 
 **Endpoints:**
 
@@ -321,10 +390,12 @@ Todas las entidades usan **UUID** como identificador primario (`VARCHAR(36)`) ge
 | Producto | `productos` | código (único), nombre (único), partida, categoría FK, unidadMedida, precios |
 | OrdenCompra | `orden_compras` | cliente FK, contrato FK, partida, semana, confirmadoPor |
 | OrdenCompraDetalle | `orden_compra_detalles` | orden FK, producto FK, lunes..domingo (cantidades) |
-| NotaVenta | `nota_ventas` | folio (único), cliente FK, contrato FK, orden FK, fecha, partida, dia |
+| NotaVenta | `nota_ventas` | folio (único), cliente FK, contrato FK, orden FK, fecha, partida, dia, **firmada**, **detalle** |
 | NotaVentaDetalle | `nota_venta_detalles` | nota FK, producto FK, cantidad, precio, subTotal |
 | NotaCancelacion | `nota_cancelaciones` | orden FK, dia, creadoPor, validadoPor |
 | NotaCancelacionDetalle | `nota_cancelacion_detalles` | cancelacion FK, producto FK, cantidadCancelada |
+| Factura | `facturas` | folio (secuencial), orden FK, cliente, contrato, partida, fechaCreacion, totalGeneral |
+| FacturaDetalle | `factura_detalles` | factura FK, productoNombre, cantidadTotal, precioVenta, subtotal |
 | Usuario | `usuarios` | username (único), password (BCrypt), role |
 | UsuarioPermiso | `usuario_permisos` | usuario FK, modulo, acción (único por usuario) |
 
@@ -352,6 +423,8 @@ Todas las entidades usan **UUID** como identificador primario (`VARCHAR(36)`) ge
 | V18 | Columnas `confirmado_por`, `fecha_confirmacion` en `orden_compras` |
 | V19 | Columna `dia` en `nota_ventas` |
 | V20 | Tablas `nota_cancelaciones` y `nota_cancelacion_detalles` |
+| V21 | Columnas `firmada` (boolean) y `detalle` (text) en `nota_ventas` |
+| V22 | Tablas `facturas` y `factura_detalles` con FK a `orden_compras` |
 
 ---
 
@@ -387,7 +460,7 @@ Todas las entidades usan **UUID** como identificador primario (`VARCHAR(36)`) ge
 ### Todas las vistas de lista
 - **Columnas ordenables**: MatSort en todos los encabezados de columna
 - **Barras de búsqueda**: filtro por texto en todas las listas
-- **Filtros específicos**: dropdown de Partida en notas de venta, órdenes y productos
+- **Filtros específicos**: dropdown de Partida en notas de venta y productos; filtro por Periodo (fecha) en órdenes
 - **Paginación**: MatTablePaginator con opciones 5, 10, 25, 50
 - **Filas clickeables**: cursor pointer + hover effect, clic en cualquier parte de la fila abre vista/detalle
 - **Botones de acción**: Editar, Eliminar (con stopPropagation para no activar clic de fila)
@@ -418,16 +491,18 @@ Todas las entidades usan **UUID** como identificador primario (`VARCHAR(36)`) ge
 ```
 SisVeronica/
 ├── src/main/java/com/laveronica/siscontrol/
-│   ├── controller/              # 10 controladores REST
+│   ├── controller/              # 11 controladores REST
 │   │   ├── AuthController.java
 │   │   ├── UsuarioAdminController.java
 │   │   ├── ClienteController.java
 │   │   ├── ContratosController.java
 │   │   ├── CategoriaController.java
 │   │   ├── ProductoController.java
+│   │   ├── ProductoExcelController.java
 │   │   ├── NotaVentaController.java
 │   │   ├── OrdenCompraController.java
 │   │   ├── NotaCancelacionController.java
+│   │   ├── FacturaController.java
 │   │   └── EnumsController.java
 │   ├── domain/                  # Entidades JPA + DTOs + Mappers
 │   │   ├── clientes/
@@ -440,6 +515,8 @@ SisVeronica/
 │   │   ├── ordencompradetalle/
 │   │   ├── notacancelacion/
 │   │   ├── notacancelaciondetalle/
+│   │   ├── factura/
+│   │   ├── facturadetalle/
 │   │   └── usuario/
 │   ├── enums/                   # Partida, UnidadMedida, Role, Modulo, Accion, DiaSemana
 │   ├── infra/
@@ -449,7 +526,7 @@ SisVeronica/
 │   ├── services/                # Lógica de negocio
 │   └── utils/helpers/           # Validaciones reutilizables
 │
-├── src/main/resources/db/migration/  # 18 archivos SQL (V1–V20)
+├── src/main/resources/db/migration/  # 22 archivos SQL (V1–V22)
 │
 ├── frontend/src/app/
 │   ├── app.routes.ts            # Rutas Angular
@@ -462,8 +539,8 @@ SisVeronica/
 │   │   ├── notaventas/          # Lista + Form + FormDialog + PreviewDialog + Detalle
 │   │   ├── ordenes-compra/      # Lista + Form + Detalle + CancelacionFormDialog
 │   │   └── config/              # Administración de usuarios
-│   ├── services/                # 10 servicios Angular + guards + interceptor
-│   └── models/                  # 8 archivos de interfaces TypeScript
+│   ├── services/                # 11 servicios Angular + guards + interceptor
+│   └── models/                  # 9 archivos de interfaces TypeScript
 │
 └── docs/                        # Documentación adicional
 ```

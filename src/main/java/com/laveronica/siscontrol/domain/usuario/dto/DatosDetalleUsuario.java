@@ -12,6 +12,10 @@ public record DatosDetalleUsuario(
         String username,
         String role,
         Boolean activo,
+        String nombreCompleto,
+        String correo,
+        String numero,
+        String cargo,
         @Schema(description = "Lista de permisos asignados")
         List<PermisoAsignado> permisos
 ) {

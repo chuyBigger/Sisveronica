@@ -109,7 +109,7 @@ class UsuarioAdminServiceTest {
 
     @Test
     void crearUsuarioSuccess() {
-        var datos = new DatosRegistroUsuario("newuser", "password123", "USER");
+        var datos = new DatosRegistroUsuario("newuser", "password123", "USER", null, null, null, null);
 
         given(usuarioRepository.existsByUsername("newuser")).willReturn(false);
         given(passwordEncoder.encode("password123")).willReturn("encoded-password");
@@ -131,7 +131,7 @@ class UsuarioAdminServiceTest {
 
     @Test
     void crearUsuarioAlreadyExistsThrowsRecursoExistenteException() {
-        var datos = new DatosRegistroUsuario("existing", "password123", "USER");
+        var datos = new DatosRegistroUsuario("existing", "password123", "USER", null, null, null, null);
 
         given(usuarioRepository.existsByUsername("existing")).willReturn(true);
 
@@ -142,7 +142,7 @@ class UsuarioAdminServiceTest {
 
     @Test
     void crearUsuarioWithDefaultRoleWhenRoleIsNull() {
-        var datos = new DatosRegistroUsuario("newuser", "password123", null);
+        var datos = new DatosRegistroUsuario("newuser", "password123", null, null, null, null, null);
 
         given(usuarioRepository.existsByUsername("newuser")).willReturn(false);
         given(passwordEncoder.encode("password123")).willReturn("encoded");

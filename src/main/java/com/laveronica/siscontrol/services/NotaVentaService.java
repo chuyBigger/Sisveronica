@@ -14,6 +14,7 @@ import com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle;
 import com.laveronica.siscontrol.domain.productos.Producto;
 import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
+import com.laveronica.siscontrol.repositories.FacturaRepository;
 import com.laveronica.siscontrol.repositories.NotaVentaRepository;
 import com.laveronica.siscontrol.repositories.OrdenCompraRespository;
 import com.laveronica.siscontrol.utils.helpers.*;
@@ -25,6 +26,7 @@ import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
+import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
@@ -37,11 +39,19 @@ public class NotaVentaService {
 
     private final NotaVentaRepository notaVentaRepository;
     private final OrdenCompraRespository ordenCompraRespository;
+    private final FacturaRepository facturaRepository;
     private final ClienteValidacionesHelper clienteValidacionesHelper;
     private final PartidaValidacionesHelper partidaValidacionesHelper;
     public final ProductoValidacionesHelper productoValidacionesHelper;
     private final NotaVentaDetalleService notaVentaDetalleService;
     private final NotaVentaValidacionesHelper notaVentaValidacionesHelper;
+
+    private void verificarNotaNoFacturada(NotaVenta nota) {
+        if (nota.getOrdenCompra() != null
+            && facturaRepository.existsByOrdenCompraIdAndActivoTrue(nota.getOrdenCompra().getId())) {
+            throw new RuntimeException("La orden de compra ya tiene una factura generada. No se puede modificar la nota.");
+        }
+    }
 
     @Transactional
     public DatosDetalleNota registrarNota(DatosRegistroNota datos) {
@@ -62,6 +72,9 @@ public class NotaVentaService {
     public DatosDetalleNota generarNotaDesdeOrden(DatosGenerarNotaDesdeOrden datos) {
         OrdenCompra orden = ordenCompraRespository.findByIdAndActivoTrue(datos.ordenCompraId())
                 .orElseThrow(() -> new ResourceNotFoundException("Orden de compra no encontrada"));
+        if (facturaRepository.existsByOrdenCompraIdAndActivoTrue(orden.getId())) {
+            throw new RuntimeException("La orden de compra ya tiene una factura generada. No se pueden crear nuevas notas.");
+        }
 
         Map<String, Double> cantidadesPorDia = Map.of(
                 "lunes", 0.0, "martes", 0.0, "miercoles", 0.0,
@@ -92,7 +105,8 @@ public class NotaVentaService {
         notaNueva.setCliente(orden.getCliente());
         notaNueva.setContrato(orden.getContrato());
         notaNueva.setOrdenCompra(orden);
-        notaNueva.setFecha(LocalDateTime.now());
+        LocalDate fechaNota = calcularFechaNota(orden, datos.dia());
+        notaNueva.setFecha(fechaNota.atStartOfDay());
         notaNueva.setPartida(orden.getPartida());
         notaNueva.setFolio(nextFolio);
         notaNueva.setDia(datos.dia());
@@ -109,6 +123,16 @@ public class NotaVentaService {
 
         notaVentaRepository.save(notaNueva);
         return new DatosDetalleNota(notaNueva);
+    }
+
+    private LocalDate calcularFechaNota(OrdenCompra orden, String dia) {
+        java.util.Map<String, Integer> offsets = java.util.Map.of(
+            "martes", 0, "miercoles", 1, "jueves", 2,
+            "viernes", 3, "sabado", 4, "domingo", 5, "lunes", 6
+        );
+        Integer offset = offsets.get(dia);
+        if (offset == null) return orden.getFechaInicioSemana();
+        return orden.getFechaInicioSemana().plusDays(offset);
     }
 
     private Double getCantidadPorDia(OrdenCompraDetalle detalle, String dia) {
@@ -137,6 +161,7 @@ public class NotaVentaService {
     @Transactional
     public DatosDetalleNota actualizarNota(String id, DatosActualizarNota datos) {
         NotaVenta nota = notaVentaValidacionesHelper.notaVentaExiste(id);
+        verificarNotaNoFacturada(nota);
         var partida = partidaValidacionesHelper.validaPartidaExistaString(datos.partida());
         nota.setPartida(partida);
 
@@ -166,6 +191,23 @@ public class NotaVentaService {
     @Transactional
     public void eliminarNota(String id) {
         NotaVenta nota = notaVentaValidacionesHelper.notaVentaExiste(id);
+        verificarNotaNoFacturada(nota);
         nota.setActivo(false);
+    }
+
+    @Transactional
+    public DatosDetalleNota firmarNota(String id) {
+        NotaVenta nota = notaVentaValidacionesHelper.notaVentaExiste(id);
+        nota.setFirmada(true);
+        notaVentaRepository.save(nota);
+        return new DatosDetalleNota(nota);
+    }
+
+    @Transactional
+    public DatosDetalleNota actualizarDetalle(String id, String detalle) {
+        NotaVenta nota = notaVentaValidacionesHelper.notaVentaExiste(id);
+        nota.setDetalle(detalle);
+        notaVentaRepository.save(nota);
+        return new DatosDetalleNota(nota);
     }
 }

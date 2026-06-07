@@ -158,7 +158,23 @@
   letter-spacing: 0.5px;
 }
 
+.admin-menu-item {
+  mat-icon { color: #e53935; }
+  &.active-link {
+    background: #fce4ec !important;
+    mat-icon { color: #c62828; }
+  }
+}
+
 :host-context(body.dark-mode) {
+  .admin-menu-item {
+    mat-icon { color: #ef9a9a; }
+    &.active-link {
+      background: #4a1c1c !important;
+      mat-icon { color: #ef9a9a; }
+    }
+  }
+
   .top-header {
     background: #1a1a2e;
     color: #ffffff;

@@ -18,6 +18,16 @@ Todas las migraciones en `src/main/resources/db/migration/` usando nomenclatura 
 | 10 | `V10__agregar_producto_id_a_orden_compra_detalles.sql` | ALTER para columna `producto_id` FK → productos |
 | 11 | `V11__add_orden_compra_id_to_nota_ventas.sql` | ALTER para columna `orden_compra_id` FK → orden_compras |
 | 12 | `V12__seed_data.sql` | Datos de prueba (categorías, clientes, productos, contratos, órdenes, notas) |
+| 13 | (omitido) | V13 no existe |
+| 14 | `V14__create_usuarios_table.sql` | Tabla `usuarios` con 3 usuarios pre-cargados (BCrypt) |
+| 15 | `V15__create_usuario_permisos_table.sql` | Tabla `usuario_permisos` + permisos pre-cargados |
+| 16 | `V16__add_cliente_general.sql` | Cliente "General" para partidas GENERAL |
+| 17 | `V17__add_unique_constraint_orden_compras.sql` | UNIQUE (cliente_id, partida, fecha_inicio_semana) |
+| 18 | `V18__add_confirmado_to_orden_compras.sql` | Columnas `confirmado_por`, `fecha_confirmacion` |
+| 19 | `V19__add_dia_to_nota_ventas.sql` | Columna `dia` en `nota_ventas` |
+| 20 | `V20__create_nota_cancelaciones.sql` | Tablas `nota_cancelaciones` y `nota_cancelacion_detalles` |
+| 21 | `V21__add_firmada_detalle_to_nota_ventas.sql` | Columnas `firmada` (BOOLEAN), `detalle` (TEXT) en `nota_ventas` |
+| 22 | `V22__create_facturas.sql` | Tablas `facturas` y `factura_detalles` con FK → `orden_compras` |
 
 ## Convenciones SQL
 

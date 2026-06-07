@@ -53,7 +53,7 @@ class AuthControllerTest {
     @Test
     @WithMockUser
     void register_DeberiaRetornar200() throws Exception {
-        var request = new DatosRegistroUsuario("nuevousuario", "password", "USER");
+        var request = new DatosRegistroUsuario("nuevousuario", "password", "USER", null, null, null, null);
         var response = new DatosRespuestaAuth("token-jwt", "nuevousuario", Role.USER, "Bearer");
 
         given(authService.register(any())).willReturn(response);

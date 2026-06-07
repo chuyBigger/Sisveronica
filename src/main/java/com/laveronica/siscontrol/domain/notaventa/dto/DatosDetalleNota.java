@@ -24,7 +24,11 @@ public record DatosDetalleNota(
         @Schema(description = "Total general")
         BigDecimal totalGeneral,
         @Schema(description = "Día de la semana")
-        String dia
+        String dia,
+        @Schema(description = "Está firmada")
+        Boolean firmada,
+        @Schema(description = "Detalle de incidencia")
+        String detalle
 
 ) {
 
@@ -41,7 +45,9 @@ public record DatosDetalleNota(
                         )
                         .collect(Collectors.toList()),
                 datos.getTotalGeneral(),
-                datos.getDia()
+                datos.getDia(),
+                datos.getFirmada(),
+                datos.getDetalle()
         );
     }
 }

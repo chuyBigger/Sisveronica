@@ -104,7 +104,7 @@ class AuthServiceTest {
 
     @Test
     void registerSuccess() {
-        var datos = new DatosRegistroUsuario("nuevo-user", "password123", "USER");
+        var datos = new DatosRegistroUsuario("nuevo-user", "password123", "USER", null, null, null, null);
 
         given(usuarioRepository.existsByUsername("nuevo-user")).willReturn(false);
         given(passwordEncoder.encode("password123")).willReturn("encoded-password");
@@ -127,7 +127,7 @@ class AuthServiceTest {
 
     @Test
     void registerUserAlreadyExistsThrowsRecursoExistenteException() {
-        var datos = new DatosRegistroUsuario("existing-user", "password123", "USER");
+        var datos = new DatosRegistroUsuario("existing-user", "password123", "USER", null, null, null, null);
 
         given(usuarioRepository.existsByUsername("existing-user")).willReturn(true);
 
@@ -138,7 +138,7 @@ class AuthServiceTest {
 
     @Test
     void registerWithDefaultRoleWhenRoleIsNull() {
-        var datos = new DatosRegistroUsuario("new-user", "password123", null);
+        var datos = new DatosRegistroUsuario("new-user", "password123", null, null, null, null, null);
 
         given(usuarioRepository.existsByUsername("new-user")).willReturn(false);
         given(passwordEncoder.encode("password123")).willReturn("encoded");

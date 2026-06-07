@@ -28,7 +28,9 @@ public class UsuarioAdminService {
 
     public List<DatosUsuarioAdmin> listarUsuarios() {
         return usuarioRepository.findAll().stream()
-                .map(u -> new DatosUsuarioAdmin(u.getId(), u.getUsername(), u.getRole().name(), u.getActivo()))
+                .map(u -> new DatosUsuarioAdmin(
+                        u.getId(), u.getUsername(), u.getRole().name(), u.getActivo(),
+                        u.getNombreCompleto(), u.getCorreo(), u.getNumero(), u.getCargo()))
                 .collect(Collectors.toList());
     }
 
@@ -47,6 +49,10 @@ public class UsuarioAdminService {
                 usuario.getUsername(),
                 usuario.getRole().name(),
                 usuario.getActivo(),
+                usuario.getNombreCompleto(),
+                usuario.getCorreo(),
+                usuario.getNumero(),
+                usuario.getCargo(),
                 permisosDto
         );
     }
@@ -63,6 +69,10 @@ public class UsuarioAdminService {
                 passwordEncoder.encode(datos.password()),
                 role
         );
+        usuario.setNombreCompleto(datos.nombreCompleto());
+        usuario.setCorreo(datos.correo());
+        usuario.setNumero(datos.numero());
+        usuario.setCargo(datos.cargo());
 
         usuarioRepository.save(usuario);
 
@@ -92,5 +102,25 @@ public class UsuarioAdminService {
                 .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
         usuario.setActivo(!usuario.getActivo());
         usuarioRepository.save(usuario);
+    }
+
+    @Transactional
+    public DatosUsuarioAdmin actualizarUsuario(String id, DatosActualizarUsuario datos) {
+        Usuario usuario = usuarioRepository.findById(id)
+                .orElseThrow(() -> new ResourceNotFoundException("Usuario no encontrado"));
+        if (datos.nombreCompleto() != null) usuario.setNombreCompleto(datos.nombreCompleto());
+        if (datos.correo() != null) usuario.setCorreo(datos.correo());
+        if (datos.numero() != null) usuario.setNumero(datos.numero());
+        if (datos.cargo() != null) usuario.setCargo(datos.cargo());
+        if (datos.password() != null && !datos.password().isBlank()) {
+            usuario.setPassword(passwordEncoder.encode(datos.password()));
+        }
+        if (datos.role() != null) {
+            usuario.setRole(Role.valueOf(datos.role()));
+        }
+        usuarioRepository.save(usuario);
+        return new DatosUsuarioAdmin(
+                usuario.getId(), usuario.getUsername(), usuario.getRole().name(), usuario.getActivo(),
+                usuario.getNombreCompleto(), usuario.getCorreo(), usuario.getNumero(), usuario.getCargo());
     }
 }

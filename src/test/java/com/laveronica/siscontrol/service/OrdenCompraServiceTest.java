@@ -15,6 +15,8 @@ import com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle;
 import com.laveronica.siscontrol.domain.ordencompradetalle.dto.DatosRegistroOrdenCompraDetalle;
 import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
+import com.laveronica.siscontrol.repositories.FacturaRepository;
+import com.laveronica.siscontrol.repositories.NotaCancelacionRepository;
 import com.laveronica.siscontrol.repositories.NotaVentaRepository;
 import com.laveronica.siscontrol.repositories.OrdenCompraRespository;
 import com.laveronica.siscontrol.services.NotaVentaService;
@@ -37,6 +39,7 @@ import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.List;
+import java.util.Set;
 
 import static org.assertj.core.api.Assertions.assertThat;
 import static org.assertj.core.api.Assertions.assertThatThrownBy;
@@ -70,6 +73,12 @@ class OrdenCompraServiceTest {
 
     @Mock
     private NotaVentaService notaVentaService;
+
+    @Mock
+    private FacturaRepository facturaRepository;
+
+    @Mock
+    private NotaCancelacionRepository notaCancelacionRepository;
 
     @InjectMocks
     private OrdenCompraService ordenCompraService;
@@ -120,6 +129,9 @@ class OrdenCompraServiceTest {
         Page<OrdenCompra> page = new PageImpl<>(List.of(oc), PageRequest.of(0, 9), 1);
 
         given(ordenCompraRespository.findByAndActivoTrue(any())).willReturn(page);
+        given(facturaRepository.findOrdenCompraIdsWithFactura(any())).willReturn(Set.of());
+        given(notaVentaRepository.findNotaCountsByOrdenCompraIds(any())).willReturn(List.of());
+        given(notaCancelacionRepository.findCancelacionCountsByOrdenCompraIds(any())).willReturn(List.of());
 
         Page<DatosListarOrdenCompra> result = ordenCompraService.listarOrdenesCompra(PageRequest.of(0, 9));
 

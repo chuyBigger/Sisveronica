@@ -42,7 +42,7 @@ class UsuarioAdminControllerTest {
     @Test
     @WithMockUser
     void listar_DeberiaRetornar200() throws Exception {
-        var usuario = new DatosUsuarioAdmin("1", "admin", "ADMIN", true);
+        var usuario = new DatosUsuarioAdmin("1", "admin", "ADMIN", true, null, null, null, null);
 
         given(usuarioAdminService.listarUsuarios()).willReturn(List.of(usuario));
 
@@ -54,7 +54,7 @@ class UsuarioAdminControllerTest {
     @Test
     @WithMockUser
     void buscarPorId_DeberiaRetornar200() throws Exception {
-        var usuario = new DatosDetalleUsuario("1", "admin", "ADMIN", true, List.of());
+        var usuario = new DatosDetalleUsuario("1", "admin", "ADMIN", true, null, null, null, null, List.of());
 
         given(usuarioAdminService.buscarUsuario("1")).willReturn(usuario);
 
@@ -66,7 +66,7 @@ class UsuarioAdminControllerTest {
     @Test
     @WithMockUser
     void crear_DeberiaRetornar200() throws Exception {
-        var request = new DatosRegistroUsuario("nuevousuario", "password", "USER");
+        var request = new DatosRegistroUsuario("nuevousuario", "password", "USER", null, null, null, null);
         var response = new DatosRespuestaAuth(null, "nuevousuario", Role.USER, "Bearer");
 
         given(usuarioAdminService.crearUsuario(any())).willReturn(response);

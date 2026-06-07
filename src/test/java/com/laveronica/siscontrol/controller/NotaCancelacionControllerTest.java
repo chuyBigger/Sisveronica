@@ -101,7 +101,7 @@ class NotaCancelacionControllerTest {
     @Test
     @WithMockUser
     void reconstruir_DeberiaRetornar200() throws Exception {
-        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(), BigDecimal.valueOf(100), "lunes");
+        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(), BigDecimal.valueOf(100), "lunes", false, null);
 
         given(cancelacionService.reconstruirNotas("1")).willReturn(List.of(response));
 

@@ -53,7 +53,7 @@ class NotaVentaControllerTest {
         var detalleRegistro = new NotaVentaDetalleRegistro(5, "1");
         var request = new DatosRegistroNota("1", "ABARROTES", List.of(detalleRegistro));
         var detalleListar = new NotaVentaListarDetalle(5, "arroz", BigDecimal.valueOf(20), BigDecimal.valueOf(100));
-        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalleListar), BigDecimal.valueOf(100), "lunes");
+        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalleListar), BigDecimal.valueOf(100), "lunes", false, null);
 
         given(notaVentaService.registrarNota(any())).willReturn(response);
 
@@ -69,7 +69,7 @@ class NotaVentaControllerTest {
     @WithMockUser
     void generarNotaDesdeOrden_DeberiaRetornar200() throws Exception {
         var request = new DatosGenerarNotaDesdeOrden("1", "lunes");
-        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(), BigDecimal.valueOf(100), "lunes");
+        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(), BigDecimal.valueOf(100), "lunes", false, null);
 
         given(notaVentaService.generarNotaDesdeOrden(any())).willReturn(response);
 
@@ -85,7 +85,7 @@ class NotaVentaControllerTest {
     @WithMockUser
     void listar_DeberiaRetornar200() throws Exception {
         var detalle = new NotaVentaListarDetalle(5, "arroz", BigDecimal.valueOf(20), BigDecimal.valueOf(100));
-        var nota = new DatosListarNota("1", 100, LocalDateTime.now(), "Cliente Test", "ABARROTES", List.of(detalle), BigDecimal.valueOf(100), "lunes");
+        var nota = new DatosListarNota("1", 100, LocalDateTime.now(), "Cliente Test", "ABARROTES", List.of(detalle), BigDecimal.valueOf(100), "lunes", false, null);
         Page<DatosListarNota> page = new PageImpl<>(List.of(nota), PageRequest.of(0, 9), 1);
 
         given(notaVentaService.listarNotas(any())).willReturn(page);
@@ -99,7 +99,7 @@ class NotaVentaControllerTest {
     @WithMockUser
     void buscarPorId_DeberiaRetornar200() throws Exception {
         var detalle = new NotaVentaListarDetalle(5, "arroz", BigDecimal.valueOf(20), BigDecimal.valueOf(100));
-        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalle), BigDecimal.valueOf(100), "lunes");
+        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalle), BigDecimal.valueOf(100), "lunes", false, null);
 
         given(notaVentaService.buscarNotaId("1")).willReturn(response);
 
@@ -114,7 +114,7 @@ class NotaVentaControllerTest {
         var detalleActualizar = new NotaVentaActualizarDetalle(10, "1");
         var request = new DatosActualizarNota("ABARROTES", List.of(detalleActualizar));
         var detalleListar = new NotaVentaListarDetalle(10, "arroz", BigDecimal.valueOf(20), BigDecimal.valueOf(200));
-        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalleListar), BigDecimal.valueOf(200), "lunes");
+        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(detalleListar), BigDecimal.valueOf(200), "lunes", false, null);
 
         given(notaVentaService.actualizarNota(any(), any())).willReturn(response);
 

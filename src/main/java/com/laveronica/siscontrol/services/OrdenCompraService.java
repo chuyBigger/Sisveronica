@@ -14,6 +14,8 @@ import com.laveronica.siscontrol.domain.ordencompra.dto.DatosDetalleOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosRegistroOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle;
 import com.laveronica.siscontrol.enums.Partida;
+import com.laveronica.siscontrol.repositories.FacturaRepository;
+import com.laveronica.siscontrol.repositories.NotaCancelacionRepository;
 import com.laveronica.siscontrol.repositories.NotaVentaRepository;
 import com.laveronica.siscontrol.repositories.OrdenCompraRespository;
 import com.laveronica.siscontrol.utils.helpers.ClienteValidacionesHelper;
@@ -29,7 +31,10 @@ import org.springframework.stereotype.Service;
 
 import java.time.LocalDate;
 import java.time.LocalDateTime;
+import java.util.HashMap;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
@@ -59,6 +64,12 @@ public class OrdenCompraService {
     @Autowired
     private NotaVentaService notaVentaService;
 
+    @Autowired
+    private FacturaRepository facturaRepository;
+
+    @Autowired
+    private NotaCancelacionRepository notaCancelacionRepository;
+
     public DatosDetalleOrdenCompra registrarOrdenCompra(@Valid DatosRegistroOrdenCompra datos) {
         Partida partida = partidaValidacionesHelper.validaPartidaExistaString(datos.partida());
         ordenCompraValidacionesHelper.validaOrdenCompraExiste(datos.cliente_id(), datos.fechaInicioSemana(), partida);
@@ -73,13 +84,62 @@ public class OrdenCompraService {
     }
 
     public Page<DatosListarOrdenCompra> listarOrdenesCompra(Pageable paginacion) {
-        return ordenCompraRespository.findByAndActivoTrue(paginacion)
-                .map(DatosListarOrdenCompra::new);
+        Page<OrdenCompra> page = ordenCompraRespository.findByAndActivoTrue(paginacion);
+        return attachFacturaStatus(page);
     }
 
     public Page<DatosListarOrdenCompra> listarOrdenesCompraPorFecha(LocalDate fecha, Pageable paginacion) {
-        return ordenCompraRespository.findByFechaInPeriodo(fecha, paginacion)
-                .map(DatosListarOrdenCompra::new);
+        Page<OrdenCompra> page = ordenCompraRespository.findByFechaInPeriodo(fecha, paginacion);
+        return attachFacturaStatus(page);
+    }
+
+    private Page<DatosListarOrdenCompra> attachFacturaStatus(Page<OrdenCompra> page) {
+        Set<String> ocIds = page.stream().map(OrdenCompra::getId).collect(Collectors.toSet());
+        if (ocIds.isEmpty()) {
+            return page.map(oc -> new DatosListarOrdenCompra(oc, false, "PENDIENTE", 0L, 0L, 0L, 0L));
+        }
+        Set<String> idsConFactura = facturaRepository.findOrdenCompraIdsWithFactura(ocIds);
+
+        Map<String, Long[]> notaCounts = new HashMap<>();
+        for (Object[] row : notaVentaRepository.findNotaCountsByOrdenCompraIds(ocIds)) {
+            String id = (String) row[0];
+            Long total = (Long) row[1];
+            Long firmadas = row[2] != null ? (Long) row[2] : 0L;
+            notaCounts.put(id, new Long[]{total, firmadas});
+        }
+
+        Map<String, Long[]> cancelCounts = new HashMap<>();
+        for (Object[] row : notaCancelacionRepository.findCancelacionCountsByOrdenCompraIds(ocIds)) {
+            String id = (String) row[0];
+            Long total = (Long) row[1];
+            Long validadas = row[2] != null ? (Long) row[2] : 0L;
+            cancelCounts.put(id, new Long[]{total, validadas});
+        }
+
+        return page.map(oc -> {
+            String id = oc.getId();
+            boolean tieneFactura = idsConFactura.contains(id);
+            Long[] nc = notaCounts.getOrDefault(id, new Long[]{0L, 0L});
+            Long[] cc = cancelCounts.getOrDefault(id, new Long[]{0L, 0L});
+            Long totalNotas = nc[0], notasFirmadas = nc[1];
+            Long totalCancel = cc[0], cancelValidadas = cc[1];
+
+            String estado;
+            if (tieneFactura) {
+                estado = "PREFACTURA";
+            } else if (oc.getConfirmadoPor() == null) {
+                estado = "PENDIENTE";
+            } else if (notasFirmadas < totalNotas) {
+                estado = "FIRMAS_PENDIENTES";
+            } else if (cancelValidadas < totalCancel) {
+                estado = "CANCELACIONES_PENDIENTES";
+            } else {
+                estado = "LISTO";
+            }
+
+            return new DatosListarOrdenCompra(oc, tieneFactura, estado,
+                    totalNotas, notasFirmadas, totalCancel, cancelValidadas);
+        });
     }
 
     public DatosDetalleOrdenCompra buscarOrdenCompraId(String id) {
@@ -135,7 +195,10 @@ public class OrdenCompraService {
 
     @Transactional
     public List<DatosDetalleNota> generarTodasNotas(String ordenId) {
-        ordenCompraValidacionesHelper.buscarOrdenCompraId(ordenId);
+        OrdenCompra oc = ordenCompraValidacionesHelper.buscarOrdenCompraId(ordenId);
+        if (facturaRepository.existsByOrdenCompraIdAndActivoTrue(oc.getId())) {
+            throw new RuntimeException("La orden de compra ya tiene una factura generada. No se pueden crear nuevas notas.");
+        }
         String[] dias = {"lunes", "martes", "miercoles", "jueves", "viernes", "sabado", "domingo"};
         List<DatosDetalleNota> notas = new java.util.ArrayList<>();
         for (String dia : dias) {

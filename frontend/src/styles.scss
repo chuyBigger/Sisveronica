@@ -139,6 +139,57 @@ table {
   width: 100%;
 }
 
+/* === Estado badges for OC list === */
+.factura-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.factura-badge mat-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+.factura-badge.listo {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.factura-badge.prefactura {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.factura-badge.firmas-pendientes {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.factura-badge.cancel-pendientes {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.factura-badge.pendiente {
+  background: #eeeeee;
+  color: #616161;
+}
+
+.btn-facturar {
+  color: #2e7d32 !important;
+}
+
+.btn-facturar:hover {
+  background: rgba(46, 125, 50, 0.12) !important;
+}
+
 @media print {
   /* === Detalle page: show only #print-area === */
   body.printing-detalle, body.printing-detalle * { visibility: hidden; }

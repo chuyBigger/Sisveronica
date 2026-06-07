@@ -8,6 +8,10 @@ public record DatosUsuarioAdmin(
         String id,
         String username,
         String role,
-        Boolean activo
+        Boolean activo,
+        String nombreCompleto,
+        String correo,
+        String numero,
+        String cargo
 ) {
 }

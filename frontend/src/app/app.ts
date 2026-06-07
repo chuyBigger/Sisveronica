@@ -7,6 +7,7 @@ import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatButtonModule } from '@angular/material/button';
 import { MatMenuModule } from '@angular/material/menu';
 import { MatTooltipModule } from '@angular/material/tooltip';
+import { MatDividerModule } from '@angular/material/divider';
 import { CommonModule } from '@angular/common';
 import { AuthService } from './services/auth.service';
 
@@ -24,6 +25,7 @@ import { AuthService } from './services/auth.service';
     MatButtonModule,
     MatMenuModule,
     MatTooltipModule,
+    MatDividerModule,
   ],
   templateUrl: './app.html',
   styleUrl: './app.scss',
@@ -46,6 +48,10 @@ export class App implements OnInit, OnDestroy {
     { path: '/contratos', icon: 'description', label: 'Contratos' },
     { path: '/notaventas', icon: 'receipt', label: 'Notas de Venta' },
     { path: '/ordenes-compra', icon: 'shopping_cart', label: 'Órdenes de Compra' },
+  ];
+
+  adminMenuItems = [
+    { path: '/admin/super', icon: 'admin_panel_settings', label: 'Super Admin' },
   ];
 
   ngOnInit(): void {

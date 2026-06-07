@@ -45,6 +45,17 @@
             }
           </a>
         }
+        @if (authService.isAdmin()) {
+          <mat-divider></mat-divider>
+          @for (item of adminMenuItems; track item.path) {
+            <a mat-list-item [routerLink]="item.path" routerLinkActive="active-link" #rla="routerLinkActive" [activated]="rla.isActive" [matTooltip]="!sidebarOpen ? item.label : ''" class="admin-menu-item">
+              <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+              @if (sidebarOpen) {
+                <span matListItemTitle>{{ item.label }}</span>
+              }
+            </a>
+          }
+        }
       </mat-nav-list>
       @if (authService.currentUser$ | async; as user) {
         <div class="user-section" [class.collapsed]="!sidebarOpen">

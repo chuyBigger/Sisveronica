@@ -62,6 +62,12 @@ public class NotaVenta {
     @Column(length = 10)
     private String dia;
 
+    @Column(nullable = false)
+    private Boolean firmada = false;
+
+    @Column(columnDefinition = "TEXT")
+    private String detalle;
+
     public void agregarDetalles(NotaVentaDetalle detalle) {
         detalles.add(detalle);
         detalle.setNotaVenta(this);

@@ -31,6 +31,15 @@ public class Usuario {
     @Column(nullable = false)
     private Boolean activo;
 
+    @Column(name = "nombre_completo")
+    private String nombreCompleto;
+
+    private String correo;
+
+    private String numero;
+
+    private String cargo;
+
     public Usuario(String username, String password, Role role) {
         this.username = username;
         this.password = password;

@@ -74,7 +74,7 @@ class OrdenCompraControllerTest {
     @WithMockUser
     void listar_DeberiaRetornar200() throws Exception {
         var detalle = new DatosListarDetalleOrdenCompraDetalle("1", "1", 1.0, 2.0, 1.0, 2.0, 1.0, 0.0, 0.0);
-        var orden = new DatosListarOrdenCompra("1", "Cliente Test", "CON-001", "ABARROTES", LocalDate.now(), List.of(detalle));
+        var orden = new DatosListarOrdenCompra("1", "Cliente Test", "CON-001", "ABARROTES", LocalDate.now(), List.of(detalle), null, null, false, "PENDIENTE", 0L, 0L, 0L, 0L);
         Page<DatosListarOrdenCompra> page = new PageImpl<>(List.of(orden), PageRequest.of(0, 9), 1);
 
         given(ordenCompraService.listarOrdenesCompra(any())).willReturn(page);
@@ -143,7 +143,7 @@ class OrdenCompraControllerTest {
     @WithMockUser
     void listarNotasPorOrden_DeberiaRetornar200() throws Exception {
         var detalle = new NotaVentaListarDetalle(5, "arroz", BigDecimal.valueOf(20), BigDecimal.valueOf(100));
-        var nota = new DatosListarNota("1", 100, LocalDateTime.now(), "Cliente Test", "ABARROTES", List.of(detalle), BigDecimal.valueOf(100), "lunes");
+        var nota = new DatosListarNota("1", 100, LocalDateTime.now(), "Cliente Test", "ABARROTES", List.of(detalle), BigDecimal.valueOf(100), "lunes", false, null);
 
         given(ordenCompraService.listarNotasPorOrden("1")).willReturn(List.of(nota));
 
@@ -155,7 +155,7 @@ class OrdenCompraControllerTest {
     @Test
     @WithMockUser
     void generarTodasNotas_DeberiaRetornar200() throws Exception {
-        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(), BigDecimal.valueOf(100), "lunes");
+        var response = new DatosDetalleNota("1", 100, LocalDateTime.now(), "Cliente Test", Partida.ABARROTES, List.of(), BigDecimal.valueOf(100), "lunes", false, null);
 
         given(ordenCompraService.generarTodasNotas("1")).willReturn(List.of(response));
 

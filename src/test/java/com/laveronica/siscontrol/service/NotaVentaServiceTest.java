@@ -17,6 +17,7 @@ import com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle;
 import com.laveronica.siscontrol.domain.productos.Producto;
 import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
+import com.laveronica.siscontrol.repositories.FacturaRepository;
 import com.laveronica.siscontrol.repositories.NotaVentaRepository;
 import com.laveronica.siscontrol.repositories.OrdenCompraRespository;
 import com.laveronica.siscontrol.services.NotaVentaDetalleService;
@@ -68,6 +69,9 @@ class NotaVentaServiceTest {
 
     @Mock
     private NotaVentaValidacionesHelper notaVentaValidacionesHelper;
+
+    @Mock
+    private FacturaRepository facturaRepository;
 
     @InjectMocks
     private NotaVentaService notaVentaService;
@@ -239,6 +243,7 @@ class NotaVentaServiceTest {
         orden.setContrato(contrato);
         orden.setPartida(Partida.ABARROTES);
         orden.setDetalles(List.of(detalleOC));
+        orden.setFechaInicioSemana(java.time.LocalDate.of(2026, 6, 1));
 
         given(ordenCompraRespository.findByIdAndActivoTrue("orden-1")).willReturn(Optional.of(orden));
         given(notaVentaRepository.findMaxFolio()).willReturn(0);

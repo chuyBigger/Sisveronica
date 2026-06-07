@@ -91,7 +91,37 @@ public class NotaCancelacionService {
         nc.setValidadoPor(username);
         nc.setFechaValidacion(LocalDateTime.now());
         cancelacionRepository.save(nc);
+
+        aplicarCancelacionANota(nc);
         return new DatosListarCancelacion(nc);
+    }
+
+    private void aplicarCancelacionANota(NotaCancelacion nc) {
+        NotaVenta nota = notaVentaRepository
+                .findByOrdenCompraIdAndDiaAndActivoTrue(
+                        nc.getOrdenCompra().getId(), nc.getDia())
+                .orElse(null);
+        if (nota == null) return;
+
+        for (NotaCancelacionDetalle detCancel : nc.getDetalles()) {
+            String prodCancelId = detCancel.getProducto().getId();
+            double cancelQty = detCancel.getCantidadCancelada();
+
+            nota.getDetalles().removeIf(detNota -> {
+                if (detNota.getProducto().getId().equals(prodCancelId)) {
+                    int nuevaCant = detNota.getCantidad() - (int) Math.round(cancelQty);
+                    if (nuevaCant <= 0) return true;
+                    detNota.setCantidad(nuevaCant);
+                    detNota.setSubTotal(detNota.getPrecioVenta().multiply(new BigDecimal(nuevaCant)));
+                    return false;
+                }
+                return false;
+            });
+        }
+
+        BigDecimal nuevoTotal = notaVentaDetalleService.calcularTotalGeneral(nota.getDetalles());
+        nota.setTotalGeneral(nuevoTotal);
+        notaVentaRepository.save(nota);
     }
 
     @Transactional
