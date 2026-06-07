@@ -1,5 +1,7 @@
 package com.laveronica.siscontrol.controller;
 
+import com.laveronica.siscontrol.enums.Accion;
+import com.laveronica.siscontrol.enums.Modulo;
 import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.enums.UnidadMedida;
 import io.swagger.v3.oas.annotations.Operation;
@@ -29,5 +31,17 @@ public class EnumsController {
     @Operation(summary = "Listar unidades de medida")
     public ResponseEntity<List<String>> listarUnidadesMedida() {
         return ResponseEntity.ok(Arrays.stream(UnidadMedida.values()).map(Enum::name).toList());
+    }
+
+    @GetMapping("/modulos")
+    @Operation(summary = "Listar módulos del sistema")
+    public ResponseEntity<List<String>> listarModulos() {
+        return ResponseEntity.ok(Arrays.stream(Modulo.values()).map(Enum::name).toList());
+    }
+
+    @GetMapping("/acciones")
+    @Operation(summary = "Listar acciones del sistema")
+    public ResponseEntity<List<String>> listarAcciones() {
+        return ResponseEntity.ok(Arrays.stream(Accion.values()).map(Enum::name).toList());
     }
 }

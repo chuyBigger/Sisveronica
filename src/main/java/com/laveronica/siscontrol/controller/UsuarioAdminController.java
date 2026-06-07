@@ -54,4 +54,10 @@ public class UsuarioAdminController {
         usuarioAdminService.toggleUsuario(id);
         return ResponseEntity.noContent().build();
     }
+
+    @PatchMapping("/{id}")
+    @Operation(summary = "Actualizar perfil de usuario")
+    public ResponseEntity<DatosUsuarioAdmin> actualizar(@PathVariable String id, @RequestBody DatosActualizarUsuario datos) {
+        return ResponseEntity.ok(usuarioAdminService.actualizarUsuario(id, datos));
+    }
 }

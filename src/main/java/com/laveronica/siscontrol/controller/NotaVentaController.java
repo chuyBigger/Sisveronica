@@ -18,6 +18,8 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
 
+import java.util.Map;
+
 @RestController
 @RequestMapping("/notaventas")
 @Tag(name = "Notas de Venta")
@@ -68,6 +70,20 @@ public class NotaVentaController {
     public ResponseEntity<Void> eliminarNota(@PathVariable String id){
         notaVentaService.eliminarNota(id);
         return ResponseEntity.noContent().build();
+    }
+
+    @PostMapping("/{id}/firmar")
+    @Operation(summary = "Firmar nota de venta")
+    public ResponseEntity<DatosDetalleNota> firmarNota(@PathVariable String id) {
+        var nota = notaVentaService.firmarNota(id);
+        return ResponseEntity.ok(nota);
+    }
+
+    @PatchMapping("/{id}/detalle")
+    @Operation(summary = "Actualizar detalle de incidencia")
+    public ResponseEntity<DatosDetalleNota> actualizarDetalle(@PathVariable String id, @RequestBody Map<String, String> body) {
+        var nota = notaVentaService.actualizarDetalle(id, body.getOrDefault("detalle", null));
+        return ResponseEntity.ok(nota);
     }
 
 }
