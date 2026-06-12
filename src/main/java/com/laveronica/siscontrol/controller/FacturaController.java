@@ -54,4 +54,22 @@ public class FacturaController {
             .map(ResponseEntity::ok)
             .orElse(ResponseEntity.notFound().build());
     }
+
+    @PostMapping("/extras")
+    @Operation(summary = "Generar factura de extras para una orden de compra")
+    public ResponseEntity<DatosListarFactura> generarFacturaExtras(
+        @Valid @RequestBody DatosRegistroFactura dto) {
+        DatosListarFactura factura = facturaService.generarFacturaExtras(dto);
+        return ResponseEntity.created(URI.create("/facturas/" + factura.id()))
+            .body(factura);
+    }
+
+    @GetMapping("/extras/por-orden/{ordenCompraId}")
+    @Operation(summary = "Obtener factura de extras por ID de orden de compra")
+    public ResponseEntity<DatosListarFactura> obtenerFacturaExtrasPorOrdenCompraId(
+        @PathVariable String ordenCompraId) {
+        return facturaService.obtenerFacturaExtrasPorOrdenCompraId(ordenCompraId)
+            .map(ResponseEntity::ok)
+            .orElse(ResponseEntity.notFound().build());
+    }
 }

@@ -45,6 +45,10 @@ public class Factura {
     @Column(name = "total_general", nullable = false)
     private BigDecimal totalGeneral;
 
+    @Column(name = "es_extras", nullable = false)
+    @Builder.Default
+    private Boolean esExtras = false;
+
     @Column(nullable = false)
     private Boolean activo;
 

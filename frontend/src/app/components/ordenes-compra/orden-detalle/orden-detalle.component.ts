@@ -10,10 +10,13 @@ import { MatDialog, MatDialogModule } from '@angular/material/dialog';
 import { MatTooltipModule } from '@angular/material/tooltip';
 import { OrdenCompraService } from '../../../services/ordencompra.service';
 import { CancelacionService } from '../../../services/cancelacion.service';
+import { ExtraService } from '../../../services/extra.service';
 import { DatosDetalleOrdenCompra } from '../../../models/ordencompra.model';
 import { DatosListarCancelacion } from '../../../models/cancelacion.model';
+import { DatosListarExtra } from '../../../models/extra.model';
 import { NotaVentaPreviewDialogComponent } from '../../notaventas/notaventa-preview-dialog.component';
 import { CancelacionFormDialogComponent, CancelacionFormData } from '../cancelacion-form-dialog.component';
+import { ExtraFormDialogComponent } from '../extra-form-dialog.component';
 import { FacturaService } from '../../../services/factura.service';
 import { Factura } from '../../../models/factura.model';
 
@@ -32,6 +35,7 @@ export class OrdenDetalleComponent implements OnInit {
   private router = inject(Router);
   private ordenService = inject(OrdenCompraService);
   private cancelacionService = inject(CancelacionService);
+  private extraService = inject(ExtraService);
   private facturaService = inject(FacturaService);
   private snackBar = inject(MatSnackBar);
   private dialog = inject(MatDialog);
@@ -40,10 +44,13 @@ export class OrdenDetalleComponent implements OnInit {
   orden!: DatosDetalleOrdenCompra;
   notas: any[] = [];
   cancelaciones: DatosListarCancelacion[] = [];
+  extras: DatosListarExtra[] = [];
   factura: Factura | null = null;
+  facturaExtras: Factura | null = null;
   cargando = true;
   generando = false;
   generandoFactura = false;
+  generandoFacturaExtras = false;
   reconstruyendo = false;
 
   readonly dias = ['lunes', 'martes', 'miercoles', 'jueves', 'viernes', 'sabado', 'domingo'];
@@ -56,7 +63,9 @@ export class OrdenDetalleComponent implements OnInit {
       this.cargarOrden(id);
       this.cargarNotas(id);
       this.cargarCancelaciones(id);
+      this.cargarExtras(id);
       this.cargarFactura(id);
+      this.cargarFacturaExtras(id);
     }
   }
 
@@ -89,6 +98,15 @@ export class OrdenDetalleComponent implements OnInit {
     this.cancelacionService.listarPorOrden(id).subscribe({
       next: (res) => {
         this.cancelaciones = res ?? [];
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
+  private cargarExtras(id: string): void {
+    this.extraService.listarPorOrden(id).subscribe({
+      next: (res) => {
+        this.extras = res ?? [];
         this.cdr.detectChanges();
       },
     });
@@ -191,6 +209,41 @@ export class OrdenDetalleComponent implements OnInit {
     }
   }
 
+  abrirCrearExtra(): void {
+    const dialogRef = this.dialog.open(ExtraFormDialogComponent, {
+      data: { orden: this.orden },
+      width: '600px',
+      maxWidth: '95vw',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'saved') this.cargarExtras(this.orden.id);
+    });
+  }
+
+  firmarExtra(id: string): void {
+    if (confirm('¿Firmar este extra? Esta acción no se puede deshacer.')) {
+      this.extraService.firmar(id).subscribe({
+        next: () => {
+          this.snackBar.open('Extra firmado', 'Cerrar', { duration: 2000 });
+          this.cargarExtras(this.orden.id);
+        },
+        error: () => this.snackBar.open('Error al firmar extra', 'Cerrar', { duration: 3000 }),
+      });
+    }
+  }
+
+  eliminarExtra(id: string): void {
+    if (confirm('¿Eliminar este extra?')) {
+      this.extraService.eliminar(id).subscribe({
+        next: () => {
+          this.snackBar.open('Extra eliminado', 'Cerrar', { duration: 2000 });
+          this.cargarExtras(this.orden.id);
+        },
+        error: () => this.snackBar.open('Error al eliminar extra', 'Cerrar', { duration: 3000 }),
+      });
+    }
+  }
+
   reconstruirNotas(): void {
     if (this.reconstruyendo) return;
     if (!confirm('¿Reconstruir notas afectadas por cancelaciones?')) return;
@@ -222,12 +275,31 @@ export class OrdenDetalleComponent implements OnInit {
     });
   }
 
+  private cargarFacturaExtras(id: string): void {
+    this.facturaService.obtenerFacturaExtrasPorOrdenCompraId(id).subscribe({
+      next: (res) => {
+        this.facturaExtras = res;
+        this.cdr.detectChanges();
+      },
+      error: () => {
+        this.facturaExtras = null;
+        this.cdr.detectChanges();
+      },
+    });
+  }
+
   get puedeGenerarFactura(): boolean {
     if (!this.orden?.confirmadoPor) return false;
     if (this.notas.length === 0) return false;
     const todasFirmadas = this.notas.every(n => n.firmada);
     const cancelacionesValidadas = this.cancelaciones.every(c => !!c.validadoPor);
     return todasFirmadas && cancelacionesValidadas;
+  }
+
+  get puedeGenerarFacturaExtras(): boolean {
+    if (!this.orden?.confirmadoPor) return false;
+    if (this.extras.length === 0) return false;
+    return this.extras.every(e => e.firmada);
   }
 
   generarFactura(): void {
@@ -245,6 +317,25 @@ export class OrdenDetalleComponent implements OnInit {
         const msg = err.error?.message || 'Error al generar factura';
         this.snackBar.open(msg, 'Cerrar', { duration: 5000 });
         this.generandoFactura = false;
+      },
+    });
+  }
+
+  generarFacturaExtras(): void {
+    if (this.generandoFacturaExtras || !this.puedeGenerarFacturaExtras) return;
+    if (!confirm('¿Generar factura de extras para esta orden de compra?')) return;
+    this.generandoFacturaExtras = true;
+    this.facturaService.generarExtras({ ordenCompraId: this.orden.id }).subscribe({
+      next: (res) => {
+        this.facturaExtras = res;
+        this.snackBar.open(`Factura de Extras #${res.folio} generada exitosamente`, 'Cerrar', { duration: 3000 });
+        this.generandoFacturaExtras = false;
+        this.cdr.detectChanges();
+      },
+      error: (err) => {
+        const msg = err.error?.message || 'Error al generar factura de extras';
+        this.snackBar.open(msg, 'Cerrar', { duration: 5000 });
+        this.generandoFacturaExtras = false;
       },
     });
   }

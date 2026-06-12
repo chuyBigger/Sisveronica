@@ -15,6 +15,7 @@ export interface Factura {
   partida: string;
   fechaCreacion: string;
   totalGeneral: number;
+  esExtras?: boolean;
   detalles: FacturaDetalle[];
 }
 

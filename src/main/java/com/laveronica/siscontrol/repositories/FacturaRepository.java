@@ -16,7 +16,15 @@ public interface FacturaRepository extends JpaRepository<Factura, String> {
 
     Optional<Factura> findByOrdenCompraIdAndActivoTrue(String ordenCompraId);
 
+    Optional<Factura> findByOrdenCompraIdAndActivoTrueAndEsExtrasFalse(String ordenCompraId);
+
+    Optional<Factura> findByOrdenCompraIdAndActivoTrueAndEsExtrasTrue(String ordenCompraId);
+
     boolean existsByOrdenCompraIdAndActivoTrue(String ordenCompraId);
+
+    boolean existsByOrdenCompraIdAndActivoTrueAndEsExtrasFalse(String ordenCompraId);
+
+    boolean existsByOrdenCompraIdAndActivoTrueAndEsExtrasTrue(String ordenCompraId);
 
     List<Factura> findByActivoTrueOrderByFechaCreacionDesc();
 

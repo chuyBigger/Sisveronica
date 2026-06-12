@@ -143,6 +143,58 @@
       </mat-card-content>
     </mat-card>
 
+    <!-- EXTRAS -->
+    <mat-card class="extras-card" [class.extras-bloqueadas]="!!factura">
+      <mat-card-header>
+        <mat-card-title>Extras</mat-card-title>
+        <div class="header-actions">
+          @if (facturaExtras) {
+            <button mat-stroked-button disabled>
+              <mat-icon>lock</mat-icon> Bloqueados
+            </button>
+          } @else {
+            <button mat-stroked-button color="accent" (click)="abrirCrearExtra()" [disabled]="!orden.confirmadoPor">
+              <mat-icon>add_circle</mat-icon> Nuevo Extra
+            </button>
+          }
+        </div>
+      </mat-card-header>
+      <mat-card-content>
+        @if (extras.length === 0) {
+          <p class="sin-datos">No hay extras registrados.</p>
+        }
+        <div class="extras-grid">
+          @for (extra of extras; track extra.id) {
+            <mat-card class="extra-mini" [class.firmada]="extra.firmada">
+              <mat-card-header>
+                <mat-icon mat-card-avatar>{{ extra.firmada ? 'verified' : 'add_circle_outline' }}</mat-icon>
+                <mat-card-title>{{ extra.dia }} — Folio #{{ extra.folio }}</mat-card-title>
+                <mat-card-subtitle>{{ extra.fecha | date:'dd/MM/yyyy' }} — {{ extra.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</mat-card-subtitle>
+              </mat-card-header>
+              <mat-card-content>
+                <p class="extra-creado">Creado por: {{ extra.creadoPor }}</p>
+                <ul class="extra-detalles">
+                  @for (d of extra.detalles; track d.id) {
+                    <li>{{ d.productoNombre }}: {{ d.cantidad }}</li>
+                  }
+                </ul>
+              </mat-card-content>
+              <mat-card-actions>
+                @if (!extra.firmada) {
+                  <button mat-button color="accent" (click)="firmarExtra(extra.id)">
+                    <mat-icon>check_circle</mat-icon> Firmar
+                  </button>
+                  <button mat-button color="warn" (click)="eliminarExtra(extra.id)">
+                    <mat-icon>delete</mat-icon> Eliminar
+                  </button>
+                }
+              </mat-card-actions>
+            </mat-card>
+          }
+        </div>
+      </mat-card-content>
+    </mat-card>
+
     <!-- NOTAS DE VENTA -->
     <mat-card class="notas-card" [class.notas-bloqueadas]="!!factura">
       <mat-card-header>
@@ -200,6 +252,11 @@
               <mat-icon>description</mat-icon> {{ generandoFactura ? 'Generando...' : 'Generar Factura' }}
             </button>
           }
+          @if (!facturaExtras && puedeGenerarFacturaExtras) {
+            <button mat-raised-button color="accent" (click)="generarFacturaExtras()" [disabled]="generandoFacturaExtras">
+              <mat-icon>add_chart</mat-icon> {{ generandoFacturaExtras ? 'Generando...' : 'Facturar Extras' }}
+            </button>
+          }
         </div>
       </mat-card-header>
       <mat-card-content>
@@ -239,21 +296,67 @@
               </table>
             </div>
           </div>
-        } @else if (orden.confirmadoPor) {
-          @if (notas.length > 0 && !puedeGenerarFactura) {
-            <p class="sin-datos factura-pendiente">
-              <mat-icon>info</mat-icon>
-              @if (!notas.every(n => n.firmada)) {
-                <span>Faltan notas por firmar.</span>
-              }
-              @if (!cancelaciones.every(c => !!c.validadoPor)) {
-                <span>Hay cancelaciones sin validar.</span>
-              }
-            </p>
-          } @else {
-            <p class="sin-datos">Presiona "Generar Factura" para crear la factura/prefactura.</p>
-          }
         } @else {
+          <p class="sin-datos">Confirma la orden y genera las notas primero.</p>
+        }
+
+        @if (facturaExtras) {
+          <mat-divider class="extras-divider"></mat-divider>
+          <div class="factura-info">
+            <div class="factura-header extras-header">
+              <span class="factura-folio">Factura de Extras #{{ facturaExtras.folio }}</span>
+              <span class="factura-fecha">{{ facturaExtras.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</span>
+            </div>
+            <mat-divider></mat-divider>
+            <div class="table-wrapper">
+              <table>
+                <thead>
+                  <tr>
+                    <th class="col-prod">Producto</th>
+                    <th class="col-cant">Cantidad</th>
+                    <th class="col-precio">Precio/U</th>
+                    <th class="col-subtotal">Subtotal</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  @for (d of facturaExtras.detalles; track d.id) {
+                    <tr>
+                      <td class="col-prod">{{ d.productoNombre }}</td>
+                      <td class="col-cant">{{ d.cantidadTotal }}</td>
+                      <td class="col-precio">{{ d.precioVenta | currency:'MXN':'symbol':'1.2-2' }}</td>
+                      <td class="col-subtotal">{{ d.subtotal | currency:'MXN':'symbol':'1.2-2' }}</td>
+                    </tr>
+                  }
+                </tbody>
+                <tfoot>
+                  <tr>
+                    <th colspan="3">Total General (Extras)</th>
+                    <th>{{ facturaExtras.totalGeneral | currency:'MXN':'symbol':'1.2-2' }}</th>
+                  </tr>
+                </tfoot>
+              </table>
+            </div>
+          </div>
+        }
+
+        @if (!factura && !facturaExtras && orden.confirmadoPor) {
+          <p class="sin-datos factura-pendiente">
+            <mat-icon>info</mat-icon>
+            @if (notas.length > 0 && !this.notas.every(n => n.firmada)) {
+              <span>Faltan notas por firmar.</span>
+            }
+            @if (cancelaciones.length > 0 && !cancelaciones.every(c => !!c.validadoPor)) {
+              <span>Hay cancelaciones sin validar.</span>
+            }
+            @if (extras.length > 0 && !extras.every(e => e.firmada)) {
+              <span>Hay extras sin firmar.</span>
+            }
+            @if (notas.length === 0) {
+              <span>Genera las notas de venta primero.</span>
+            }
+          </p>
+        }
+        @if (!factura && !facturaExtras && !orden.confirmadoPor) {
           <p class="sin-datos">Confirma la orden de compra primero.</p>
         }
       </mat-card-content>

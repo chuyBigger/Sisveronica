@@ -14,6 +14,7 @@ public record DatosListarFactura(
     String partida,
     LocalDateTime fechaCreacion,
     BigDecimal totalGeneral,
+    Boolean esExtras,
     List<DatosFacturaDetalle> detalles
 ) {
     public DatosListarFactura(Factura f) {
@@ -26,6 +27,7 @@ public record DatosListarFactura(
             f.getPartida(),
             f.getFechaCreacion(),
             f.getTotalGeneral(),
+            f.getEsExtras(),
             f.getDetalles().stream().map(DatosFacturaDetalle::new).toList()
         );
     }
