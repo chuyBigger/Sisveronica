@@ -1,0 +1,54 @@
+version: "3.8"
+
+services:
+  mysql:
+    image: mysql:8.0
+    platform: linux/arm64
+    container_name: sisveronica-mysql
+    restart: unless-stopped
+    environment:
+      MYSQL_ROOT_PASSWORD: ${DB_PASS?Variable DB_PASS requerida}
+      MYSQL_DATABASE: sis_veronica
+    volumes:
+      - mysql_data:/var/lib/mysql
+    networks:
+      - sisveronica-net
+    healthcheck:
+      test: ["CMD", "mysqladmin", "ping", "-h", "localhost"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+
+  backend:
+    image: chuycode/sistemveronica-backend:latest
+    platform: linux/arm64
+    container_name: sisveronica-backend
+    restart: unless-stopped
+    depends_on:
+      mysql:
+        condition: service_healthy
+    environment:
+      DB_SVERO_URL: mysql://sisveronica-mysql:3306/sis_veronica
+      DB_USER_NAME: root
+      DB_PASS: ${DB_PASS?Variable DB_PASS requerida}
+    networks:
+      - sisveronica-net
+
+  frontend:
+    image: chuycode/sistemveronica-frontend:latest
+    platform: linux/arm64
+    container_name: sisveronica-frontend
+    restart: unless-stopped
+    ports:
+      - "80:80"
+    depends_on:
+      - backend
+    networks:
+      - sisveronica-net
+
+networks:
+  sisveronica-net:
+    driver: bridge
+
+volumes:
+  mysql_data:
