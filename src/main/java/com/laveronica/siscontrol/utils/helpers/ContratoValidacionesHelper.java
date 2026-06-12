@@ -19,7 +19,7 @@ public class ContratoValidacionesHelper {
     @Autowired
     private StringValidacionesHelper stringValidacionesHelper;
 
-    public Contrato validaContratoExisteId(Long id){
+    public Contrato validaContratoExisteId(String id){
         return contratoRepository.findByIdAndActivoTrue(id).orElseThrow(
                 () -> new ResourceNotFoundException("⚠️ No se encontro el contrato  o no existe...")
         );
@@ -33,7 +33,7 @@ public class ContratoValidacionesHelper {
         }
     }
 
-    public DatosDetalleContrato buscarContratoExisteId(@Valid Long id) {
+    public DatosDetalleContrato buscarContratoExisteId(String id) {
         return contratoRepository.findById(id)
                 .map(DatosDetalleContrato::new)
                 .orElseThrow(() -> new ResourceNotFoundException("⚠️ Contrato no encontrado !!"));

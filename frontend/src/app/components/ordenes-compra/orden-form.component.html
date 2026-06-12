@@ -1,0 +1,288 @@
+@if (modoConfirmacion && datosGuardados) {
+  <div class="container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>Orden de Compra Registrada</mat-card-title>
+        <mat-card-subtitle>Folio #{{ datosGuardados.id }}</mat-card-subtitle>
+      </mat-card-header>
+      <mat-card-content>
+        <div class="confirmation-summary">
+          <div class="summary-row">
+            <span class="summary-label">Cliente:</span>
+            <span>{{ datosGuardados.clienteNombre || datosGuardados.cliente }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Contrato:</span>
+            <span>{{ datosGuardados.contratoNombre || datosGuardados.contrato }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Partida:</span>
+            <span>{{ datosGuardados.partida }}</span>
+          </div>
+          <div class="summary-row">
+            <span class="summary-label">Semana del:</span>
+            <span>{{ datosGuardados.fechaInicioSemana }}</span>
+          </div>
+        </div>
+
+        <div class="table-wrapper">
+          <table class="orden-table">
+            <thead>
+              <tr>
+                <th class="col-no">No.</th>
+                <th class="sticky-col">Producto</th>
+                @for (dia of diasSemana; track dia) {
+                  <th>{{ diasLabels[dia] }}</th>
+                }
+                <th class="col-kilos">Kilos</th>
+              </tr>
+            </thead>
+            <tbody>
+              @for (detalle of datosGuardados.detalles; track $index) {
+                <tr>
+                  <td class="col-no">{{ $index + 1 }}</td>
+                  <td class="sticky-col product-name">{{ detalle.producto }}</td>
+                  @for (dia of diasSemana; track dia) {
+                    <td class="num">{{ detalle[dia] || 0 }}</td>
+                  }
+                  <td class="num kilos">{{ getConfirmaTotalFila($index) }}</td>
+                </tr>
+              }
+            </tbody>
+            <tfoot>
+              <tr>
+                <td class="col-no"></td>
+                <td class="sticky-col total-label">TOTALES</td>
+                @for (dia of diasSemana; track dia) {
+                  <td class="num total">{{ getConfirmaTotalCol(dia) }}</td>
+                }
+                <td class="num total">{{ getConfirmaGranTotal() }}</td>
+              </tr>
+            </tfoot>
+          </table>
+        </div>
+
+        <div class="form-actions">
+          <button mat-stroked-button type="button" (click)="nuevaOrden()">
+            <mat-icon>add</mat-icon> Nueva Orden
+          </button>
+          @if (!modoGeneracion) {
+            <button mat-raised-button color="accent" type="button" (click)="activarModoGeneracion()">
+              <mat-icon>receipt_long</mat-icon> Generar Notas de Venta
+            </button>
+          }
+          <button mat-raised-button color="primary" type="button" (click)="volverLista()">
+            <mat-icon>list</mat-icon> Volver al listado
+          </button>
+        </div>
+
+        @if (modoGeneracion) {
+          <div class="generacion-section">
+            <h3>Generar Notas de Venta Diarias</h3>
+            <p class="section-hint">Seleccione los días para generar notas. Solo se incluyen productos con cantidad > 0.</p>
+
+            <div class="dias-grid">
+              @for (dia of diasSemana; track dia) {
+                <div class="dia-card" [class.sin-productos]="!tieneProductosDia(dia)" [class.generando]="diaGenerando === dia">
+                  <div class="dia-header">
+                    <span class="dia-name">{{ diasLabels[dia] }}</span>
+                    <span class="dia-kilos">{{ totalesPorDia[dia] | number:'1.1-1' }} kg</span>
+                  </div>
+                  @if (tieneProductosDia(dia)) {
+                    <button mat-raised-button color="primary" type="button"
+                      (click)="generarNota(dia)"
+                      [disabled]="generandoNota">
+                      @if (diaGenerando === dia) {
+                        <mat-spinner diameter="16" class="btn-spinner-sm"></mat-spinner>
+                      } @else {
+                        <mat-icon>description</mat-icon>
+                      }
+                      Generar
+                    </button>
+                  } @else {
+                    <span class="sin-datos">Sin productos</span>
+                  }
+                </div>
+              }
+            </div>
+
+            <div class="generar-todas">
+              <button mat-raised-button color="accent" type="button"
+                (click)="generarTodasLasNotas()"
+                [disabled]="generandoNota">
+                @if (diaGenerando === 'todas') {
+                  <mat-spinner diameter="16" class="btn-spinner-sm"></mat-spinner>
+                } @else {
+                  <mat-icon>playlist_add</mat-icon>
+                }
+                Generar todas las notas
+              </button>
+            </div>
+
+            @if (notasGeneradas.length > 0) {
+              <div class="notas-generadas">
+                <h4>Notas Generadas ({{ notasGeneradas.length }})</h4>
+                <div class="notas-list">
+                  @for (nota of notasGeneradas; track nota.id) {
+                    <a class="nota-chip" [routerLink]="['/notaventas', nota.id, 'ver']" matTooltip="Ver nota">
+                      <mat-icon>receipt</mat-icon>
+                      <span>Folio {{ nota.folio }}</span>
+                      <span class="nota-total">{{ nota.totalGeneral | currency }}</span>
+                    </a>
+                  }
+                </div>
+              </div>
+            }
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+  </div>
+} @else {
+  <div class="container">
+    <mat-card>
+      <mat-card-header>
+        <mat-card-title>{{ esEdicion ? 'Editar Orden de Compra' : 'Nueva Orden de Compra' }}</mat-card-title>
+      </mat-card-header>
+      <mat-card-content>
+          <form [formGroup]="form">
+            <div class="form-grid">
+              <mat-form-field appearance="outline">
+                <mat-label>Cliente (Clínica)</mat-label>
+                <mat-select formControlName="cliente_id" (selectionChange)="onClienteChange()">
+                  @for (c of clientes; track c.id) {
+                    <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('cliente_id')?.hasError('required')) {
+                  <mat-error>Seleccione una clínica</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Contrato</mat-label>
+                <mat-select formControlName="contrato_id">
+                  @for (c of contratos; track c.id) {
+                    <mat-option [value]="c.id">{{ c.contrato }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('contrato_id')?.hasError('required')) {
+                  <mat-error>Requerido</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Partida</mat-label>
+                <mat-select formControlName="partida" (selectionChange)="onPartidaChange()">
+                  @for (p of partidas; track p) {
+                    <mat-option [value]="p">{{ p }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('partida')?.hasError('required')) {
+                  <mat-error>Seleccione una partida</mat-error>
+                }
+              </mat-form-field>
+
+              <mat-form-field appearance="outline">
+                <mat-label>Semana del</mat-label>
+                <input matInput [matDatepicker]="pickerSemana" formControlName="fechaInicioSemana">
+                <mat-datepicker-toggle matSuffix [for]="pickerSemana"></mat-datepicker-toggle>
+                <mat-datepicker #pickerSemana></mat-datepicker>
+                @if (form.get('fechaInicioSemana')?.hasError('required')) {
+                  <mat-error>Requerido</mat-error>
+                }
+              </mat-form-field>
+            </div>
+
+            @if (cargando && detalles.length === 0) {
+              <div class="loading-products">
+                <mat-spinner diameter="30"></mat-spinner>
+                <span>{{ esEdicion ? 'Cargando orden...' : 'Cargando productos...' }}</span>
+              </div>
+            }
+
+            @if (detalles.length > 0) {
+              <div class="table-section">
+                <h3>Productos - {{ form.get('partida')?.value }}</h3>
+                <p class="section-hint">Capture las cantidades por día para cada producto</p>
+
+                <div class="table-wrapper">
+                  <table class="orden-table" formArrayName="detalles">
+                    <thead>
+                      <tr>
+                        <th class="col-no">No.</th>
+                        <th class="sticky-col">Producto</th>
+                        @for (dia of diasSemana; track dia) {
+                          <th>{{ diasLabels[dia] }}</th>
+                        }
+                        <th class="col-kilos">Kilos</th>
+                      </tr>
+                    </thead>
+                    <tbody>
+                      @for (detalle of detalles.controls; track $index) {
+                        <tr [formGroupName]="$index">
+                          <td class="col-no">{{ $index + 1 }}</td>
+                          <td class="sticky-col product-name">
+                            <span class="product-cell">{{ detalle.get('producto_nombre')?.value }}</span>
+                            <input type="hidden" [formControlName]="'producto_id'">
+                          </td>
+                          @for (dia of diasSemana; track dia) {
+                            <td>
+                              <input
+                                class="cell-input"
+                                type="number"
+                                min="0"
+                                step="0.1"
+                                [formControlName]="dia"
+                                placeholder="0"
+                                (input)="onCellChange()"
+                              >
+                            </td>
+                          }
+                          <td class="num kilos-row">{{ totalesPorFila[$index] }}</td>
+                        </tr>
+                      }
+                    </tbody>
+                    <tfoot>
+                      <tr>
+                        <td class="col-no"></td>
+                        <td class="sticky-col total-label">TOTALES</td>
+                        @for (dia of diasSemana; track dia) {
+                          <td class="num total">{{ totalesPorDia[dia] }}</td>
+                        }
+                        <td class="num total">{{ granTotal }}</td>
+                      </tr>
+                    </tfoot>
+                  </table>
+                </div>
+              </div>
+            }
+
+            @if (detalles.length === 0 && form.get('partida')?.value && !cargando) {
+              <div class="empty-state">
+                <p>No se encontraron productos para la partida seleccionada.</p>
+              </div>
+            }
+
+            @if (detalles.length === 0 && !form.get('partida')?.value) {
+              <div class="empty-state">
+                <mat-icon class="empty-icon">table_chart</mat-icon>
+                <p>Seleccione clínica, partida y semana para comenzar a capturar</p>
+              </div>
+            }
+
+            <div class="form-actions">
+              <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+              <button mat-raised-button color="primary" type="button" (click)="guardar()" [disabled]="form.invalid || cargando">
+                @if (cargando) {
+                  <mat-spinner diameter="20" class="btn-spinner"></mat-spinner>
+                }
+                <mat-icon>save</mat-icon>
+                {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+              </button>
+            </div>
+          </form>
+      </mat-card-content>
+    </mat-card>
+  </div>
+}

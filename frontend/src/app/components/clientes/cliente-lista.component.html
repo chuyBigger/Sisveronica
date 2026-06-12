@@ -1,0 +1,64 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>Clientes</mat-card-title>
+      <div class="header-actions">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Buscar cliente</mat-label>
+          <input matInput [(ngModel)]="searchQuery" (keyup.enter)="buscar()" placeholder="Nombre, RFC o municipio">
+          @if (searchQuery) {
+            <button matSuffix mat-icon-button (click)="limpiarBusqueda()">
+              <mat-icon>close</mat-icon>
+            </button>
+          }
+        </mat-form-field>
+        <button mat-raised-button color="primary" routerLink="/clientes/nuevo">
+          <mat-icon>add</mat-icon> Crear
+        </button>
+      </div>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="table-wrapper">
+        <table mat-table [dataSource]="dataSource" matSort>
+          <ng-container matColumnDef="rfc">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>RFC</th>
+            <td mat-cell *matCellDef="let row">{{ row.rfc }}</td>
+          </ng-container>
+          <ng-container matColumnDef="nombre">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Nombre</th>
+            <td mat-cell *matCellDef="let row">{{ row.nombre }}</td>
+          </ng-container>
+          <ng-container matColumnDef="municipio">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Municipio</th>
+            <td mat-cell *matCellDef="let row">{{ row.municipio }}</td>
+          </ng-container>
+          <ng-container matColumnDef="estado">
+            <th mat-header-cell *matHeaderCellDef mat-sort-header>Estado</th>
+            <td mat-cell *matCellDef="let row">{{ row.estado }}</td>
+          </ng-container>
+          <ng-container matColumnDef="acciones">
+            <th mat-header-cell *matHeaderCellDef>Acciones</th>
+            <td mat-cell *matCellDef="let row">
+              <button mat-icon-button color="primary" [routerLink]="['/clientes', row.id]" (click)="$event.stopPropagation()" matTooltip="Editar">
+                <mat-icon>edit</mat-icon>
+              </button>
+              <button mat-icon-button color="warn" (click)="$event.stopPropagation(); confirmarEliminar(row.id, row.nombre)" matTooltip="Eliminar">
+                <mat-icon>delete</mat-icon>
+              </button>
+            </td>
+          </ng-container>
+          <tr mat-header-row *matHeaderRowDef="displayedColumns"></tr>
+          <tr mat-row *matRowDef="let row; columns: displayedColumns;"
+            class="data-row"
+            (click)="verCliente(row.id)"></tr>
+        </table>
+      </div>
+      <mat-paginator
+        [length]="totalElements"
+        [pageSize]="10"
+        [pageSizeOptions]="[5, 10, 25, 50]"
+        showFirstLastButtons>
+      </mat-paginator>
+    </mat-card-content>
+  </mat-card>
+</div>

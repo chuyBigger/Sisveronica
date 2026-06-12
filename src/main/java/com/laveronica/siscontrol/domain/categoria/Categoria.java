@@ -22,8 +22,8 @@ import java.util.List;
 public class Categoria {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @NotNull
     private String nombre;
@@ -35,7 +35,7 @@ public class Categoria {
     @Column(nullable = false)
     private Boolean activo;
 
-    @OneToMany(mappedBy = "categoria", cascade = CascadeType.ALL, orphanRemoval = true)
+    @OneToMany(mappedBy = "categoria")
     private List<Producto> productos = new ArrayList<>();
 
     public Categoria(DatosRegistroCategoria categoria){

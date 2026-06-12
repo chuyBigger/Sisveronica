@@ -7,7 +7,8 @@ public enum Partida {
     CARNES,
     LACTEOS,
     FRUTASYVERDURAS,
-    VARIOS;
+    VARIOS,
+    GENERAL;
 
     @JsonCreator
     public static Partida fromString(String value) {

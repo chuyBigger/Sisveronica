@@ -12,7 +12,7 @@ public class CategoriaValidacionesHelper {
     @Autowired
     private CategoriaRepository categoriaRepository;
 
-    public Categoria validarCategoriaActiva(Long id){
+    public Categoria validarCategoriaActiva(String id){
 
         Categoria categoria = categoriaRepository.findById(id)
                 .orElseThrow(()-> new ResourceNotFoundException("La categoría ingresada (ID: " + id + ") no existe."));

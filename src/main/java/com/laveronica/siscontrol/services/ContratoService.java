@@ -45,11 +45,11 @@ public class ContratoService {
                 .toList();
     }
 
-    public DatosDetalleContrato buscarContratoId(@Valid Long id) {
+    public DatosDetalleContrato buscarContratoId(@Valid String id) {
         return contratoValidacionesHelper.buscarContratoExisteId(id);
     }
 
-    public DatosDetalleContrato actualizarContratoId(@Valid Long id, DatosActualizarContrato datos) {
+    public DatosDetalleContrato actualizarContratoId(@Valid String id, DatosActualizarContrato datos) {
 
         Contrato contrato = contratoValidacionesHelper.validaContratoExisteId(id);
 
@@ -74,7 +74,7 @@ public class ContratoService {
         return new DatosDetalleContrato(contratoActulizado);
     }
 
-    public void eliminarContrato(Long id) {
+    public void eliminarContrato(String id) {
         Contrato contrato = contratoValidacionesHelper.validaContratoExisteId(id);
         contrato.setActivo(false);
     }

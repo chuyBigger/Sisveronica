@@ -1,0 +1,249 @@
+@use '@angular/material' as mat;
+
+html {
+  height: 100%;
+  @include mat.theme(
+    (
+      color: (
+        primary: mat.$azure-palette,
+        tertiary: mat.$blue-palette,
+      ),
+      typography: Roboto,
+      density: 0,
+    )
+  );
+}
+
+body {
+  color-scheme: light;
+  background-color: var(--mat-sys-surface);
+  color: var(--mat-sys-on-surface);
+  font: var(--mat-sys-body-medium);
+  margin: 0;
+  height: 100%;
+  transition: background-color 0.3s, color 0.3s;
+}
+
+body.dark-mode {
+  color-scheme: dark;
+}
+
+body.dark-mode {
+  --mat-sys-surface: #121212;
+  --mat-sys-surface-dim: #0d0d0d;
+  --mat-sys-surface-container: #1e1e1e;
+  --mat-sys-surface-container-low: #1a1a1a;
+  --mat-sys-surface-container-high: #2a2a2a;
+  --mat-sys-surface-container-highest: #333333;
+  --mat-sys-on-surface: #e0e0e0;
+  --mat-sys-on-surface-variant: #aaaaaa;
+  --mat-sys-outline: #444444;
+  --mat-sys-outline-variant: #333333;
+  --mat-sys-primary: #90caf9;
+  --mat-sys-on-primary: #003258;
+  --mat-sys-primary-container: #00497d;
+  --mat-sys-on-primary-container: #d1e4ff;
+  --mat-sys-secondary: #bec6dc;
+  --mat-sys-on-secondary: #283141;
+  --mat-sys-secondary-container: #3e4758;
+  --mat-sys-on-secondary-container: #dae2f9;
+  --mat-sys-error: #ffb4ab;
+  --mat-sys-on-error: #690005;
+  --mat-sys-error-container: #93000a;
+  --mat-sys-on-error-container: #ffdad6;
+  --mat-sys-surface-on: #ffffff;
+  --mat-sys-shadow: #000000;
+}
+
+body.dark-mode .mat-mdc-card {
+  background-color: #1e1e1e;
+}
+
+body.dark-mode .mat-mdc-form-field {
+  --mdc-outlined-text-field-container-color: #1e1e1e;
+}
+
+body.dark-mode .mat-mdc-table {
+  background-color: #1e1e1e;
+}
+
+.data-row {
+  cursor: pointer;
+  transition: background-color 0.15s ease;
+}
+
+.data-row:hover {
+  background-color: var(--mat-sys-primary-container, #e3eef9) !important;
+}
+
+body.dark-mode .data-row:hover {
+  background-color: #2a3a4a !important;
+}
+
+body.dark-mode .mat-mdc-header-row {
+  background-color: #2a2a2a;
+}
+
+body.dark-mode .mat-mdc-row:hover {
+  background-color: #2a2a2a;
+}
+
+* {
+  box-sizing: border-box;
+}
+
+html, body {
+  height: 100%;
+}
+
+.mat-mdc-form-field-error {
+  font-size: 0.75rem;
+}
+
+.notaventa-preview-dialog .mat-mdc-dialog-surface,
+.producto-preview-dialog .mat-mdc-dialog-surface {
+  padding: 0 !important;
+  border-radius: 8px !important;
+  overflow: hidden !important;
+}
+
+.container {
+  padding: 20px;
+}
+
+mat-card-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  flex-wrap: wrap;
+  gap: 12px;
+}
+
+.header-actions {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+
+.header-actions .mat-mdc-form-field {
+  min-width: 160px;
+}
+
+.table-wrapper {
+  overflow-x: auto;
+  margin-top: 16px;
+}
+
+table {
+  width: 100%;
+}
+
+/* === Estado badges for OC list === */
+.factura-badge {
+  display: inline-flex;
+  align-items: center;
+  gap: 2px;
+  padding: 2px 8px;
+  border-radius: 12px;
+  font-size: 0.75rem;
+  font-weight: 600;
+  white-space: nowrap;
+}
+
+.factura-badge mat-icon {
+  font-size: 14px;
+  width: 14px;
+  height: 14px;
+}
+
+.factura-badge.listo {
+  background: #e8f5e9;
+  color: #2e7d32;
+}
+
+.factura-badge.prefactura {
+  background: #e3f2fd;
+  color: #1565c0;
+}
+
+.factura-badge.firmas-pendientes {
+  background: #fff3e0;
+  color: #e65100;
+}
+
+.factura-badge.cancel-pendientes {
+  background: #fce4ec;
+  color: #c62828;
+}
+
+.factura-badge.pendiente {
+  background: #eeeeee;
+  color: #616161;
+}
+
+.btn-facturar {
+  color: #2e7d32 !important;
+}
+
+.btn-facturar:hover {
+  background: rgba(46, 125, 50, 0.12) !important;
+}
+
+@media print {
+  /* === Detalle page: show only #print-area === */
+  body.printing-detalle, body.printing-detalle * { visibility: hidden; }
+  body.printing-detalle #print-area, body.printing-detalle #print-area * { visibility: visible; }
+  body.printing-detalle #print-area {
+    position: absolute; top: 0; left: 0; width: 100%; overflow: visible;
+    padding: 0.5cm 0.5cm;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  body.printing-detalle #print-area .detalle-table th,
+  body.printing-detalle #print-area .detalle-table td { padding: 1px 3px !important; }
+  body.printing-detalle #print-area .detalle-table th { background: #e8e8e8 !important; }
+  body.printing-detalle #print-area .detalle-table tbody tr:nth-child(even) { background: #f5f5f5 !important; }
+  body.printing-detalle #print-area .detalle-table tfoot .total-row { background: #e0e0e0 !important; }
+  body.printing-detalle #print-area .header { padding-bottom: 0.2rem; margin-bottom: 0.2rem; }
+  body.printing-detalle #print-area .header-top { margin-bottom: 0.2rem; }
+  body.printing-detalle #print-area .fiscal-info { line-height: 1.2; }
+  body.printing-detalle #print-area .logo-img { width: 28px; }
+  body.printing-detalle #print-area .folio-number { font-size: 1.3em !important; }
+  body.printing-detalle #print-area .folio-box { padding: 0.15rem 0.4rem; min-width: 70px; }
+  body.printing-detalle #print-area .control-section { padding: 0.15rem 0.3rem; margin-bottom: 0.2rem; }
+  body.printing-detalle #print-area .control-label { min-width: 50px; }
+  body.printing-detalle #print-area .signature-section { padding-top: 0.3rem; margin-top: 0.3rem; }
+  body.printing-detalle #print-area .signature-space { height: 20px; }
+
+  /* === Dialog: show only the dialog content === */
+  body.printing-dialog, body.printing-dialog * { visibility: hidden; }
+  body.printing-dialog .notaventa-preview-dialog,
+  body.printing-dialog .notaventa-preview-dialog * { visibility: visible; }
+  body.printing-dialog .notaventa-preview-dialog {
+    position: absolute !important; top: 0 !important; left: 0 !important;
+    width: 100% !important;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  body.printing-dialog .notaventa-preview-dialog .side-menu { display: none !important; }
+  body.printing-dialog .notaventa-preview-dialog .preview-area {
+    overflow: visible; padding: 0.5cm 0.5cm;
+    -webkit-print-color-adjust: exact; print-color-adjust: exact;
+  }
+  body.printing-dialog .notaventa-preview-dialog .detalle-table th,
+  body.printing-dialog .notaventa-preview-dialog .detalle-table td { padding: 1px 3px !important; }
+  body.printing-dialog .notaventa-preview-dialog .detalle-table th { background: #e8e8e8 !important; }
+  body.printing-dialog .notaventa-preview-dialog .detalle-table tbody tr:nth-child(even) { background: #f5f5f5 !important; }
+  body.printing-dialog .notaventa-preview-dialog .detalle-table tfoot .total-row { background: #e0e0e0 !important; }
+  body.printing-dialog .notaventa-preview-dialog .header { padding-bottom: 0.2rem; margin-bottom: 0.2rem; }
+  body.printing-dialog .notaventa-preview-dialog .header-top { margin-bottom: 0.2rem; }
+  body.printing-dialog .notaventa-preview-dialog .fiscal-info { line-height: 1.2; }
+  body.printing-dialog .notaventa-preview-dialog .logo-img { width: 28px; }
+  body.printing-dialog .notaventa-preview-dialog .folio-number { font-size: 1.3em !important; }
+  body.printing-dialog .notaventa-preview-dialog .folio-box { padding: 0.15rem 0.4rem; min-width: 70px; }
+  body.printing-dialog .notaventa-preview-dialog .control-section { padding: 0.15rem 0.3rem; margin-bottom: 0.2rem; }
+  body.printing-dialog .notaventa-preview-dialog .control-label { min-width: 50px; }
+  body.printing-dialog .notaventa-preview-dialog .signature-section { padding-top: 0.3rem; margin-top: 0.3rem; }
+  body.printing-dialog .notaventa-preview-dialog .signature-space { height: 20px; }
+
+  .cdk-overlay-backdrop { visibility: hidden !important; }
+}

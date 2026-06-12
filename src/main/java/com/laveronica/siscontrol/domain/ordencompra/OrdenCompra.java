@@ -10,6 +10,7 @@ import jakarta.persistence.*;
 import lombok.*;
 
 import java.time.LocalDate;
+import java.time.LocalDateTime;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -26,8 +27,8 @@ import java.util.List;
 public class OrdenCompra {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "cliente_id", nullable = false)
@@ -47,14 +48,22 @@ public class OrdenCompra {
     @Column(name = "fecha_fin_semana", nullable = false)
     private LocalDate fechaFinSemana;
 
+    @Builder.Default
     @OneToMany(mappedBy = "ordenCompra", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<OrdenCompraDetalle> detalles = new ArrayList<>();
 
+    @Builder.Default
     @OneToMany(mappedBy = "ordenCompra")
-    private List<NotaVenta> ListaNotaVentas = new ArrayList<>();
+    private List<NotaVenta> listaNotaVentas = new ArrayList<>();
 
     @Column(nullable = false)
     private Boolean activo;
+
+    @Column(name = "confirmado_por")
+    private String confirmadoPor;
+
+    @Column(name = "fecha_confirmacion")
+    private LocalDateTime fechaConfirmacion;
 
     public void agregarDetalles(OrdenCompraDetalle detalle) {
         detalles.add(detalle);

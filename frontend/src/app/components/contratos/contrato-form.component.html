@@ -1,0 +1,71 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ esEdicion ? 'Editar Contrato' : 'Nuevo Contrato' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (cargando) {
+        <div class="spinner-wrapper">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="guardar()" class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Contrato</mat-label>
+            <input matInput formControlName="contrato" placeholder="Nombre del contrato">
+            @if (form.get('contrato')?.hasError('required')) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Cliente</mat-label>
+            <mat-select formControlName="clienteId">
+              @for (c of clientes; track c.id) {
+                <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+              }
+            </mat-select>
+            @if (form.get('clienteId')?.hasError('required')) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha Inicio</mat-label>
+            <input matInput [matDatepicker]="pickerInicio" formControlName="fechaInicio">
+            <mat-datepicker-toggle matSuffix [for]="pickerInicio"></mat-datepicker-toggle>
+            <mat-datepicker #pickerInicio></mat-datepicker>
+            @if (form.get('fechaInicio')?.hasError('required')) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Fecha Término</mat-label>
+            <input matInput [matDatepicker]="pickerTermino" formControlName="fechaTermino">
+            <mat-datepicker-toggle matSuffix [for]="pickerTermino"></mat-datepicker-toggle>
+            <mat-datepicker #pickerTermino></mat-datepicker>
+            @if (form.get('fechaTermino')?.hasError('required')) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Presupuesto</mat-label>
+            <input matInput type="number" step="0.01" formControlName="presupuesto" placeholder="0.00">
+            @if (form.get('presupuesto')?.hasError('required')) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+              {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

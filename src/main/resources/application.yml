@@ -9,9 +9,18 @@ spring:
     username: ${DB_USER_NAME}
     password: ${DB_PASS}
 
+  servlet:
+    multipart:
+      max-file-size: 10MB
+      max-request-size: 10MB
+
   mvc:
     throw-exception-if-no-handler-found: true
 
   web:
     resources:
       add-mappings: false
+
+jwt:
+  secret: laveronica-siscontrol-jwt-secret-key-2024-muy-seguro-para-produccion
+  expiration-ms: 86400000

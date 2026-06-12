@@ -1,0 +1,116 @@
+<div class="dialog-layout">
+  <div class="preview-area" id="print-area">
+    <div class="header">
+      <div class="header-top">
+        <div class="header-left">
+          <img src="logo.jpeg" alt="Logo" class="logo-img">
+          <div class="brand">
+            <h1 class="business-name">{{ negocio.nombre }}</h1>
+            <p class="slogan">{{ negocio.eslogan }}</p>
+          </div>
+        </div>
+        <div class="folio-box">
+          <span class="folio-label">NOTA No.</span>
+          <span class="folio-number">{{ nota.folio }}</span>
+        </div>
+      </div>
+      <div class="fiscal-info">
+        <p>{{ negocio.fiscal }}</p>
+        <p>{{ negocio.rfc }}</p>
+        <p>{{ negocio.domicilio }}</p>
+      </div>
+    </div>
+
+    <div class="control-section compact">
+      <div class="control-row">
+        <span class="control-label">Fecha:</span>
+        <span class="control-value">{{ nota.fecha | date:'fullDate' }}</span>
+      </div>
+      <div class="control-row">
+        <span class="control-label">Cliente:</span>
+        <span class="control-value">{{ nota.cliente }}</span>
+      </div>
+      <div class="control-row">
+        <span class="control-label">Domicilio:</span>
+        <span class="control-value">Aguascalientes</span>
+      </div>
+    </div>
+
+    <table class="detalle-table">
+      <thead>
+        <tr>
+          <th class="col-no">No.</th>
+          <th class="col-producto">Producto</th>
+          <th class="col-cantidad">Cant.</th>
+          <th class="col-precio">Precio/U</th>
+          <th class="col-total">Sub Total</th>
+        </tr>
+      </thead>
+      <tbody>
+        @for (detalle of nota.detalles; track $index) {
+          <tr>
+            <td class="col-no">{{ $index + 1 }}</td>
+            <td class="col-producto">{{ detalle.producto }}</td>
+            <td class="col-cantidad">{{ detalle.cantidad }}</td>
+            <td class="col-precio">{{ detalle.precio | currency:'MXN':'symbol':'1.2-2' }}</td>
+            <td class="col-total">{{ detalle.subTotal | currency:'MXN':'symbol':'1.2-2' }}</td>
+          </tr>
+        }
+      </tbody>
+      <tfoot>
+        <tr class="total-row">
+          <td colspan="4" class="total-label">TOTAL GENERAL</td>
+          <td class="total-amount">{{ nota.totalGeneral | currency:'MXN':'symbol':'1.2-2' }}</td>
+        </tr>
+      </tfoot>
+    </table>
+
+    <div class="signature-section">
+      <div class="signature-line">
+        <div class="signature-space"></div>
+      </div>
+    </div>
+  </div>
+
+  <div class="side-menu" [class.nota-firmada]="nota.firmada" [class.nota-alerta]="!nota.firmada && nota.detalle">
+    <div class="menu-header">
+      <mat-icon>receipt</mat-icon>
+      <span>Nota #{{ nota.folio }}</span>
+      @if (nota.firmada) {
+        <mat-icon class="status-badge firmada" matTooltip="Firmada">check_circle</mat-icon>
+      } @else if (nota.detalle) {
+        <mat-icon class="status-badge alerta" matTooltip="{{ nota.detalle }}">warning</mat-icon>
+      }
+    </div>
+    @if (nota.detalle && !nota.firmada) {
+      <div class="detalle-preview">
+        <mat-icon>info</mat-icon>
+        <span>{{ nota.detalle }}</span>
+      </div>
+    }
+    <mat-divider></mat-divider>
+    <div class="menu-actions">
+      @if (!nota.firmada) {
+        <button mat-stroked-button class="menu-btn firmar-btn" (click)="firmarNota()">
+          <mat-icon>thumb_up</mat-icon> Firmada
+        </button>
+      }
+      <button mat-stroked-button class="menu-btn" (click)="editarDetalle()">
+        <mat-icon>edit_note</mat-icon> Detalle
+      </button>
+      <button mat-stroked-button class="menu-btn" (click)="editar()">
+        <mat-icon>edit</mat-icon> Editar
+      </button>
+      <button mat-stroked-button class="menu-btn" (click)="imprimir()">
+        <mat-icon>print</mat-icon> Imprimir
+      </button>
+      <button mat-stroked-button class="menu-btn danger" (click)="borrar()">
+        <mat-icon>delete</mat-icon> Borrar
+      </button>
+    </div>
+    <mat-divider></mat-divider>
+    <button mat-stroked-button class="menu-btn close-btn" (click)="cerrar()">
+      <mat-icon>close</mat-icon> Cerrar
+    </button>
+  </div>
+</div>

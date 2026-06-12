@@ -25,8 +25,8 @@ import java.util.List;
 public class NotaVenta {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @Column(name = "folio", unique = true, nullable = false )
     private Integer folio;
@@ -58,6 +58,15 @@ public class NotaVenta {
 
     @Column(nullable = false)
     private Boolean activo;
+
+    @Column(length = 10)
+    private String dia;
+
+    @Column(nullable = false)
+    private Boolean firmada = false;
+
+    @Column(columnDefinition = "TEXT")
+    private String detalle;
 
     public void agregarDetalles(NotaVentaDetalle detalle) {
         detalles.add(detalle);

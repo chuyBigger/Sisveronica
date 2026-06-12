@@ -1,0 +1,188 @@
+<div class="config-page">
+  <h2 class="page-title"><mat-icon>settings</mat-icon> Configuración del Sistema</h2>
+
+  <div class="config-layout">
+    <!-- LEFT: User list -->
+    <mat-card class="user-list-card">
+      <mat-card-header>
+        <mat-card-title>Usuarios</mat-card-title>
+        <button mat-stroked-button color="primary" (click)="nuevoUsuario()">
+          <mat-icon>person_add</mat-icon> Nuevo
+        </button>
+      </mat-card-header>
+      <mat-card-content class="user-list">
+        @for (u of usuarios; track u.id) {
+          <div
+            class="user-item"
+            [class.selected]="selectedUser?.id === u.id"
+            (click)="seleccionarUsuario(u)"
+          >
+            <div class="user-avatar">
+              <mat-icon>{{ u.activo ? 'person' : 'person_off' }}</mat-icon>
+            </div>
+            <div class="user-info">
+              <span class="user-name">{{ u.nombreCompleto || u.username }}</span>
+              <span class="user-username">&#64;{{ u.username }}</span>
+              <span class="user-role">{{ u.role }}</span>
+            </div>
+            <div class="user-status">
+              <button
+                mat-icon-button
+                [matTooltip]="u.activo ? 'Desactivar' : 'Activar'"
+                (click)="$event.stopPropagation(); toggleUsuario(u)"
+              >
+                <mat-icon [class.activo]="u.activo" [class.inactivo]="!u.activo">
+                  {{ u.activo ? 'check_circle' : 'cancel' }}
+                </mat-icon>
+              </button>
+            </div>
+          </div>
+        }
+      </mat-card-content>
+    </mat-card>
+
+    <!-- RIGHT: Details / Permissions / New user -->
+    <div class="right-panel">
+      @if (!selectedUser) {
+        <!-- NEW USER FORM -->
+        <mat-card>
+          <mat-card-header>
+            <mat-icon mat-card-avatar>person_add</mat-icon>
+            <mat-card-title>Registrar Nuevo Usuario</mat-card-title>
+            <mat-card-subtitle>Complete todos los campos</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="form-grid">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Nombre completo</mat-label>
+                <input matInput [(ngModel)]="formNombre" placeholder="Nombre completo">
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Nickname *</mat-label>
+                <input matInput [(ngModel)]="formUsername" placeholder="usuario" required>
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Correo</mat-label>
+                <input matInput [(ngModel)]="formCorreo" placeholder="correo@ejemplo.com" type="email">
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Número</mat-label>
+                <input matInput [(ngModel)]="formNumero" placeholder="449-xxx-xxxx">
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Contraseña *</mat-label>
+                <input matInput [(ngModel)]="formPassword" type="password" placeholder="••••••" required>
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Cargo</mat-label>
+                <input matInput [(ngModel)]="formCargo" placeholder="Puesto / Rol">
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Rol</mat-label>
+                <mat-select [(ngModel)]="formRole">
+                  <mat-option value="USER">Usuario</mat-option>
+                  <mat-option value="ADMIN">Administrador</mat-option>
+                  <mat-option value="VIEWER">Visitante</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-raised-button color="primary" (click)="crearUsuario()">
+              <mat-icon>save</mat-icon> Guardar Usuario
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      } @else {
+        <!-- USER PROFILE EDIT -->
+        <mat-card>
+          <mat-card-header>
+            <mat-icon mat-card-avatar>manage_accounts</mat-icon>
+            <mat-card-title>{{ selectedUser.nombreCompleto || selectedUser.username }}</mat-card-title>
+            <mat-card-subtitle>&#64;{{ selectedUser.username }} — {{ selectedUser.role }}</mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <div class="form-grid">
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Nombre completo</mat-label>
+                <input matInput [(ngModel)]="editNombre" placeholder="Nombre completo">
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Correo</mat-label>
+                <input matInput [(ngModel)]="editCorreo" placeholder="correo@ejemplo.com" type="email">
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Número</mat-label>
+                <input matInput [(ngModel)]="editNumero" placeholder="449-xxx-xxxx">
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Cargo</mat-label>
+                <input matInput [(ngModel)]="editCargo" placeholder="Puesto / Rol">
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Nueva contraseña</mat-label>
+                <input matInput [(ngModel)]="editPassword" type="password" placeholder="Dejar vacío para mantener">
+              </mat-form-field>
+              <mat-form-field appearance="outline" subscriptSizing="dynamic">
+                <mat-label>Rol</mat-label>
+                <mat-select [(ngModel)]="editRole">
+                  <mat-option value="USER">Usuario</mat-option>
+                  <mat-option value="ADMIN">Administrador</mat-option>
+                  <mat-option value="VIEWER">Visitante</mat-option>
+                </mat-select>
+              </mat-form-field>
+            </div>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-raised-button color="primary" (click)="guardarPerfil()">
+              <mat-icon>save</mat-icon> Guardar Perfil
+            </button>
+          </mat-card-actions>
+        </mat-card>
+
+        <!-- PERMISSION MATRIX -->
+        <mat-card class="permisos-card">
+          <mat-card-header>
+            <mat-icon mat-card-avatar>security</mat-icon>
+            <mat-card-title>Permisos por Área</mat-card-title>
+            <mat-card-subtitle>
+              Marque las casillas para asignar permisos a {{ selectedUser.nombreCompleto || selectedUser.username }}
+            </mat-card-subtitle>
+          </mat-card-header>
+          <mat-card-content>
+            <table class="permisos-table">
+              <thead>
+                <tr>
+                  <th class="col-modulo">Módulo / Área</th>
+                  @for (acc of acciones; track acc) {
+                    <th class="col-accion">{{ nombreAccion(acc) }}</th>
+                  }
+                </tr>
+              </thead>
+              <tbody>
+                @for (row of permisosMatrix; track row.modulo) {
+                  <tr>
+                    <td class="col-modulo">{{ nombreModulo(row.modulo) }}</td>
+                    @for (cell of row.checks; track cell.accion) {
+                      <td class="col-accion">
+                        <mat-checkbox
+                          [(ngModel)]="cell.activo"
+                          [matTooltip]="(cell.activo ? 'Quitar' : 'Asignar') + ' ' + nombreAccion(cell.accion) + ' en ' + nombreModulo(row.modulo)">
+                        </mat-checkbox>
+                      </td>
+                    }
+                  </tr>
+                }
+              </tbody>
+            </table>
+          </mat-card-content>
+          <mat-card-actions align="end">
+            <button mat-raised-button color="primary" (click)="guardarPermisos()">
+              <mat-icon>save</mat-icon> Guardar Permisos
+            </button>
+          </mat-card-actions>
+        </mat-card>
+      }
+    </div>
+  </div>
+</div>

@@ -28,7 +28,7 @@ public class ClienteValidacionesHelper {
         return clienteEncontrado;
     }
 
-    public Cliente validaClienteExistaId(Long id){
+    public Cliente validaClienteExistaId(String id){
         Cliente cliente = clienteRepository.findById(id).orElseThrow(
                 () -> new ResourceNotFoundException("⚠️ Cliente no encontrado...")
         );

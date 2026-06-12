@@ -18,7 +18,7 @@ public class ProductoValidacionesHelper {
 
 
     @Transactional
-    public Producto encontrarProductoId(Long id) {
+    public Producto encontrarProductoId(String id) {
         var producto = productosRepository.findByIdAndActivoTrue(id)
                 .orElseThrow(
                         () -> new ResourceNotFoundException("⚠️ Producto No encontrado ID:" + id + " no existe o es invalido.")

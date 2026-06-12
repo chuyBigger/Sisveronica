@@ -1,0 +1,64 @@
+<div class="super-admin-container">
+  <mat-card class="admin-card">
+    <mat-card-header>
+      <mat-icon mat-card-avatar class="danger-icon">warning_amber</mat-icon>
+      <mat-card-title>Panel Super Admin</mat-card-title>
+      <mat-card-subtitle>Eliminación lógica de notas, órdenes y cancelaciones</mat-card-subtitle>
+    </mat-card-header>
+
+    <mat-divider></mat-divider>
+
+    <mat-card-content>
+      <div class="warning-box">
+        <mat-icon>error_outline</mat-icon>
+        <span>
+          <strong>¡ADVERTENCIA!</strong> Esta acción desactiva el registro de forma permanente.
+          No podrá recuperarse ni reactivarse. Los folios de notas eliminadas se perderán definitivamente.
+          Úsalo solo en caso de errores críticos.
+        </span>
+      </div>
+
+      <div class="form-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Tipo de registro</mat-label>
+          <mat-select [(ngModel)]="entityType">
+            <mat-option value="nota">Nota de Venta</mat-option>
+            <mat-option value="orden">Orden de Compra</mat-option>
+            <mat-option value="cancelacion">Cancelación</mat-option>
+          </mat-select>
+        </mat-form-field>
+
+        <mat-form-field appearance="outline" class="input-field">
+          @if (entityType === 'nota') {
+            <mat-label>ID o Folio de la nota</mat-label>
+            <mat-hint>Ingresa el UUID o el número de folio</mat-hint>
+          } @else if (entityType === 'orden') {
+            <mat-label>ID de la orden</mat-label>
+            <mat-hint>Ingresa el UUID de la orden de compra</mat-hint>
+          } @else {
+            <mat-label>ID de la cancelación</mat-label>
+            <mat-hint>Ingresa el UUID de la cancelación</mat-hint>
+          }
+          <input matInput [(ngModel)]="inputValue" placeholder="ej: 550e8400-e29b..." />
+        </mat-form-field>
+
+        <button
+          mat-raised-button
+          color="warn"
+          class="delete-btn"
+          [disabled]="deleting || !inputValue.trim()"
+          (click)="eliminar()">
+          <mat-icon>delete_forever</mat-icon>
+          {{ deleting ? 'Eliminando...' : 'Eliminar' }}
+        </button>
+      </div>
+
+      @if (result) {
+        <div class="result-box" [class.success]="!result.includes('Error')" [class.error]="result.includes('Error')">
+          <mat-icon>{{ result.includes('Error') ? 'cancel' : 'check_circle' }}</mat-icon>
+          <span>{{ result }}</span>
+        </div>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

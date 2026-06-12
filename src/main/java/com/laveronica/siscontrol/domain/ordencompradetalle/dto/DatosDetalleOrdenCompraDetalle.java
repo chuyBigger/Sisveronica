@@ -1,13 +1,18 @@
 package com.laveronica.siscontrol.domain.ordencompradetalle.dto;
 
 import com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle;
+import io.swagger.v3.oas.annotations.media.Schema;
 
 import java.time.LocalDate;
 
+@Schema(name = "OrdenCompraDetalleInfo")
 public record DatosDetalleOrdenCompraDetalle(
 
-        Long id,
-        Long producto,
+        String id,
+        @Schema(description = "Nombre del producto")
+        String producto,
+        @Schema(description = "Nombre del producto")
+        String productoNombre,
         Double lunes,
         Double martes,
         Double miercoles,
@@ -20,7 +25,8 @@ public record DatosDetalleOrdenCompraDetalle(
     public DatosDetalleOrdenCompraDetalle(OrdenCompraDetalle detalle) {
         this(
                 detalle.getId(),
-                detalle.getProducto().getId(),
+                detalle.getProducto().getId().toString(),
+                detalle.getProducto().getNombre(),
                 detalle.getLunes(),
                 detalle.getMartes(),
                 detalle.getMiercoles(),

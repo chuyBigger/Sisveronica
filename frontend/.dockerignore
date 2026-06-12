@@ -1,0 +1,8 @@
+node_modules/
+.git/
+.gitignore
+.angular/
+dist/
+.DS_Store
+README.md
+*.md

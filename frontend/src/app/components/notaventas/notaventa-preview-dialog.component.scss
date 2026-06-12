@@ -1,0 +1,290 @@
+:host {
+  display: block;
+  overflow: hidden;
+}
+
+.dialog-layout {
+  display: flex;
+  height: 85vh;
+  max-height: 700px;
+}
+
+.side-menu {
+  width: 160px;
+  min-width: 160px;
+  display: flex;
+  flex-direction: column;
+  background: var(--mat-sys-surface-container-high, #f0f0f0);
+  padding: 12px 8px;
+  gap: 4px;
+}
+
+.menu-header {
+  display: flex;
+  align-items: center;
+  gap: 6px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  padding: 8px;
+  color: var(--mat-sys-primary, #1976d2);
+
+  mat-icon { font-size: 20px; width: 20px; height: 20px; }
+}
+
+.menu-actions {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+  padding: 8px 0;
+}
+
+.menu-btn {
+  justify-content: flex-start;
+  gap: 8px;
+  width: 100%;
+
+  mat-icon { font-size: 18px; width: 18px; height: 18px; }
+}
+
+.menu-btn.danger {
+  color: var(--mat-sys-error, #d32f2f);
+  border-color: var(--mat-sys-error, #d32f2f);
+}
+
+.close-btn {
+  margin-top: auto;
+}
+
+.preview-area {
+  flex: 1;
+  overflow-y: auto;
+  padding: 24px 28px;
+  font-family: 'Courier New', Courier, monospace;
+  font-size: 12px;
+  color: #000;
+  background: #fff;
+}
+
+.header {
+  border-bottom: 2px solid #333;
+  padding-bottom: 0.8rem;
+  margin-bottom: 0.8rem;
+}
+
+.header-top {
+  display: flex;
+  justify-content: space-between;
+  align-items: flex-start;
+  margin-bottom: 0.5rem;
+}
+
+.header-left {
+  display: flex;
+  gap: 0.6rem;
+  align-items: center;
+}
+
+.logo-img {
+  width: 55px;
+  height: auto;
+}
+
+.business-name {
+  font-size: 1.2rem;
+  font-weight: 700;
+  margin: 0;
+  text-transform: uppercase;
+  letter-spacing: 0.5px;
+}
+
+.slogan {
+  font-size: 0.75rem;
+  color: #555;
+  font-style: italic;
+  margin: 0.1rem 0 0 0;
+}
+
+.folio-box {
+  text-align: center;
+  border: 2px solid #333;
+  padding: 0.4rem 0.8rem;
+  min-width: 110px;
+}
+
+.folio-label {
+  display: block;
+  font-size: 0.65rem;
+  font-weight: 600;
+  text-transform: uppercase;
+  letter-spacing: 1px;
+}
+
+.folio-number {
+  display: block;
+  font-size: 1.5rem;
+  font-weight: 700;
+  line-height: 1.1;
+}
+
+.fiscal-info {
+  font-size: 0.75rem;
+  line-height: 1.4;
+
+  p { margin: 0; }
+}
+
+.control-section {
+  border: 1px solid #666;
+  padding: 0.5rem 0.7rem;
+  margin-bottom: 0.8rem;
+
+  &.compact {
+    padding: 0.25rem 0.5rem;
+    margin-bottom: 0.4rem;
+  }
+}
+
+.control-row {
+  display: flex;
+  gap: 0.3rem;
+  font-size: 0.8rem;
+  line-height: 1.3;
+}
+
+.control-label {
+  font-weight: 600;
+  min-width: 60px;
+  white-space: nowrap;
+}
+
+.control-value {
+  overflow: hidden;
+  text-overflow: ellipsis;
+  white-space: nowrap;
+}
+
+.detalle-table {
+  width: 100%;
+  table-layout: fixed;
+  border-collapse: collapse;
+  font-size: 0.8rem;
+  margin-bottom: 0.8rem;
+
+  th, td {
+    border: 1px solid #666;
+    padding: 3px 5px;
+    text-align: left;
+    overflow: hidden;
+  }
+
+  thead th {
+    background: #e8e8e8;
+    font-weight: 700;
+    text-transform: uppercase;
+    font-size: 0.7rem;
+    letter-spacing: 0.5px;
+  }
+
+  .col-no { width: 22px; text-align: center; }
+  .col-producto {
+    white-space: nowrap;
+    overflow: hidden;
+    text-overflow: ellipsis;
+  }
+  .col-cantidad { width: 28px; text-align: center; }
+  .col-precio { width: 72px; text-align: right; }
+  .col-total { width: 72px; text-align: right; }
+
+  tbody tr:nth-child(even) { background: #f5f5f5; }
+
+  tfoot .total-row {
+    background: #e0e0e0;
+    font-weight: 700;
+
+    .total-label {
+      text-align: right;
+      padding-right: 0.8rem;
+      text-transform: uppercase;
+      font-size: 0.8rem;
+    }
+
+    .total-amount {
+      border: 2px solid #333;
+      font-size: 0.9rem;
+    }
+  }
+}
+
+.signature-section {
+  border-top: 1px solid #999;
+  padding-top: 1rem;
+  margin-top: 1rem;
+}
+
+.signature-label {
+  font-weight: 600;
+  font-size: 0.8rem;
+  text-transform: uppercase;
+}
+
+.signature-space {
+  height: 45px;
+  border-bottom: 1px solid #333;
+  width: 55%;
+}
+
+.signature-sub {
+  margin: 0.2rem 0 0;
+  font-size: 0.75rem;
+  color: #555;
+}
+
+.firmar-btn {
+  color: #2e7d32 !important;
+  border-color: #2e7d32 !important;
+}
+
+.status-badge {
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
+  margin-left: auto;
+}
+
+.status-badge.firmada {
+  color: #4caf50;
+}
+
+.status-badge.alerta {
+  color: #ff9800;
+}
+
+.detalle-preview {
+  display: flex;
+  align-items: flex-start;
+  gap: 4px;
+  padding: 6px 8px;
+  margin: 4px 0;
+  background: #fff3e0;
+  border-radius: 4px;
+  font-size: 0.75rem;
+  color: #e65100;
+  line-height: 1.3;
+
+  mat-icon {
+    font-size: 16px;
+    width: 16px;
+    height: 16px;
+    margin-top: 1px;
+    flex-shrink: 0;
+  }
+}
+
+.nota-firmada {
+  border-left: 3px solid #4caf50;
+}
+
+.nota-alerta {
+  border-left: 3px solid #ff9800;
+}
+

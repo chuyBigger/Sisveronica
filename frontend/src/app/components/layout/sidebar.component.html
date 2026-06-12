@@ -1,0 +1,22 @@
+<mat-nav-list>
+  @for (item of menuItems; track item.path) {
+    <a mat-list-item [routerLink]="item.path" routerLinkActive="active-link" #rla="routerLinkActive" [activated]="rla.isActive">
+      <mat-icon matListItemIcon>{{ item.icon }}</mat-icon>
+      <span matListItemTitle>{{ item.label }}</span>
+    </a>
+  }
+</mat-nav-list>
+@if (authService.currentUser$ | async; as user) {
+  <div class="user-section">
+    <div class="user-info">
+      <mat-icon>account_circle</mat-icon>
+      <div class="user-details">
+        <span class="username">{{ user.username }}</span>
+        <span class="role">{{ user.role }}</span>
+      </div>
+    </div>
+    <button mat-icon-button (click)="logout()" matTooltip="Cerrar sesión">
+      <mat-icon>logout</mat-icon>
+    </button>
+  </div>
+}

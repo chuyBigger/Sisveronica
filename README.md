@@ -1,241 +1,559 @@
+# SisVeronica
 
+Sistema de control de facturación y administración para la carnicería **"La Verónica"**.
 
-
-
-ºnterno de Gestión y Control de Pedidos
-
-**¡Bienvenido a SIGCOP!**  
-Sistema backend desarrollado con **Java y Spring Boot** que gestiona clientes, contratos y pedidos internos, optimizando la operación de cada departamento y generando reportes de rendimiento y metas económicas.
+Flujo operativo: **Órdenes de Compra** (semanales) → **Notas de Venta** (diarias, folio secuencial) → **Cancelaciones** → **Reportes**.
 
 ---
 
-## 📝 Descripción
+## Stack tecnológico
 
-Este proyecto implementa un backend modular para gestión de pedidos, contratos y clientes:
-
-- API RESTful para gestión de **Clientes** y **Contratos**.
-- Manejo de operaciones CRUD, actualización parcial (PATCH) y eliminación lógica.
-- Validaciones de datos con **Jakarta Validation**.
-- Persistencia con **Spring Data JPA** y **MySQL**.
-- Manejo centralizado de excepciones y mensajes de error claros.
-- DTOs para entrada y salida de datos, separando lógica de negocio y persistencia.
-- Arquitectura modular lista para evolucionar hacia microservicios por partidas.
-
----
-
-## 📌 Funcionalidades principales
-
-### ✅ Gestión de Clientes
-- Registrar nuevos clientes.
-- Consultar clientes existentes.
-- Actualizar información de clientes.
-- Eliminar clientes (eliminación lógica).
-
-### ✅ Gestión de Contratos
-- Registrar contratos asociados a clientes.
-- Consultar contratos activos.
-- Actualización parcial de contratos con PATCH.
-- Eliminación lógica de contratos.
-- Validaciones de reglas de negocio básicas.
-
-### ✅ Operaciones adicionales
-- Manejo de errores con mensajes claros.
-- DTOs para separar la capa de dominio y la presentación.
-- Preparado para integrar **JWT** y seguridad en el futuro.
-- Documentación de API con **Swagger** (pendiente de completar).
+| Capa | Tecnología | Versión |
+|------|-----------|---------|
+| Backend | Java | 17 |
+| Backend | Spring Boot | 3.5.4 |
+| Backend | Spring Security + JWT | (jjwt) |
+| Backend | Spring Data JPA | Hibernate 6 |
+| Backend | Flyway | 11.7.2 |
+| Backend | MySQL | 8.0+ |
+| Backend | Lombok + MapStruct | Última |
+| Backend | Maven | Wrapper incluido |
+| Frontend | Angular | 21 |
+| Frontend | Angular Material | UI |
+| Frontend | TypeScript | — |
 
 ---
 
-## 🛠️ Tecnologías utilizadas
+## Requisitos
 
-- 💻 **Lenguaje:** Java 17
-- ⚙️ **Framework:** Spring Boot
-- 🗄️ **Persistencia:** JPA / Hibernate con **MySQL**
-- 🏷️ **Manejo de datos:** DTOs y **Jackson**
-- 🔧 **Validación:** Jakarta Validation (`@Valid`)
-- 📝 **Migraciones de base de datos:** Flyway
-- 🛠️ **Productividad:** Lombok (`@Getter`, `@Setter`, `@AllArgsConstructor`)
-- 🌐 **API REST:** `ResponseEntity` y status codes
-- 📊 **Documentación:** Swagger (pendiente)
-- 🔒 **Seguridad:** JWT (pendiente)
+- **Java 17+** (JDK)
+- **MySQL 8.0+**
+- **Node.js 18+** (para el frontend)
+- **Maven** (usar `mvnw.cmd` incluido)
 
 ---
 
-## 🚀 Cómo ejecutar el proyecto
+## Configuración
 
-1. Clona el repositorio:
+### Base de datos
 
-```bash
-git clone <url-del-repositorio>
+```sql
+CREATE DATABASE sis_veronica;
 ```
 
-2. Configura la base de datos en `application.properties`:
+Credenciales en `application.properties`:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/sigcop
-spring.datasource.username=usuario
-spring.datasource.password=contraseña
-spring.jpa.hibernate.ddl-auto=update
-```
-
-3. Instala dependencias:
-
-```bash
-mvn install
-```
-
-4. Ejecuta la aplicación:
-
-```bash
-mvn spring-boot:run
-```
-
-5. Accede a la API (pendiente de documentación Swagger):
-
-```
-http://localhost:8080
-```
-
-
-
-## 📄 Estado actual del proyecto
-
-✅ Funcionalidades implementadas:
-- CRUD de **Clientes**
-- CRUD de **Contratos**
-- Actualización parcial (PATCH)
-- Eliminación lógica
-- Manejo básico de errores
-
-🛠️ Mejoras previstas:
-- Integración de **JWT** y seguridad de endpoints.
-- Documentación completa con **Swagger**.
-- Implementación de microservicios por partidas.
-- Dashboards y reportes automáticos de operaciones y métricas.
-
----
-
-## 📄 Licencia
-
-Proyecto bajo **licencia MIT**:
-
-```text
-MIT License
-Copyright (c) 2025 Jesús Medina Casas
-```
-
----
-
-
-
-
-# SisControl - Sistema de Control Operativo La Verónica
-
-**¡Bienvenido a SisControl!** 🚀
-
-Backend desarrollado con **Java y Spring Boot** para la gestión centralizada de la operación de ventas, contratos, clientes, y logística diaria de *La Verónica*. Este sistema está diseñado para garantizar la integridad de las transacciones y automatizar el registro de pedidos y entregas.
-
----
-
-## 🏗️ Arquitectura y Dominio
-
-Este proyecto implementa una arquitectura **API RESTful modular** enfocada en el dominio de las transacciones de venta.
-
-### Módulos Implementados Recientemente:
-
-| Módulo | Descripción | Relación JPA |
-| :--- | :--- | :--- |
-| **Clientes** | Gestión de maestros de clientes. | `1:N` a Contratos y Notas de Venta |
-| **Días** | Mapeo de días operativos y sus estados. | `1:N` a Notas de Venta |
-| **Nota de Venta** | Transacción principal (cabecera de la venta). | `1:N` a NotaVentaDetalle |
-| **Nota de Venta Detalle** | Ítems, cantidades y subtotales por producto. | `N:1` a Nota de Venta y Producto |
-| **Contratos** | Reglas de negocio y términos asociados al cliente. | `N:1` a Clientes |
-
-### Características Clave:
-* **Integridad Transaccional:** Uso riguroso de **`@Transactional`** para asegurar que las Notas de Venta y sus Detalles se guarden o fallen como una sola unidad.
-* **Persistencia Robusta:** Mapeo de relaciones complejo (`@OneToMany`, `@ManyToOne`, `Enum`) validado y optimizado.
-* **Separación de Responsabilidades:** Utilización de DTOs en la capa de presentación y servicios (`@Service`) para la lógica de negocio.
-* **Manejo de Errores:** Excepciones y validaciones (`Jakarta Validation`) centralizadas.
-
----
-
-## 📌 Tecnologías Utilizadas
-
-| Categoría | Tecnología | Versión / Anotación |
-| :--- | :--- | :--- |
-| **Lenguaje** | Java | Java 17 |
-| **Framework** | Spring Boot | 3.x |
-| **Persistencia** | JPA / Hibernate | MySQL |
-| **Base de Datos** | Migraciones | **Flyway** (Esquema validado) |
-| **Productividad** | Mapeo y POJOs | **Lombok** (`@Getter`, `@AllArgsConstructor`) |
-| **Validación** | Reglas de DTO | Jakarta Validation (`@Valid`, `@NotNull`) |
-| **Testing** | Pruebas Unitarias | JUnit 5 (Próximo) |
-
----
-
-## 🚀 Cómo Ejecutar el Proyecto
-
-### 1. Requisitos
-Asegúrate de tener instalado: **JDK 17** y **MySQL Server** (o similar).
-
-### 2. Configuración de Base de Datos
-Actualiza el archivo `application.properties` con tus credenciales:
-
-```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/sisveronica
+spring.datasource.url=jdbc:mysql://localhost:3306/sis_veronica
 spring.datasource.username=root
-spring.datasource.password=su_contraseña
-# Flyway se encarga de las migraciones
-spring.jpa.hibernate.ddl-auto=validate 
-Nota: El valor ddl-auto=validate es la configuración más segura en entornos con Flyway, ya que valida que el esquema de la DB coincida con las entidades JPA.
+spring.datasource.password=Admin.1516
+```
 
-3. Ejecución
-Clona el repositorio: git clone <url-del-repositorio>
+### Ejecutar backend
 
-Navega al directorio del proyecto.
+```bash
+.\mvnw.cmd clean spring-boot:run
+```
 
-Ejecuta la aplicación:
+Flyway ejecuta las 22 migraciones automáticamente (V1–V22).
 
-Bash
+### Ejecutar frontend
 
-mvn spring-boot:run
-4. Endpoints Principales (Ejemplo)
-La API estará disponible en http://localhost:8080.
+```bash
+cd frontend
+npm install
+ng serve
+```
 
-Funcionalidad	Método	URL	Body (DTO)
-Registrar Nota	POST	/notas	RegistroNotaVentaDTO
-Registrar Cliente	POST	/clientes	RegistroClienteDTO
+Frontend en `http://localhost:4200`, Backend en `http://localhost:8080`.
 
-Exportar a Hojas de cálculo
-🛣️ Estado y Desarrollo Futuro
-Implementado y Validado:
+---
 
-Modelo de Dominio (NotaVenta, Detalle, Día, Producto).
+## Credenciales de acceso
 
-Integridad de Mapeo (JPA y Flyway sincronizados 100%).
+| Usuario | Contraseña | Rol |
+|---------|-----------|-----|
+| `admin` | `admin123` | ADMIN |
+| `usuario` | `user123` | USER |
+| `visita` | `pass1234` | VIEWER |
 
-Controladores y DTOs para Clientes y Contratos.
+---
 
-Endpoint para registrar nueva Nota de Venta (POST /notas).
+## Funciones implementadas
 
-Próximos Pasos (La Locura):
+### 1. Autenticación y Seguridad
 
-Implementar la lógica completa en el NotaVentaService (cálculo de totales, validación de existencia de IDs, etc.).
+- Login con JWT (token Bearer)
+- Roles: **ADMIN**, **USER**, **VIEWER**
+- Permisos granulares por módulo × acción (CREAR, LEER, ACTUALIZAR, ELIMINAR)
+- `AuthGuard` protege todas las rutas excepto login
+- `AdminGuard` protege rutas de administración
+- `jwtInterceptor` agrega token automáticamente y redirige a login en 401
+- Registro de usuarios nuevos (solo admin)
+- Logout con limpieza de token
 
-Desarrollo de la funcionalidad de Órdenes de Compra (OC).
+**Endpoints:**
 
-Integración de JWT para autenticación y seguridad de endpoints.
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/auth/login` | Login |
+| POST | `/auth/register` | Registro de usuario |
 
-Documentación completa de la API con Swagger.
+---
 
-👨‍💻 Desarrollador
-Jesús Medina Casas
+### 2. Clientes
 
-💻 Desarrollador Java y Spring Boot
+- CRUD completo (Crear, Leer, Actualizar, Eliminar)
+- Baja lógica (campo `activo`)
+- Búsqueda por nombre, RFC o municipio
 
-🔗 LinkedIn
+**Endpoints:**
 
-🐙 GitHub
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/clientes` | Crear cliente |
+| GET | `/clientes` | Listar clientes |
+| GET | `/clientes/{id}` | Buscar por UUID |
+| PATCH | `/clientes/{id}` | Actualizar cliente |
+| DELETE | `/clientes/{id}` | Eliminar (baja lógica) |
 
-📜 Licencia
-Este proyecto está bajo la Licencia MIT.
+---
+
+### 3. Contratos
+
+- CRUD completo
+- Vinculados a un cliente
+- Fechas de inicio y término
+- Presupuesto asignado
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/contratos` | Crear contrato |
+| GET | `/contratos` | Listar contratos |
+| GET | `/contratos/{id}` | Buscar por UUID |
+| PATCH | `/contratos/{id}` | Actualizar contrato |
+| DELETE | `/contratos/{id}` | Eliminar (baja lógica) |
+
+---
+
+### 4. Categorías
+
+- CRUD completo
+- Asociadas a una partida
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/categorias` | Crear categoría |
+| GET | `/categorias` | Listar categorías |
+| GET | `/categorias/{id}` | Buscar por UUID |
+| PATCH | `/categorias/{id}` | Actualizar categoría |
+| DELETE | `/categorias/{id}` | Eliminar (baja lógica) |
+
+---
+
+### 5. Productos
+
+- CRUD completo con popup de preview/edición inline
+- Filtrado por partida
+- Búsqueda por palabra clave
+- Paginación
+- 25 productos oficiales de carnes pre-cargados (V12)
+
+**Popup de producto:**
+- **Modo vista**: muestra nombre, código, partida, categoría, precio de venta
+- **Modo edición**: formulario inline con todos los campos editables (nombre, partida, categoría, código, unidad de medida, precio compra, precio venta)
+- Botones: Editar, Borrar, Guardar, Cancelar, Cerrar
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/productos` | Crear producto |
+| GET | `/productos` | Listar productos (paginado) |
+| GET | `/productos/{id}` | Buscar por UUID |
+| GET | `/productos/partidas/{partida}` | Filtrar por partida |
+| GET | `/productos/categorias/{id}` | Filtrar por categoría |
+| GET | `/productos/buscar/{nombre}` | Buscar por nombre exacto |
+| GET | `/productos/buscar_palabras?q=` | Búsqueda por palabra |
+| PATCH | `/productos/{id}` | Actualizar producto |
+| DELETE | `/productos/{id}` | Eliminar (baja lógica) |
+
+---
+
+### 5.1 Carga masiva de Productos (Excel)
+
+- Subir archivo `.xlsx` con productos
+- Columnas esperadas: código, nombre, partida, categoría, precio compra, precio venta
+- **Validaciones**: archivo no vacío, extensión `.xlsx`, categoría existente
+- **Reporte de resultados**: filas insertadas, duplicados omitidos, precios faltantes
+- Multipart max 10MB
+- Apache POI 5.2.5
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/productos/excel/importar` | Importar productos desde Excel |
+
+---
+
+### 6. Órdenes de Compra
+
+- CRUD completo
+- **Vista de detalle** (`/ordenes-compra/:id/ver`):
+  - Toolbar: Volver, Editar, Eliminar, Confirmar, Crear Notas
+  - Tabla producto × día (Lunes a Domingo) con totales
+  - Badge de confirmación
+  - Sección de cancelaciones
+  - Mini-cards de notas de venta asociadas
+  - **Indicadores en notas**: estrella verde SVG 15 puntas (firmada), `warning_amber` (vencida sin firmar), candado gris (bloqueada por factura)
+  - **Sección Factura**: botón "Generar Factura" + tabla de detalle de prefactura
+  - **Inmutabilidad post-factura**: notas y cancelaciones bloqueadas (candado gris, botones deshabilitados)
+- **Formulario de creación**: selección cliente → contrato → partida → tabla editable producto×día
+- **Confirmación**: registro de quién confirmó y fecha
+- **Unicidad**: validación de (cliente + partida + semana) para duplicados
+- **Generación de notas**: generar todas las notas de venta desde la orden
+- **Partida GENERAL**: carga todos los productos (no filtrados por partida)
+- **Filtro por Periodo**: filtro de fecha en la lista de OC (reemplazó filtro por Partida)
+- **Badges de estado en lista**:
+  - 🔵 `Prefactura` — factura generada
+  - 🟢 `Listo` — confirmada, todas firmadas, todas validadas
+  - 🟠 `X/Y firmadas` — faltan firmas
+  - 🔴 `X/Y validadas` — cancelaciones pendientes
+  - ⚪ `Pendiente` — no confirmada
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/orden_compra` | Crear orden |
+| GET | `/orden_compra` | Listar órdenes (paginado) |
+| GET | `/orden_compra/{id}` | Buscar por UUID |
+| PATCH | `/orden_compra/{id}` | Actualizar orden |
+| DELETE | `/orden_compra/{id}` | Eliminar orden |
+| POST | `/orden_compra/{id}/confirmar` | Confirmar orden |
+| GET | `/orden_compra/{id}/notas` | Listar notas de la orden |
+| POST | `/orden_compra/{id}/generar-notas` | Generar todas las notas |
+
+---
+
+### 7. Notas de Venta
+
+- CRUD completo con popup de formulario y preview
+- **Folio secuencial automático**: `COALESCE(MAX(folio), 0) + 1`
+- **Generación desde orden**: crear nota individual desde una orden de compra por día
+- **Preview**: vista previa estilo remisión con logo, datos fiscales, tabla de productos, total
+- **Impresión**: 1/4 carta (≤8 productos) o 1/3 carta (>8). `window.print()` en la misma página con `@media print`
+- **Detalle completo** (`/notaventas/:id/ver`): vista read-only con menú lateral
+- **Indicador visual**: borde naranja en notas que tienen cancelaciones asociadas
+- **Campo `dia`**: día de la semana asociado a la nota
+- **Firma de notas**:
+  - Columna `firmada` (boolean) y `detalle` (texto) en BD
+  - POST `/{id}/firmar`: marca la nota como firmada (no reversible)
+  - PATCH `/{id}/detalle`: actualiza el detalle/anotación de la nota
+  - **Indicadores visuales** en lista y detalle: estrella verde SVG de 15 puntas (firmada), `warning_amber` amarillo (atrasada), candado gris (bloqueada por factura)
+  - Filas coloreadas en la lista: verde si firmada, naranja si vencida sin firmar
+
+**Popup de nota de venta:**
+- Menú lateral con: Editar, Imprimir, Firmar, Detalle, Borrar, Cerrar
+- Badge de estado: firmada / pendiente / vencida
+- Vista previa estilo remisión fiscal
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/notaventas` | Crear nota |
+| POST | `/notaventas/generar-desde-orden` | Generar desde orden |
+| GET | `/notaventas` | Listar notas (paginado) |
+| GET | `/notaventas/{id}` | Buscar por UUID |
+| PATCH | `/notaventas/{id}` | Actualizar nota |
+| DELETE | `/notaventas/{id}` | Eliminar (baja lógica) |
+| POST | `/notaventas/{id}/firmar` | Firmar nota |
+| PATCH | `/notaventas/{id}/detalle` | Actualizar detalle |
+
+---
+
+### 8. Cancelaciones (Notas de Cancelación)
+
+- Crear cancelación por orden de compra + día
+- **Selección de día**: se elige el día de la semana a cancelar
+- **Ajuste por producto**: cantidad a cancelar (validada contra cantidades de la OC)
+- **Validación**: aprobar cancelación (registra quién validó y fecha)
+- **Reconstrucción de notas**: recalcula las Notas de Venta afectadas restando las cancelaciones validadas
+- **Indicador visual**: borde rojo (pendiente) / verde (validada) en cada cancelación
+
+**Popup de cancelación:**
+- Selección del día
+- Lista de productos con cantidades editables
+- Botones: Guardar, Cerrar
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/cancelaciones` | Crear cancelación |
+| GET | `/cancelaciones/orden/{ordenCompraId}` | Listar por orden |
+| POST | `/cancelaciones/{id}/validar` | Validar cancelación |
+| DELETE | `/cancelaciones/{id}` | Eliminar cancelación |
+| POST | `/cancelaciones/reconstruir/{ordenCompraId}` | Reconstruir notas |
+
+---
+
+### 9. Factura / Prefactura
+
+- **Generación automática** desde una Orden de Compra confirmada
+- **Validaciones** antes de generar:
+  - La OC debe estar confirmada
+  - Todas las Notas de Venta deben estar firmadas (`firmada = true`)
+  - Todas las Cancelaciones deben estar validadas (`validadoPor != null`)
+  - No debe existir otra factura activa para la misma OC
+- **Cálculo**: suma cantidades por producto de todas las notas firmadas, resta las cancelaciones validadas
+- **Folio secuencial**: `COALESCE(MAX(folio), 0) + 1`
+- **Detalles**: tabla producto × (cantidad total, precio/venta, subtotal), total general
+- **Inmutabilidad post-factura**: al generar la factura, las Notas de Venta y Cancelaciones de la OC quedan bloqueadas:
+  - No se pueden editar ni eliminar notas
+  - No se pueden crear nuevas notas
+  - No se pueden crear/validar/eliminar cancelaciones
+  - Las mini-cards muestran candado gris como indicador
+
+**Sección en OrdenDetalle:**
+- Botón "Generar Factura" (solo cuando estado = LISTO: confirmada + todas firmadas + todas validadas)
+- Tabla de detalle con producto, cantidad total, precio unitario, subtotal
+- Badge "Prefactura" con folio y fecha de creación
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| POST | `/facturas` | Generar factura para una OC |
+| GET | `/facturas` | Listar todas las facturas |
+| GET | `/facturas/{id}` | Buscar por UUID |
+| GET | `/facturas/por-orden/{ordenCompraId}` | Buscar por OC |
+
+---
+
+### 10. Administración de Usuarios
+
+- CRUD de usuarios (solo ADMIN)
+- Asignación de permisos granulares por módulo × acción
+- Habilitar/deshabilitar usuarios
+- Panel de configuración con tabs: Usuarios / Permisos
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/usuarios` | Listar usuarios |
+| GET | `/usuarios/{id}` | Detalle de usuario |
+| POST | `/usuarios` | Crear usuario |
+| PUT | `/usuarios/{id}/permisos` | Asignar permisos |
+| PATCH | `/usuarios/{id}/toggle` | Habilitar/deshabilitar |
+
+---
+
+### 11. Enums
+
+**Endpoints:**
+
+| Método | Ruta | Descripción |
+|--------|------|-------------|
+| GET | `/enums/partidas` | Listar partidas |
+| GET | `/enums/unidades-medida` | Listar unidades de medida |
+
+**Valores disponibles:**
+
+| Enum | Valores |
+|------|---------|
+| Partida | ABARROTES, CARNES, LACTEOS, FRUTASYVERDURAS, VARIOS, GENERAL |
+| UnidadMedida | KILO, LITRO, PIEZA, PAQUETE |
+| Role | ADMIN, USER, VIEWER |
+| Modulo | PRODUCTOS, CLIENTES, CONTRATOS, NOTAS_VENTA, ORDENES_COMPRA, REPORTES, USUARIOS |
+| Accion | CREAR, LEER, ACTUALIZAR, ELIMINAR |
+| DiaSemana | LUNES, MARTES, MIERCOLES, JUEVES, VIERNES, SABADO, DOMINGO |
+
+---
+
+## Modelo de datos
+
+Todas las entidades usan **UUID** como identificador primario (`VARCHAR(36)`) generado automáticamente por Hibernate.
+
+| Entidad | Tabla | Campos clave |
+|---------|-------|-------------|
+| Cliente | `clientes` | nombre, rfc (único), dirección, municipio, estado |
+| Contrato | `contratos` | contrato (único), cliente FK, fechas, presupuesto |
+| Categoria | `categorias` | nombre, partida |
+| Producto | `productos` | código (único), nombre (único), partida, categoría FK, unidadMedida, precios |
+| OrdenCompra | `orden_compras` | cliente FK, contrato FK, partida, semana, confirmadoPor |
+| OrdenCompraDetalle | `orden_compra_detalles` | orden FK, producto FK, lunes..domingo (cantidades) |
+| NotaVenta | `nota_ventas` | folio (único), cliente FK, contrato FK, orden FK, fecha, partida, dia, **firmada**, **detalle** |
+| NotaVentaDetalle | `nota_venta_detalles` | nota FK, producto FK, cantidad, precio, subTotal |
+| NotaCancelacion | `nota_cancelaciones` | orden FK, dia, creadoPor, validadoPor |
+| NotaCancelacionDetalle | `nota_cancelacion_detalles` | cancelacion FK, producto FK, cantidadCancelada |
+| Factura | `facturas` | folio (secuencial), orden FK, cliente, contrato, partida, fechaCreacion, totalGeneral |
+| FacturaDetalle | `factura_detalles` | factura FK, productoNombre, cantidadTotal, precioVenta, subtotal |
+| Usuario | `usuarios` | username (único), password (BCrypt), role |
+| UsuarioPermiso | `usuario_permisos` | usuario FK, modulo, acción (único por usuario) |
+
+---
+
+## Migraciones de base de datos
+
+| Migración | Descripción |
+|-----------|-------------|
+| V1 | Tabla `clientes` |
+| V2 | Tabla `contratos` |
+| V3 | Tabla `productos` |
+| V4 | Tabla `categorias` |
+| V5 | Tabla `nota_ventas` |
+| V7 | Tabla `nota_venta_detalles` |
+| V8 | Tabla `orden_compras` |
+| V9 | Tabla `orden_compra_detalles` (con columnas LUNES–DOMINGO) |
+| V10 | Agregar `producto_id` a `orden_compra_detalles` |
+| V11 | Agregar `orden_compra_id` a `nota_ventas` |
+| V12 | Seed data: categorías, clientes, contratos, órdenes, notas, 25 productos de carnes |
+| V14 | Tabla `usuarios` + 3 usuarios pre-cargados |
+| V15 | Tabla `usuario_permisos` + permisos pre-cargados |
+| V16 | Cliente "General" para partidas GENERAL |
+| V17 | Constraint UNIQUE en (cliente_id, partida, fecha_inicio_semana) |
+| V18 | Columnas `confirmado_por`, `fecha_confirmacion` en `orden_compras` |
+| V19 | Columna `dia` en `nota_ventas` |
+| V20 | Tablas `nota_cancelaciones` y `nota_cancelacion_detalles` |
+| V21 | Columnas `firmada` (boolean) y `detalle` (text) en `nota_ventas` |
+| V22 | Tablas `facturas` y `factura_detalles` con FK a `orden_compras` |
+
+---
+
+## Frontend - Rutas
+
+| Ruta | Componente | Protegida |
+|------|-----------|-----------|
+| `/` | LoginComponent | No |
+| `/dashboard` | DashboardComponent | AuthGuard |
+| `/productos` | ProductoListaComponent | AuthGuard |
+| `/productos/nuevo` | ProductoFormComponent | AuthGuard |
+| `/productos/:id` | ProductoFormComponent | AuthGuard |
+| `/clientes` | ClienteListaComponent | AuthGuard |
+| `/clientes/nuevo` | ClienteFormComponent | AuthGuard |
+| `/clientes/:id` | ClienteFormComponent | AuthGuard |
+| `/contratos` | ContratoListaComponent | AuthGuard |
+| `/contratos/nuevo` | ContratoFormComponent | AuthGuard |
+| `/contratos/:id` | ContratoFormComponent | AuthGuard |
+| `/notaventas` | NotaVentaListaComponent | AuthGuard |
+| `/notaventas/nuevo` | NotaVentaFormComponent | AuthGuard |
+| `/notaventas/:id` | NotaVentaFormComponent | AuthGuard |
+| `/notaventas/:id/ver` | NotaVentaDetalleComponent | AuthGuard |
+| `/ordenes-compra` | OrdenListaComponent | AuthGuard |
+| `/ordenes-compra/nuevo` | OrdenFormComponent | AuthGuard |
+| `/ordenes-compra/:id/ver` | OrdenDetalleComponent | AuthGuard |
+| `/ordenes-compra/:id` | OrdenFormComponent | AuthGuard |
+| `/config` | ConfigComponent | AuthGuard |
+
+---
+
+## Frontend - Funciones de UI
+
+### Todas las vistas de lista
+- **Columnas ordenables**: MatSort en todos los encabezados de columna
+- **Barras de búsqueda**: filtro por texto en todas las listas
+- **Filtros específicos**: dropdown de Partida en notas de venta y productos; filtro por Periodo (fecha) en órdenes
+- **Paginación**: MatTablePaginator con opciones 5, 10, 25, 50
+- **Filas clickeables**: cursor pointer + hover effect, clic en cualquier parte de la fila abre vista/detalle
+- **Botones de acción**: Editar, Eliminar (con stopPropagation para no activar clic de fila)
+
+### Header global
+- Nombre del sistema ("Sistema Veronica") + subtítulo
+- Fecha actual (centro)
+- Reloj en vivo (derecha)
+- Menú kebab: Modo oscuro, Ajustes, Cerrar sesión
+- Botón hamburguesa para colapsar/expandir sidebar
+
+### Sidebar colapsable
+- **Expandido** (260px): icono + texto de cada módulo
+- **Colapsado** (64px): solo iconos con tooltip al hover
+- Estado persistido en `localStorage`
+- Sección de usuario con nombre, rol y botón de logout
+
+### Modo oscuro
+- Toggle en menú kebab del header
+- Persiste en `localStorage`
+- Variables CSS globales para todo el sistema
+- Compatibilidad con todos los componentes
+
+---
+
+## Estructura del proyecto
+
+```
+SisVeronica/
+├── src/main/java/com/laveronica/siscontrol/
+│   ├── controller/              # 11 controladores REST
+│   │   ├── AuthController.java
+│   │   ├── UsuarioAdminController.java
+│   │   ├── ClienteController.java
+│   │   ├── ContratosController.java
+│   │   ├── CategoriaController.java
+│   │   ├── ProductoController.java
+│   │   ├── ProductoExcelController.java
+│   │   ├── NotaVentaController.java
+│   │   ├── OrdenCompraController.java
+│   │   ├── NotaCancelacionController.java
+│   │   ├── FacturaController.java
+│   │   └── EnumsController.java
+│   ├── domain/                  # Entidades JPA + DTOs + Mappers
+│   │   ├── clientes/
+│   │   ├── contratos/
+│   │   ├── categoria/
+│   │   ├── productos/
+│   │   ├── notaventa/
+│   │   ├── notaventadetalle/
+│   │   ├── ordencompra/
+│   │   ├── ordencompradetalle/
+│   │   ├── notacancelacion/
+│   │   ├── notacancelaciondetalle/
+│   │   ├── factura/
+│   │   ├── facturadetalle/
+│   │   └── usuario/
+│   ├── enums/                   # Partida, UnidadMedida, Role, Modulo, Accion, DiaSemana
+│   ├── infra/
+│   │   ├── exceptions/          # Manejo global de errores
+│   │   └── security/            # JWT, SecurityConfig, CORS
+│   ├── repositories/            # Interfaces JPA
+│   ├── services/                # Lógica de negocio
+│   └── utils/helpers/           # Validaciones reutilizables
+│
+├── src/main/resources/db/migration/  # 22 archivos SQL (V1–V22)
+│
+├── frontend/src/app/
+│   ├── app.routes.ts            # Rutas Angular
+│   ├── components/
+│   │   ├── auth/                # Login
+│   │   ├── layout/              # Sidebar, Dashboard
+│   │   ├── clientes/            # Lista + Formulario
+│   │   ├── contratos/           # Lista + Formulario
+│   │   ├── productos/           # Lista + Formulario + Preview Dialog
+│   │   ├── notaventas/          # Lista + Form + FormDialog + PreviewDialog + Detalle
+│   │   ├── ordenes-compra/      # Lista + Form + Detalle + CancelacionFormDialog
+│   │   └── config/              # Administración de usuarios
+│   ├── services/                # 11 servicios Angular + guards + interceptor
+│   └── models/                  # 9 archivos de interfaces TypeScript
+│
+└── docs/                        # Documentación adicional
+```
+
+---
+
+## Convenciones
+
+- **IDs**: UUID `VARCHAR(36)` generado por Hibernate (`GenerationType.UUID`)
+- **Bajas lógicas**: columna `activo` en todas las tablas (nunca se eliminan registros físicamente)
+- **Enums**: almacenados como string en BD (`@Enumerated(EnumType.STRING)`)
+- **Paginación**: `@PageableDefault` con tamaño 9 o 10
+- **Seed data**: Flyway V12 inserta datos de prueba con UUIDs explícitos
+- **Passwords**: encriptados con BCrypt
+- **CORS**: configurado para `localhost:4200` con todos los métodos HTTP
+- **CSS**: variables CSS globales para soporte de modo oscuro

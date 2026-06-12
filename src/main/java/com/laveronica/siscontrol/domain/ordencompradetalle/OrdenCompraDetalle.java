@@ -20,8 +20,8 @@ import java.time.LocalDate;
 public class OrdenCompraDetalle {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private Long id;
+    @GeneratedValue(strategy = GenerationType.UUID)
+    private String id;
 
     @ManyToOne(fetch = FetchType.LAZY)
     @JoinColumn(name = "orden_compra_id", nullable = false)

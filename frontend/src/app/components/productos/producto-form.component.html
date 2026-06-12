@@ -1,0 +1,85 @@
+<div class="container">
+  <mat-card>
+    <mat-card-header>
+      <mat-card-title>{{ esEdicion ? 'Editar Producto' : 'Nuevo Producto' }}</mat-card-title>
+    </mat-card-header>
+    <mat-card-content>
+      @if (cargando) {
+        <div class="spinner-wrapper">
+          <mat-spinner diameter="40"></mat-spinner>
+        </div>
+      } @else {
+        <form [formGroup]="form" (ngSubmit)="guardar()" class="form-grid">
+          <mat-form-field appearance="outline">
+            <mat-label>Nombre</mat-label>
+            <input matInput formControlName="nombre" placeholder="Nombre del producto">
+            @if (form.get('nombre')?.hasError('required')) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Partida</mat-label>
+            <mat-select formControlName="partida">
+              @for (p of partidas; track p) {
+                <mat-option [value]="p">{{ p }}</mat-option>
+              }
+            </mat-select>
+            @if (form.get('partida')?.hasError('required')) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Categoría</mat-label>
+            <mat-select formControlName="categoriaId">
+              @for (cat of categorias; track cat.id) {
+                <mat-option [value]="cat.id">{{ cat.nombre }}</mat-option>
+              }
+            </mat-select>
+            @if (form.get('categoriaId')?.hasError('required')) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Código</mat-label>
+            <input matInput formControlName="codigo" placeholder="Código de barras">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Unidad de Medida</mat-label>
+            <mat-select formControlName="unidadMedida">
+              @for (u of unidadesMedida; track u) {
+                <mat-option [value]="u">{{ u }}</mat-option>
+              }
+            </mat-select>
+            @if (form.get('unidadMedida')?.hasError('required')) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Precio Compra</mat-label>
+            <input matInput type="number" step="0.01" formControlName="precioCompra" placeholder="0.00">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Precio Venta</mat-label>
+            <input matInput type="number" step="0.01" formControlName="precioVenta" placeholder="0.00">
+            @if (form.get('precioVenta')?.hasError('required')) {
+              <mat-error>Requerido</mat-error>
+            }
+          </mat-form-field>
+
+          <div class="form-actions">
+            <button mat-button type="button" (click)="cancelar()">Cancelar</button>
+            <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">
+              {{ esEdicion ? 'Actualizar' : 'Guardar' }}
+            </button>
+          </div>
+        </form>
+      }
+    </mat-card-content>
+  </mat-card>
+</div>

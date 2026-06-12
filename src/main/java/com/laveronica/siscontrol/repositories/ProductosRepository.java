@@ -10,7 +10,7 @@ import org.springframework.data.jpa.repository.JpaRepository;
 import java.util.Optional;
 
 
-public interface ProductosRepository extends JpaRepository<Producto, Long> {
+public interface ProductosRepository extends JpaRepository<Producto, String> {
 
     boolean existsByNombre(String nombre);
 
@@ -20,7 +20,7 @@ public interface ProductosRepository extends JpaRepository<Producto, Long> {
 
     Page<Producto> findAllByCategoriaAndActivoTrue(Categoria categoria, Pageable paguinas);
 
-    Optional<Producto> findByIdAndActivoTrue(Long id);
+    Optional<Producto> findByIdAndActivoTrue(String id);
 
     Optional<Producto> findByNombreAndActivoTrue(String nombre);
 

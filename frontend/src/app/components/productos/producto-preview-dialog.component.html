@@ -1,0 +1,128 @@
+<div class="dialog-layout">
+  <div class="preview-area">
+    @if (cargando) {
+      <div class="spinner-wrapper">
+        <mat-spinner diameter="40"></mat-spinner>
+      </div>
+    } @else if (!editMode) {
+      <div class="producto-header">
+        <mat-icon class="product-icon">inventory_2</mat-icon>
+        <div class="producto-brand">
+          <h2 class="producto-nombre">{{ producto.nombre }}</h2>
+          <span class="producto-codigo">{{ producto.codigo }}</span>
+        </div>
+      </div>
+
+      <mat-divider></mat-divider>
+
+      <div class="info-grid">
+        <div class="info-item">
+          <span class="info-label">Partida</span>
+          <span class="info-value">{{ producto.partida }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Categoría</span>
+          <span class="info-value">{{ producto.categoria }}</span>
+        </div>
+        <div class="info-item">
+          <span class="info-label">Precio de Venta</span>
+          <span class="info-value precio">{{ producto.precioVenta | currency:'MXN':'symbol':'1.2-2' }}</span>
+        </div>
+      </div>
+    } @else {
+      <h3 class="edit-title">Editando producto</h3>
+      <form [formGroup]="form" class="edit-form">
+        <mat-form-field appearance="outline">
+          <mat-label>Nombre</mat-label>
+          <input matInput formControlName="nombre">
+          @if (form.get('nombre')?.hasError('required')) {
+            <mat-error>Requerido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Partida</mat-label>
+          <mat-select formControlName="partida">
+            @for (p of partidas; track p) {
+              <mat-option [value]="p">{{ p }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('partida')?.hasError('required')) {
+            <mat-error>Requerido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Categoría</mat-label>
+          <mat-select formControlName="categoriaId">
+            @for (cat of categorias; track cat.id) {
+              <mat-option [value]="cat.id">{{ cat.nombre }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('categoriaId')?.hasError('required')) {
+            <mat-error>Requerido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Código</mat-label>
+          <input matInput formControlName="codigo">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Unidad de Medida</mat-label>
+          <mat-select formControlName="unidadMedida">
+            @for (u of unidadesMedida; track u) {
+              <mat-option [value]="u">{{ u }}</mat-option>
+            }
+          </mat-select>
+          @if (form.get('unidadMedida')?.hasError('required')) {
+            <mat-error>Requerido</mat-error>
+          }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Precio Compra</mat-label>
+          <input matInput type="number" step="0.01" formControlName="precioCompra">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Precio Venta</mat-label>
+          <input matInput type="number" step="0.01" formControlName="precioVenta">
+          @if (form.get('precioVenta')?.hasError('required')) {
+            <mat-error>Requerido</mat-error>
+          }
+        </mat-form-field>
+      </form>
+    }
+  </div>
+
+  <div class="side-menu">
+    <div class="menu-header">
+      <mat-icon>inventory_2</mat-icon>
+      <span>{{ editMode ? 'Editando' : producto.nombre }}</span>
+    </div>
+    <mat-divider></mat-divider>
+    <div class="menu-actions">
+      @if (!editMode) {
+        <button mat-stroked-button class="menu-btn" (click)="editar()" [disabled]="cargando">
+          <mat-icon>edit</mat-icon> Editar
+        </button>
+        <button mat-stroked-button class="menu-btn danger" (click)="borrar()">
+          <mat-icon>delete</mat-icon> Borrar
+        </button>
+      } @else {
+        <button mat-stroked-button class="menu-btn save-btn" (click)="guardar()" [disabled]="form.invalid || cargando">
+          <mat-icon>save</mat-icon> Guardar
+        </button>
+        <button mat-stroked-button class="menu-btn" (click)="cancelarEdicion()">
+          <mat-icon>close</mat-icon> Cancelar
+        </button>
+      }
+    </div>
+    <mat-divider></mat-divider>
+    <button mat-stroked-button class="menu-btn close-btn" (click)="cerrar()">
+      <mat-icon>close</mat-icon> Cerrar
+    </button>
+  </div>
+</div>
