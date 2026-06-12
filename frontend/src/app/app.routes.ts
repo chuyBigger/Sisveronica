@@ -16,6 +16,7 @@ import { OrdenDetalleComponent } from './components/ordenes-compra/orden-detalle
 import { LoginComponent } from './components/auth/login.component';
 import { ConfigComponent } from './components/config/config.component';
 import { SuperAdminComponent } from './components/super-admin/super-admin.component';
+import { ReporteProduccionComponent } from './components/reportes/reporte-produccion.component';
 
 export const routes: Routes = [
   { path: '', component: LoginComponent },
@@ -39,4 +40,5 @@ export const routes: Routes = [
   { path: 'ordenes-compra/:id', component: OrdenFormComponent, canActivate: [AuthGuard] },
   { path: 'config', component: ConfigComponent, canActivate: [AuthGuard] },
   { path: 'admin/super', component: SuperAdminComponent, canActivate: [AdminGuard] },
+  { path: 'reportes/produccion', component: ReporteProduccionComponent, canActivate: [AuthGuard] },
 ];

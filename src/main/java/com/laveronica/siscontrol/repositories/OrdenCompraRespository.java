@@ -9,6 +9,7 @@ import org.springframework.data.jpa.repository.Query;
 import org.springframework.data.repository.query.Param;
 
 import java.time.LocalDate;
+import java.util.List;
 import java.util.Optional;
 
 public interface OrdenCompraRespository extends JpaRepository<OrdenCompra, String> {
@@ -21,4 +22,6 @@ public interface OrdenCompraRespository extends JpaRepository<OrdenCompra, Strin
 
     @Query("SELECT o FROM OrdenCompra o WHERE o.activo = true AND o.fechaInicioSemana <= :fecha AND o.fechaFinSemana >= :fecha")
     Page<OrdenCompra> findByFechaInPeriodo(@Param("fecha") LocalDate fecha, Pageable paginacion);
+
+    List<OrdenCompra> findByActivoTrueAndFechaInicioSemanaAndPartida(LocalDate fechaInicioSemana, Partida partida);
 }

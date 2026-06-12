@@ -1,0 +1,69 @@
+<div class="no-print reporte-container">
+  <mat-card>
+    <mat-card-header>
+      <mat-icon mat-card-avatar>assessment</mat-icon>
+      <mat-card-title>Reporte de Producción - Carnes</mat-card-title>
+      <mat-card-subtitle>Reporte semanal por cliente basado en Órdenes de Compra</mat-card-subtitle>
+    </mat-card-header>
+    <mat-card-content>
+      <div class="filtro-row">
+        <mat-form-field appearance="outline">
+          <mat-label>Semana (elige cualquier día)</mat-label>
+          <input matInput [matDatepicker]="picker" [(ngModel)]="selectedDate" placeholder="Selecciona una fecha">
+          <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+          <mat-datepicker #picker></mat-datepicker>
+        </mat-form-field>
+        <button mat-raised-button color="primary" (click)="consultar()" [disabled]="loading">
+          <mat-icon>search</mat-icon> {{ loading ? 'Cargando...' : 'Generar reporte' }}
+        </button>
+      </div>
+    </mat-card-content>
+  </mat-card>
+
+  @if (reporte) {
+    <div id="reporte-print-area">
+      @for (cliente of reporte.clientes; track cliente.clienteNombre) {
+        <div class="cliente-page">
+          <div class="cliente-header">
+            <div class="cliente-titulo">
+              <h2>{{ cliente.clienteNombre }}</h2>
+              <span class="semana-range">{{ reporte.semanaInicio }} al {{ reporte.semanaFin }}</span>
+            </div>
+            <div class="cliente-total-general">
+              Total: <strong>{{ cliente.totalGeneral | number:'1.2-2' }} kg</strong>
+            </div>
+          </div>
+
+          <div class="dias-grid">
+            @for (dia of cliente.dias; track dia.dia) {
+              <div class="dia-mini-nota">
+                <div class="dia-mini-header">
+                  <span class="dia-label">{{ diaLabel(dia.dia) }}</span>
+                  <span class="dia-fecha">{{ dia.fecha }}</span>
+                  <span class="dia-total">{{ dia.totalDia | number:'1.2-2' }} kg</span>
+                </div>
+                <table class="productos-table">
+                  <tbody>
+                    @for (p of dia.productos; track p.productoNombre) {
+                      <tr>
+                        <td class="prod-nombre">{{ p.productoNombre }}</td>
+                        <td class="prod-cant">{{ p.cantidad | number:'1.2-2' }}</td>
+                        <td class="prod-um">{{ p.unidadMedida }}</td>
+                      </tr>
+                    }
+                  </tbody>
+                </table>
+              </div>
+            }
+          </div>
+        </div>
+      }
+    </div>
+
+    <div class="no-print actions-row">
+      <button mat-raised-button color="accent" (click)="imprimir()">
+        <mat-icon>print</mat-icon> Imprimir
+      </button>
+    </div>
+  }
+</div>

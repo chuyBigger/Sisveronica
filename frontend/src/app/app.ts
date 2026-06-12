@@ -48,6 +48,7 @@ export class App implements OnInit, OnDestroy {
     { path: '/contratos', icon: 'description', label: 'Contratos' },
     { path: '/notaventas', icon: 'receipt', label: 'Notas de Venta' },
     { path: '/ordenes-compra', icon: 'shopping_cart', label: 'Órdenes de Compra' },
+    { path: '/reportes/produccion', icon: 'assessment', label: 'Reporte Producción' },
   ];
 
   adminMenuItems = [
