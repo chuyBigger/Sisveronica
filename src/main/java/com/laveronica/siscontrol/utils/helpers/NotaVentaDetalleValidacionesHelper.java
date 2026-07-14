@@ -2,19 +2,15 @@ package com.laveronica.siscontrol.utils.helpers;
 
 import com.laveronica.siscontrol.domain.notaventadetalle.NotaVentaDetalle;
 import com.laveronica.siscontrol.repositories.NotaVentaDetalleRepository;
-import com.laveronica.siscontrol.repositories.NotaVentaRepository;
+import lombok.RequiredArgsConstructor;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class NotaVentaDetalleValidacionesHelper {
 
-    @Autowired
-    private NotaVentaDetalleRepository notaVentaDetalleRepository;
-
-    @Autowired
-    private NotaVentaRepository notaVentaRepository;
+    private final NotaVentaDetalleRepository notaVentaDetalleRepository;
 
     @Transactional
     public NotaVentaDetalle detalleProductoExiste(String id, String producto){

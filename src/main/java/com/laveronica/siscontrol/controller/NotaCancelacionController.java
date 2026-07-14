@@ -8,27 +8,28 @@ import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
 
 @RestController
 @RequestMapping("/cancelaciones")
+@RequiredArgsConstructor
 @Tag(name = "Cancelaciones")
 @SecurityRequirement(name = "bearerAuth")
 public class NotaCancelacionController {
 
-    @Autowired
-    private NotaCancelacionService cancelacionService;
+    private final NotaCancelacionService cancelacionService;
 
     @PostMapping
     @Operation(summary = "Crear cancelación")
-    public ResponseEntity<DatosListarCancelacion> crear(@Valid @RequestBody DatosRegistroCancelacion datos) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        var cancelacion = cancelacionService.crearCancelacion(datos, username);
+    public ResponseEntity<DatosListarCancelacion> crear(@Valid @RequestBody DatosRegistroCancelacion datos,
+                                                        @AuthenticationPrincipal UserDetails userDetails) {
+        var cancelacion = cancelacionService.crearCancelacion(datos, userDetails.getUsername());
         return ResponseEntity.ok(cancelacion);
     }
 
@@ -41,9 +42,9 @@ public class NotaCancelacionController {
 
     @PostMapping("/{id}/validar")
     @Operation(summary = "Validar cancelación")
-    public ResponseEntity<DatosListarCancelacion> validar(@PathVariable String id) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        var cancelacion = cancelacionService.validarCancelacion(id, username);
+    public ResponseEntity<DatosListarCancelacion> validar(@PathVariable String id,
+                                                          @AuthenticationPrincipal UserDetails userDetails) {
+        var cancelacion = cancelacionService.validarCancelacion(id, userDetails.getUsername());
         return ResponseEntity.ok(cancelacion);
     }
 

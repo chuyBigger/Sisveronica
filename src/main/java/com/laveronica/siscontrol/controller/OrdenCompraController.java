@@ -7,11 +7,12 @@ import com.laveronica.siscontrol.domain.ordencompra.dto.DatosDetalleOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosListarOrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompra.dto.DatosRegistroOrdenCompra;
 import com.laveronica.siscontrol.services.OrdenCompraService;
+import com.laveronica.siscontrol.services.OrdenCompraService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -26,12 +27,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/orden_compra")
+@RequiredArgsConstructor
 @Tag(name = "Órdenes de Compra")
 @SecurityRequirement(name = "bearerAuth")
 public class OrdenCompraController {
 
-    @Autowired
-    private OrdenCompraService ordenCompraService;
+    private final OrdenCompraService ordenCompraService;
 
     @PostMapping
     @Operation(summary = "Registrar orden de compra")

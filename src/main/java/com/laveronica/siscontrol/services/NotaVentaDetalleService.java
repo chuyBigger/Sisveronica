@@ -7,7 +7,7 @@ import com.laveronica.siscontrol.domain.productos.Producto;
 import com.laveronica.siscontrol.repositories.NotaVentaDetalleRepository;
 import com.laveronica.siscontrol.utils.helpers.ProductoValidacionesHelper;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -15,14 +15,11 @@ import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class NotaVentaDetalleService {
 
-
-    @Autowired
-    private ProductoValidacionesHelper productoValidacionesHelper;
-
-    @Autowired
-    private NotaVentaDetalleRepository notaVentaDetalleRepository;
+    private final ProductoValidacionesHelper productoValidacionesHelper;
+    private final NotaVentaDetalleRepository notaVentaDetalleRepository;
 
 
     public List<NotaVentaDetalle> registrarNuevaListaNotaVentasDetalles(List<NotaVentaDetalleRegistro> datos, NotaVenta notaVenta){

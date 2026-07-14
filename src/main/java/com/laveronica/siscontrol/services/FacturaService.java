@@ -68,62 +68,26 @@ public class FacturaService {
                 + cancelacionesNoValidadas.size());
         }
 
-        Map<String, Double> cantidadesPorProducto = new HashMap<>();
-        Map<String, BigDecimal> preciosPorProducto = new HashMap<>();
+        Map<String, Double> cantidades = new HashMap<>();
+        Map<String, BigDecimal> precios = new HashMap<>();
 
         for (NotaVenta nota : notas) {
             for (var detalle : nota.getDetalles()) {
                 String nombre = detalle.getProducto().getNombre();
-                cantidadesPorProducto.merge(nombre, detalle.getCantidad().doubleValue(), Double::sum);
-                preciosPorProducto.putIfAbsent(nombre, detalle.getPrecioVenta());
+                cantidades.merge(nombre, detalle.getCantidad().doubleValue(), Double::sum);
+                precios.putIfAbsent(nombre, detalle.getPrecioVenta());
             }
         }
 
         for (NotaCancelacion cancelacion : cancelaciones) {
             for (var detalle : cancelacion.getDetalles()) {
                 String nombre = detalle.getProducto().getNombre();
-                cantidadesPorProducto.merge(nombre, -detalle.getCantidadCancelada(), Double::sum);
+                cantidades.merge(nombre, -detalle.getCantidadCancelada(), Double::sum);
             }
         }
 
-        cantidadesPorProducto.values().removeIf(v -> v <= 0);
-
-        int folio = facturaRepository.obtenerMaxFolio() + 1;
-        Factura factura = Factura.builder()
-            .folio(folio)
-            .ordenCompra(oc)
-            .cliente(oc.getCliente().getNombre())
-            .contrato(oc.getContrato() != null ? oc.getContrato().getContrato() : null)
-            .partida(oc.getPartida().name())
-            .fechaCreacion(LocalDateTime.now())
-            .totalGeneral(BigDecimal.ZERO)
-            .activo(true)
-            .build();
-
-        BigDecimal totalGeneral = BigDecimal.ZERO;
-
-        for (var entry : cantidadesPorProducto.entrySet()) {
-            String productoNombre = entry.getKey();
-            Double cantidad = entry.getValue();
-            BigDecimal precio = preciosPorProducto.get(productoNombre);
-            BigDecimal subtotal = precio.multiply(BigDecimal.valueOf(cantidad))
-                .setScale(2, RoundingMode.HALF_UP);
-
-            FacturaDetalle detalle = FacturaDetalle.builder()
-                .productoNombre(productoNombre)
-                .cantidadTotal(cantidad)
-                .precioVenta(precio)
-                .subtotal(subtotal)
-                .build();
-
-            factura.agregarDetalle(detalle);
-            totalGeneral = totalGeneral.add(subtotal);
-        }
-
-        factura.setTotalGeneral(totalGeneral);
-        factura = facturaRepository.save(factura);
-
-        return new DatosListarFactura(factura);
+        cantidades.values().removeIf(v -> v <= 0);
+        return crearFactura(oc, cantidades, precios, false);
     }
 
     @Transactional
@@ -136,6 +100,10 @@ public class FacturaService {
         }
 
         List<Extra> extras = extraRepository.findByOrdenCompraIdAndActivoTrue(oc.getId());
+        if (extras.isEmpty()) {
+            throw new RuntimeException("No hay extras para facturar");
+        }
+
         List<Extra> extrasNoFirmados = extras.stream()
             .filter(e -> !Boolean.TRUE.equals(e.getFirmada()))
             .toList();
@@ -144,28 +112,22 @@ public class FacturaService {
                 + extrasNoFirmados.size());
         }
 
-        if (extras.isEmpty()) {
-            throw new RuntimeException("No hay extras para facturar");
-        }
-
-        Map<String, Double> cantidadesPorProducto = new HashMap<>();
-        Map<String, BigDecimal> preciosPorProducto = new HashMap<>();
+        Map<String, Double> cantidades = new HashMap<>();
+        Map<String, BigDecimal> precios = new HashMap<>();
 
         for (Extra extra : extras) {
             for (var detalle : extra.getDetalles()) {
                 String nombre = detalle.getProducto().getNombre();
-                cantidadesPorProducto.merge(nombre, detalle.getCantidad(), Double::sum);
+                cantidades.merge(nombre, detalle.getCantidad(), Double::sum);
+                precios.putIfAbsent(nombre, detalle.getPrecioVenta());
             }
         }
 
-        List<NotaVenta> notas = notaVentaRepository.findByOrdenCompraIdAndActivoTrue(oc.getId());
-        for (NotaVenta nota : notas) {
-            for (var detalle : nota.getDetalles()) {
-                String nombre = detalle.getProducto().getNombre();
-                preciosPorProducto.putIfAbsent(nombre, detalle.getPrecioVenta());
-            }
-        }
+        return crearFactura(oc, cantidades, precios, true);
+    }
 
+    private DatosListarFactura crearFactura(OrdenCompra oc, Map<String, Double> cantidades,
+                                             Map<String, BigDecimal> precios, boolean esExtras) {
         int folio = facturaRepository.obtenerMaxFolio() + 1;
         Factura factura = Factura.builder()
             .folio(folio)
@@ -175,16 +137,16 @@ public class FacturaService {
             .partida(oc.getPartida().name())
             .fechaCreacion(LocalDateTime.now())
             .totalGeneral(BigDecimal.ZERO)
-            .esExtras(true)
+            .esExtras(esExtras)
             .activo(true)
             .build();
 
         BigDecimal totalGeneral = BigDecimal.ZERO;
 
-        for (var entry : cantidadesPorProducto.entrySet()) {
+        for (var entry : cantidades.entrySet()) {
             String productoNombre = entry.getKey();
             Double cantidad = entry.getValue();
-            BigDecimal precio = preciosPorProducto.getOrDefault(productoNombre, BigDecimal.ZERO);
+            BigDecimal precio = precios.getOrDefault(productoNombre, BigDecimal.ZERO);
             BigDecimal subtotal = precio.multiply(BigDecimal.valueOf(cantidad))
                 .setScale(2, RoundingMode.HALF_UP);
 

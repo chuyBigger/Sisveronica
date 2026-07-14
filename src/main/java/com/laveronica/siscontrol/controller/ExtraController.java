@@ -9,7 +9,8 @@ import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
-import org.springframework.security.core.context.SecurityContextHolder;
+import org.springframework.security.core.annotation.AuthenticationPrincipal;
+import org.springframework.security.core.userdetails.UserDetails;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -25,9 +26,9 @@ public class ExtraController {
 
     @PostMapping
     @Operation(summary = "Crear extra")
-    public ResponseEntity<DatosListarExtra> crear(@Valid @RequestBody DatosRegistroExtra datos) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return ResponseEntity.ok(extraService.crearExtra(datos, username));
+    public ResponseEntity<DatosListarExtra> crear(@Valid @RequestBody DatosRegistroExtra datos,
+                                                  @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(extraService.crearExtra(datos, userDetails.getUsername()));
     }
 
     @GetMapping("/orden/{ordenCompraId}")
@@ -38,9 +39,9 @@ public class ExtraController {
 
     @PostMapping("/{id}/firmar")
     @Operation(summary = "Firmar extra")
-    public ResponseEntity<DatosListarExtra> firmar(@PathVariable String id) {
-        String username = SecurityContextHolder.getContext().getAuthentication().getName();
-        return ResponseEntity.ok(extraService.firmarExtra(id, username));
+    public ResponseEntity<DatosListarExtra> firmar(@PathVariable String id,
+                                                   @AuthenticationPrincipal UserDetails userDetails) {
+        return ResponseEntity.ok(extraService.firmarExtra(id, userDetails.getUsername()));
     }
 
     @DeleteMapping("/{id}")

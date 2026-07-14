@@ -1,16 +1,16 @@
 package com.laveronica.siscontrol.controller;
 
 import com.laveronica.siscontrol.domain.notaventa.dto.DatosActualizarNota;
+import com.laveronica.siscontrol.domain.notaventa.dto.DatosDetalleNota;
 import com.laveronica.siscontrol.domain.notaventa.dto.DatosGenerarNotaDesdeOrden;
 import com.laveronica.siscontrol.domain.notaventa.dto.DatosListarNota;
-import com.laveronica.siscontrol.services.NotaVentaService;
-import com.laveronica.siscontrol.domain.notaventa.dto.DatosDetalleNota;
 import com.laveronica.siscontrol.domain.notaventa.dto.DatosRegistroNota;
+import com.laveronica.siscontrol.services.NotaVentaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.data.web.PageableDefault;
@@ -22,12 +22,12 @@ import java.util.Map;
 
 @RestController
 @RequestMapping("/notaventas")
+@RequiredArgsConstructor
 @Tag(name = "Notas de Venta")
 @SecurityRequirement(name = "bearerAuth")
 public class NotaVentaController {
 
-    @Autowired
-    private NotaVentaService notaVentaService;
+    private final NotaVentaService notaVentaService;
 
     @PostMapping
     @Operation(summary = "Registrar nota de venta")

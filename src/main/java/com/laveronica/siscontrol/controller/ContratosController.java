@@ -5,11 +5,12 @@ import com.laveronica.siscontrol.domain.contratos.dto.DatosActualizarContrato;
 import com.laveronica.siscontrol.domain.contratos.dto.DatosDetalleContrato;
 import com.laveronica.siscontrol.domain.contratos.dto.DatosRegistroContrato;
 import com.laveronica.siscontrol.services.ContratoService;
+import com.laveronica.siscontrol.services.ContratoService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
@@ -19,12 +20,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/contratos")
+@RequiredArgsConstructor
 @Tag(name = "Contratos")
 @SecurityRequirement(name = "bearerAuth")
 public class ContratosController {
 
-    @Autowired
-    private ContratoService contratoService;
+    private final ContratoService contratoService;
 
     @PostMapping
     @Operation(summary = "Registrar contrato")

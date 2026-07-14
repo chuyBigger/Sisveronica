@@ -5,6 +5,8 @@ import com.laveronica.siscontrol.domain.productos.Producto;
 import jakarta.persistence.*;
 import lombok.*;
 
+import java.math.BigDecimal;
+
 @Table(name = "extra_detalles")
 @Entity
 @Getter
@@ -28,6 +30,9 @@ public class ExtraDetalle {
 
     @Column(nullable = false)
     private Double cantidad;
+
+    @Column(name = "precio_venta", nullable = false, precision = 10, scale = 2)
+    private BigDecimal precioVenta;
 
     @Column(nullable = false)
     private boolean activo;

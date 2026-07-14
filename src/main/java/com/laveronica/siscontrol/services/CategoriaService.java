@@ -9,24 +9,26 @@ import com.laveronica.siscontrol.repositories.CategoriaRepository;
 import jakarta.persistence.EntityNotFoundException;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class CategoriaService {
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    private final CategoriaRepository categoriaRepository;
 
     @Transactional
     public Categoria registrarCategoria(DatosRegistroCategoria datos) {
         if (datos.partida() == null) {
             throw new IllegalArgumentException("⚠️ Falta asignar 'partida'");
         }
-        if (!categoriaRepository.existsByNombre(datos.nombre())) {
-            Categoria nuevaCategoria = new Categoria(datos);
+        String nombreNormalizado = datos.nombre().toUpperCase().trim();
+        if (!categoriaRepository.existsByNombre(nombreNormalizado)) {
+            Categoria nuevaCategoria = new Categoria(
+                    new DatosRegistroCategoria(nombreNormalizado, datos.partida()));
             categoriaRepository.save(nuevaCategoria);
             return nuevaCategoria;
         } else {
@@ -53,8 +55,8 @@ public class CategoriaService {
     public Categoria actualizarCategoria(String id, @Valid DatosActualizarCategoria datos) {
         Categoria categoria = categoriaRepository.findByIdAndActivoTrue(id)
                 .orElseThrow(() -> new EntityNotFoundException("La Categoría seleccionada no existe"));
-        if (!datos.nombre().isEmpty()) {
-            categoria.setNombre(datos.nombre());
+        if (datos.nombre() != null && !datos.nombre().isEmpty()) {
+            categoria.setNombre(datos.nombre().toUpperCase().trim());
         }
         if (datos.partida() != null) {
             categoria.setPartida(datos.partida());

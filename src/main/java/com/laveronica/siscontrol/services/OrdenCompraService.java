@@ -24,7 +24,7 @@ import com.laveronica.siscontrol.utils.helpers.OrdenCompraValidacionesHelper;
 import com.laveronica.siscontrol.utils.helpers.PartidaValidacionesHelper;
 import jakarta.transaction.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.data.domain.Page;
 import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
@@ -38,37 +38,19 @@ import java.util.Set;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrdenCompraService {
 
-    @Autowired
-    private OrdenCompraValidacionesHelper ordenCompraValidacionesHelper;
-
-    @Autowired
-    private ClienteValidacionesHelper clienteValidacionesHelper;
-
-    @Autowired
-    private ContratoValidacionesHelper contratoValidacionesHelper;
-
-    @Autowired
-    private OrdenCompraDetalleService ordenCompraDetalleService;
-
-    @Autowired
-    private OrdenCompraRespository ordenCompraRespository;
-
-    @Autowired
-    private PartidaValidacionesHelper partidaValidacionesHelper;
-
-    @Autowired
-    private NotaVentaRepository notaVentaRepository;
-
-    @Autowired
-    private NotaVentaService notaVentaService;
-
-    @Autowired
-    private FacturaRepository facturaRepository;
-
-    @Autowired
-    private NotaCancelacionRepository notaCancelacionRepository;
+    private final OrdenCompraValidacionesHelper ordenCompraValidacionesHelper;
+    private final ClienteValidacionesHelper clienteValidacionesHelper;
+    private final ContratoValidacionesHelper contratoValidacionesHelper;
+    private final OrdenCompraDetalleService ordenCompraDetalleService;
+    private final OrdenCompraRespository ordenCompraRespository;
+    private final PartidaValidacionesHelper partidaValidacionesHelper;
+    private final NotaVentaRepository notaVentaRepository;
+    private final NotaVentaService notaVentaService;
+    private final FacturaRepository facturaRepository;
+    private final NotaCancelacionRepository notaCancelacionRepository;
 
     public DatosDetalleOrdenCompra registrarOrdenCompra(@Valid DatosRegistroOrdenCompra datos) {
         Partida partida = partidaValidacionesHelper.validaPartidaExistaString(datos.partida());
