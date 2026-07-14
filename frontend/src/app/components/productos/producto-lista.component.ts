@@ -19,6 +19,7 @@ import { EnumsService } from '../../services/enums.service';
 import { DatosListarProductos } from '../../models/producto.model';
 import { ProductoPreviewDialogComponent } from './producto-preview-dialog.component';
 import { ProductoExcelDialogComponent } from './producto-excel-dialog.component';
+import { CategoriaDialogComponent } from '../categorias/categoria-dialog.component';
 
 @Component({
   selector: 'app-producto-lista',
@@ -150,6 +151,12 @@ export class ProductoListaComponent implements AfterViewInit {
       if (result === 'uploaded') {
         this.cargarProductos();
       }
+    });
+  }
+
+  abrirCategorias(): void {
+    this.dialog.open(CategoriaDialogComponent, {
+      width: '600px',
     });
   }
 

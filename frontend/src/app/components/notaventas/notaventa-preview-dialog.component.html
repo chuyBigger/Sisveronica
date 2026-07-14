@@ -3,15 +3,14 @@
     <div class="header">
       <div class="header-top">
         <div class="header-left">
-          <img src="logo.jpeg" alt="Logo" class="logo-img">
           <div class="brand">
             <h1 class="business-name">{{ negocio.nombre }}</h1>
             <p class="slogan">{{ negocio.eslogan }}</p>
           </div>
         </div>
         <div class="folio-box">
-          <span class="folio-label">NOTA No.</span>
-          <span class="folio-number">{{ nota.folio }}</span>
+          <span class="folio-label">{{ label }} No.</span>
+          <span class="folio-number">{{ data.folio }}</span>
         </div>
       </div>
       <div class="fiscal-info">
@@ -24,16 +23,18 @@
     <div class="control-section compact">
       <div class="control-row">
         <span class="control-label">Fecha:</span>
-        <span class="control-value">{{ nota.fecha | date:'fullDate' }}</span>
+        <span class="control-value">{{ data.fecha | date:'fullDate' }}</span>
       </div>
       <div class="control-row">
-        <span class="control-label">Cliente:</span>
-        <span class="control-value">{{ nota.cliente }}</span>
+        <span class="control-label">{{ isExtra ? 'Usuario:' : 'Cliente:' }}</span>
+        <span class="control-value">{{ clienteOUsuario }}</span>
       </div>
-      <div class="control-row">
-        <span class="control-label">Domicilio:</span>
-        <span class="control-value">Aguascalientes</span>
-      </div>
+      @if (data.dia) {
+        <div class="control-row">
+          <span class="control-label">Día:</span>
+          <span class="control-value">{{ data.dia }}</span>
+        </div>
+      }
     </div>
 
     <table class="detalle-table">
@@ -42,26 +43,37 @@
           <th class="col-no">No.</th>
           <th class="col-producto">Producto</th>
           <th class="col-cantidad">Cant.</th>
-          <th class="col-precio">Precio/U</th>
-          <th class="col-total">Sub Total</th>
+          @if (conPrecios) {
+            <th class="col-precio">Precio/U</th>
+            <th class="col-total">Sub Total</th>
+          }
         </tr>
       </thead>
       <tbody>
-        @for (detalle of nota.detalles; track $index) {
+        @for (detalle of data.detalles; track $index) {
           <tr>
             <td class="col-no">{{ $index + 1 }}</td>
-            <td class="col-producto">{{ detalle.producto }}</td>
+            <td class="col-producto">{{ getProductoName(detalle) }}</td>
             <td class="col-cantidad">{{ detalle.cantidad }}</td>
-            <td class="col-precio">{{ detalle.precio | currency:'MXN':'symbol':'1.2-2' }}</td>
-            <td class="col-total">{{ detalle.subTotal | currency:'MXN':'symbol':'1.2-2' }}</td>
+            @if (conPrecios) {
+              <td class="col-precio">{{ detalle.precio | number:'1.2-2' }}</td>
+              <td class="col-total">{{ detalle.subTotal | number:'1.2-2' }}</td>
+            }
           </tr>
         }
       </tbody>
       <tfoot>
-        <tr class="total-row">
-          <td colspan="4" class="total-label">TOTAL GENERAL</td>
-          <td class="total-amount">{{ nota.totalGeneral | currency:'MXN':'symbol':'1.2-2' }}</td>
-        </tr>
+        @if (conPrecios) {
+          <tr class="total-row">
+            <td [attr.colspan]="4" class="total-label">TOTAL GENERAL</td>
+            <td class="total-amount">{{ data.totalGeneral | number:'1.2-2' }}</td>
+          </tr>
+        } @else {
+          <tr class="total-row">
+            <td colspan="2" class="total-label">TOTAL PRODUCTOS</td>
+            <td class="total-amount">{{ data.detalles.length }}</td>
+          </tr>
+        }
       </tfoot>
     </table>
 
@@ -72,41 +84,47 @@
     </div>
   </div>
 
-  <div class="side-menu" [class.nota-firmada]="nota.firmada" [class.nota-alerta]="!nota.firmada && nota.detalle">
+  <div class="side-menu"
+    [class.nota-firmada]="data.firmada"
+    [class.nota-alerta]="!data.firmada && data.detalle && !isExtra">
     <div class="menu-header">
-      <mat-icon>receipt</mat-icon>
-      <span>Nota #{{ nota.folio }}</span>
-      @if (nota.firmada) {
+      <mat-icon>{{ isExtra ? 'add_circle' : 'receipt' }}</mat-icon>
+      <span>{{ label }} #{{ data.folio }}</span>
+      @if (data.firmada) {
         <mat-icon class="status-badge firmada" matTooltip="Firmada">check_circle</mat-icon>
-      } @else if (nota.detalle) {
-        <mat-icon class="status-badge alerta" matTooltip="{{ nota.detalle }}">warning</mat-icon>
+      } @else if (data.detalle && !isExtra) {
+        <mat-icon class="status-badge alerta" matTooltip="{{ data.detalle }}">warning</mat-icon>
       }
     </div>
-    @if (nota.detalle && !nota.firmada) {
+    @if (data.detalle && !data.firmada && !isExtra) {
       <div class="detalle-preview">
         <mat-icon>info</mat-icon>
-        <span>{{ nota.detalle }}</span>
+        <span>{{ data.detalle }}</span>
       </div>
     }
     <mat-divider></mat-divider>
     <div class="menu-actions">
-      @if (!nota.firmada) {
-        <button mat-stroked-button class="menu-btn firmar-btn" (click)="firmarNota()">
+      @if (!data.firmada) {
+        <button mat-stroked-button class="menu-btn firmar-btn" (click)="firmar()">
           <mat-icon>thumb_up</mat-icon> Firmada
         </button>
       }
-      <button mat-stroked-button class="menu-btn" (click)="editarDetalle()">
-        <mat-icon>edit_note</mat-icon> Detalle
-      </button>
-      <button mat-stroked-button class="menu-btn" (click)="editar()">
-        <mat-icon>edit</mat-icon> Editar
-      </button>
+      @if (!isExtra) {
+        <button mat-stroked-button class="menu-btn" (click)="editarDetalle()">
+          <mat-icon>edit_note</mat-icon> Detalle
+        </button>
+        <button mat-stroked-button class="menu-btn" (click)="editar()">
+          <mat-icon>edit</mat-icon> Editar
+        </button>
+      }
       <button mat-stroked-button class="menu-btn" (click)="imprimir()">
         <mat-icon>print</mat-icon> Imprimir
       </button>
-      <button mat-stroked-button class="menu-btn danger" (click)="borrar()">
-        <mat-icon>delete</mat-icon> Borrar
-      </button>
+      @if (!data.firmada) {
+        <button mat-stroked-button class="menu-btn danger" (click)="borrar()">
+          <mat-icon>delete</mat-icon> Borrar
+        </button>
+      }
     </div>
     <mat-divider></mat-divider>
     <button mat-stroked-button class="menu-btn close-btn" (click)="cerrar()">

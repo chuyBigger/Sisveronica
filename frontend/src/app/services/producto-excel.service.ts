@@ -29,4 +29,11 @@ export class ProductoExcelService {
       responseType: 'blob',
     });
   }
+
+  exportarProductos(partida: string): Observable<Blob> {
+    return this.http.get(`${this.apiUrl}/exportar`, {
+      params: { partida },
+      responseType: 'blob',
+    });
+  }
 }

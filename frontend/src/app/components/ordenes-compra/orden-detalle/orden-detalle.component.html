@@ -144,7 +144,7 @@
     </mat-card>
 
     <!-- EXTRAS -->
-    <mat-card class="extras-card" [class.extras-bloqueadas]="!!factura">
+    <mat-card class="extras-card" [class.extras-bloqueadas]="!!facturaExtras">
       <mat-card-header>
         <mat-card-title>Extras</mat-card-title>
         <div class="header-actions">
@@ -163,32 +163,33 @@
         @if (extras.length === 0) {
           <p class="sin-datos">No hay extras registrados.</p>
         }
-        <div class="extras-grid">
+        <div class="notas-grid">
           @for (extra of extras; track extra.id) {
-            <mat-card class="extra-mini" [class.firmada]="extra.firmada">
+            <mat-card class="nota-mini" [class.tiene-detalle]="!extra.firmada" (click)="abrirExtra(extra)">
               <mat-card-header>
-                <mat-icon mat-card-avatar>{{ extra.firmada ? 'verified' : 'add_circle_outline' }}</mat-icon>
-                <mat-card-title>{{ extra.dia }} — Folio #{{ extra.folio }}</mat-card-title>
-                <mat-card-subtitle>{{ extra.fecha | date:'dd/MM/yyyy' }} — {{ extra.fechaCreacion | date:'dd/MM/yyyy HH:mm' }}</mat-card-subtitle>
+                <mat-icon mat-card-avatar>add_circle</mat-icon>
+                <mat-card-title>Extra #{{ extra.folio }}</mat-card-title>
+                <mat-card-subtitle>{{ extra.fecha | date:'dd/MM/yyyy' }} @if (extra.dia) { — {{ extra.dia }} }</mat-card-subtitle>
               </mat-card-header>
-              <mat-card-content>
-                <p class="extra-creado">Creado por: {{ extra.creadoPor }}</p>
-                <ul class="extra-detalles">
-                  @for (d of extra.detalles; track d.id) {
-                    <li>{{ d.productoNombre }}: {{ d.cantidad }}</li>
+              @if (facturaExtras) {
+                <div class="nota-indicator">
+                  <mat-icon class="indi-bloqueada" matTooltip="Factura de extras generada — bloqueado">lock</mat-icon>
+                </div>
+              } @else {
+                <div class="nota-indicator">
+                  @if (extra.firmada) {
+                    <svg class="indi-firmada" viewBox="0 0 100 100" matTooltip="Firmada">
+                      <polygon points="98,50 74.5,55.2 93.8,69.5 70.2,64.7 82.1,85.7 62.5,71.7 64.8,95.7 52.6,74.9 45,97.7 42.3,73.8 26,91.6 33.3,68.6 11.2,78.2 27.2,60.2 3.1,60 25,50 3.1,40 27.2,39.8 11.2,21.8 33.3,31.4 26,8.4 42.3,26.2 45,2.3 52.6,25.1 64.8,4.3 62.5,28.3 82.1,14.3 70.2,35.3 93.8,30.5 74.5,44.8" fill="#4caf50"/>
+                    </svg>
+                  } @else {
+                    <mat-icon class="indi-vencida" matTooltip="Pendiente de firma">warning_amber</mat-icon>
                   }
-                </ul>
+                </div>
+              }
+              <mat-card-content>
+                <p class="nota-cliente">{{ extra.creadoPor }}</p>
+                <p class="nota-total">{{ extra.totalGeneral | number:'1.2-2' }}</p>
               </mat-card-content>
-              <mat-card-actions>
-                @if (!extra.firmada) {
-                  <button mat-button color="accent" (click)="firmarExtra(extra.id)">
-                    <mat-icon>check_circle</mat-icon> Firmar
-                  </button>
-                  <button mat-button color="warn" (click)="eliminarExtra(extra.id)">
-                    <mat-icon>delete</mat-icon> Eliminar
-                  </button>
-                }
-              </mat-card-actions>
             </mat-card>
           }
         </div>
@@ -234,7 +235,7 @@
               }
               <mat-card-content>
                 <p class="nota-cliente">{{ nota.cliente }}</p>
-                <p class="nota-total">{{ nota.totalGeneral | currency:'MXN':'symbol':'1.2-2' }}</p>
+                <p class="nota-total">{{ nota.totalGeneral | number:'1.2-2' }}</p>
               </mat-card-content>
             </mat-card>
           }
@@ -282,15 +283,15 @@
                     <tr>
                       <td class="col-prod">{{ d.productoNombre }}</td>
                       <td class="col-cant">{{ d.cantidadTotal }}</td>
-                      <td class="col-precio">{{ d.precioVenta | currency:'MXN':'symbol':'1.2-2' }}</td>
-                      <td class="col-subtotal">{{ d.subtotal | currency:'MXN':'symbol':'1.2-2' }}</td>
+                      <td class="col-precio">{{ d.precioVenta | number:'1.2-2' }}</td>
+                      <td class="col-subtotal">{{ d.subtotal | number:'1.2-2' }}</td>
                     </tr>
                   }
                 </tbody>
                 <tfoot>
                   <tr>
                     <th colspan="3">Total General</th>
-                    <th>{{ factura.totalGeneral | currency:'MXN':'symbol':'1.2-2' }}</th>
+                    <th>{{ factura.totalGeneral | number:'1.2-2' }}</th>
                   </tr>
                 </tfoot>
               </table>
@@ -323,15 +324,15 @@
                     <tr>
                       <td class="col-prod">{{ d.productoNombre }}</td>
                       <td class="col-cant">{{ d.cantidadTotal }}</td>
-                      <td class="col-precio">{{ d.precioVenta | currency:'MXN':'symbol':'1.2-2' }}</td>
-                      <td class="col-subtotal">{{ d.subtotal | currency:'MXN':'symbol':'1.2-2' }}</td>
+                      <td class="col-precio">{{ d.precioVenta | number:'1.2-2' }}</td>
+                      <td class="col-subtotal">{{ d.subtotal | number:'1.2-2' }}</td>
                     </tr>
                   }
                 </tbody>
                 <tfoot>
                   <tr>
                     <th colspan="3">Total General (Extras)</th>
-                    <th>{{ facturaExtras.totalGeneral | currency:'MXN':'symbol':'1.2-2' }}</th>
+                    <th>{{ facturaExtras.totalGeneral | number:'1.2-2' }}</th>
                   </tr>
                 </tfoot>
               </table>

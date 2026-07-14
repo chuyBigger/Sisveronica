@@ -38,13 +38,31 @@
           @if (cargando) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {
-            <ng-container>
-              <mat-icon>upload</mat-icon> Cargar productos
-            </ng-container>
+            <ng-container><mat-icon>upload</mat-icon> Cargar productos</ng-container>
           }
         </button>
       </div>
     </div>
+
+    <mat-divider></mat-divider>
+
+    <div class="export-section">
+      <p class="instructions">Descargar productos existentes por partida:</p>
+      <div class="export-controls">
+        <mat-form-field appearance="outline" subscriptSizing="dynamic">
+          <mat-label>Partida</mat-label>
+          <mat-select [(ngModel)]="partidaExportar">
+            @for (p of partidas; track p) {
+              <mat-option [value]="p">{{ p }}</mat-option>
+            }
+          </mat-select>
+        </mat-form-field>
+        <button mat-stroked-button color="accent" (click)="descargarProductos()" [disabled]="!partidaExportar">
+          <mat-icon>download</mat-icon> Descargar productos
+        </button>
+      </div>
+    </div>
+
   } @else {
     <div class="report-section">
       <h3>Reporte de carga</h3>

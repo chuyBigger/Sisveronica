@@ -58,15 +58,15 @@
               <td class="col-no">{{ $index + 1 }}</td>
               <td class="col-producto">{{ detalle.producto }}</td>
               <td class="col-cantidad">{{ detalle.cantidad }}</td>
-              <td class="col-precio">{{ detalle.precio | currency:'MXN':'symbol':'1.2-2' }}</td>
-              <td class="col-total">{{ detalle.subTotal | currency:'MXN':'symbol':'1.2-2' }}</td>
+              <td class="col-precio">{{ detalle.precio | number:'1.2-2' }}</td>
+              <td class="col-total">{{ detalle.subTotal | number:'1.2-2' }}</td>
             </tr>
           }
         </tbody>
         <tfoot>
           <tr class="total-row">
             <td colspan="4" class="total-label">TOTAL GENERAL</td>
-            <td class="total-amount">{{ nota.totalGeneral | currency:'MXN':'symbol':'1.2-2' }}</td>
+            <td class="total-amount">{{ nota.totalGeneral | number:'1.2-2' }}</td>
           </tr>
         </tfoot>
       </table>
