@@ -245,7 +245,7 @@ class NotaVentaServiceTest {
         orden.setDetalles(List.of(detalleOC));
         orden.setFechaInicioSemana(java.time.LocalDate.of(2026, 6, 1));
 
-        given(ordenCompraRespository.findByIdAndActivoTrue("orden-1")).willReturn(Optional.of(orden));
+        given(ordenCompraRespository.findByIdAndActivoTrueWithLock("orden-1")).willReturn(Optional.of(orden));
         given(notaVentaRepository.findMaxFolio()).willReturn(0);
         given(notaVentaRepository.save(any())).willAnswer(invocation -> {
             NotaVenta nv = invocation.getArgument(0);
@@ -268,7 +268,7 @@ class NotaVentaServiceTest {
         orden.setId("orden-1");
         orden.setDetalles(List.of());
 
-        given(ordenCompraRespository.findByIdAndActivoTrue("orden-1")).willReturn(Optional.of(orden));
+        given(ordenCompraRespository.findByIdAndActivoTrueWithLock("orden-1")).willReturn(Optional.of(orden));
 
         assertThatThrownBy(() -> notaVentaService.generarNotaDesdeOrden(datos))
                 .isInstanceOf(ResourceNotFoundException.class)
@@ -293,7 +293,7 @@ class NotaVentaServiceTest {
         orden.setId("orden-1");
         orden.setDetalles(List.of(detalleOC));
 
-        given(ordenCompraRespository.findByIdAndActivoTrue("orden-1")).willReturn(Optional.of(orden));
+        given(ordenCompraRespository.findByIdAndActivoTrueWithLock("orden-1")).willReturn(Optional.of(orden));
 
         assertThatThrownBy(() -> notaVentaService.generarNotaDesdeOrden(datos))
                 .isInstanceOf(ResourceNotFoundException.class)
@@ -304,7 +304,7 @@ class NotaVentaServiceTest {
     void generarNotaDesdeOrdenOrdenNotFoundThrowsResourceNotFoundException() {
         var datos = new DatosGenerarNotaDesdeOrden("bad-id", "lunes");
 
-        given(ordenCompraRespository.findByIdAndActivoTrue("bad-id")).willReturn(Optional.empty());
+        given(ordenCompraRespository.findByIdAndActivoTrueWithLock("bad-id")).willReturn(Optional.empty());
 
         assertThatThrownBy(() -> notaVentaService.generarNotaDesdeOrden(datos))
                 .isInstanceOf(ResourceNotFoundException.class)
