@@ -4,6 +4,11 @@ import { Observable, BehaviorSubject, tap } from 'rxjs';
 import { environment } from '../../environments/environment';
 import { DatosLogin, DatosRegistroUsuario, DatosRespuestaAuth } from '../models/auth.model';
 
+interface JwtPayload {
+  exp: number;
+  role?: string;
+}
+
 @Injectable({ providedIn: 'root' })
 export class AuthService {
   private apiUrl = `${environment.apiUrl}/auth`;
@@ -12,12 +17,22 @@ export class AuthService {
 
   constructor(private http: HttpClient) {
     const stored = localStorage.getItem('auth_token');
-    if (stored) {
-      const token = stored;
+    if (stored && !this.isTokenExpired(stored)) {
       const user = localStorage.getItem('auth_user');
       if (user) {
         this.currentUserSubject.next(JSON.parse(user));
       }
+    } else if (stored) {
+      this.logout();
+    }
+  }
+
+  private isTokenExpired(token: string): boolean {
+    try {
+      const payload = JSON.parse(atob(token.split('.')[1])) as JwtPayload;
+      return Date.now() >= payload.exp * 1000;
+    } catch {
+      return true;
     }
   }
 
@@ -48,7 +63,12 @@ export class AuthService {
   }
 
   getToken(): string | null {
-    return localStorage.getItem('auth_token');
+    const token = localStorage.getItem('auth_token');
+    if (token && this.isTokenExpired(token)) {
+      this.logout();
+      return null;
+    }
+    return token;
   }
 
   isAuthenticated(): boolean {

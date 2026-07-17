@@ -17,9 +17,13 @@ export const jwtInterceptor: HttpInterceptorFn = (req, next) => {
 
   return next(req).pipe(
     catchError((error: HttpErrorResponse) => {
-      if (error.status === 401) {
+      const isAuthError = error.status === 401;
+      const isNetworkOrServerError = error.status === 0 || error.status === 503 || error.status === 504;
+
+      if (isAuthError || isNetworkOrServerError) {
         authService.logout();
-        router.navigate(['/']);
+        const msg = isAuthError ? 'sessionExpired' : 'serverUnavailable';
+        router.navigate(['/'], { queryParams: { [msg]: 'true' } });
       }
       return throwError(() => error);
     })

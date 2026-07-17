@@ -43,7 +43,7 @@ class ContratosControllerTest {
     @Test
     @WithMockUser
     void registrar_DeberiaRetornar201() throws Exception {
-        var request = new DatosRegistroContrato("CON-001", "1", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var request = new DatosRegistroContrato("CON-001", "1", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000), null, null);
         Cliente cliente = new Cliente();
         cliente.setId("1");
         cliente.setNombre("Cliente Test");
@@ -67,7 +67,7 @@ class ContratosControllerTest {
     @Test
     @WithMockUser
     void listar_DeberiaRetornar200() throws Exception {
-        var detalle = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var detalle = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000), null, null);
 
         given(contratoService.listarContratos()).willReturn(List.of(detalle));
 
@@ -79,7 +79,7 @@ class ContratosControllerTest {
     @Test
     @WithMockUser
     void buscarPorId_DeberiaRetornar200() throws Exception {
-        var detalle = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var detalle = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000), null, null);
 
         given(contratoService.buscarContratoId("1")).willReturn(detalle);
 
@@ -91,8 +91,8 @@ class ContratosControllerTest {
     @Test
     @WithMockUser
     void actualizar_DeberiaRetornar200() throws Exception {
-        var request = new DatosActualizarContrato("1", LocalDate.now(), LocalDate.now().plusDays(60), BigDecimal.valueOf(8000));
-        var response = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(60), BigDecimal.valueOf(8000));
+        var request = new DatosActualizarContrato("1", LocalDate.now(), LocalDate.now().plusDays(60), BigDecimal.valueOf(8000), null, null);
+        var response = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(60), BigDecimal.valueOf(8000), null, null);
 
         given(contratoService.actualizarContratoId(any(), any())).willReturn(response);
 

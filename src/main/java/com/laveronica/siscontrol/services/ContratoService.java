@@ -63,6 +63,14 @@ public class ContratoService {
             contrato.setPresupuesto(datos.presupuesto());
         }
 
+        if (datos.spei() != null) {
+            contrato.setSpei(datos.spei());
+        }
+
+        if (datos.detalles() != null) {
+            contrato.setDetalles(datos.detalles());
+        }
+
         Contrato contratoActulizado = contratoRepository.save(contrato);
 
         return new DatosDetalleContrato(contratoActulizado);

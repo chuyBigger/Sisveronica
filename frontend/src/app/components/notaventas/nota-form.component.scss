@@ -44,7 +44,6 @@
   width: 100%;
 
   mat-icon { font-size: 18px; width: 18px; height: 18px; }
-
   .btn-spinner { display: inline-block; }
 }
 
@@ -168,8 +167,6 @@
   flex: 1;
   max-width: 300px;
   margin: 0;
-
-  &.mat-mdc-form-field { font-size: 0.8rem; }
 }
 
 .detalle-table {
@@ -202,7 +199,6 @@
   .cell-field {
     width: 100%;
     margin: 0;
-    font-size: 0.75rem;
   }
 
   tbody tr:nth-child(even) { background: #f9f9f9; }

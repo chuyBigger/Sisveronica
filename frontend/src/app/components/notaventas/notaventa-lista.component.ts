@@ -18,7 +18,7 @@ import { NotaVentaService } from '../../services/notaventa.service';
 import { EnumsService } from '../../services/enums.service';
 import { DatosListarNota } from '../../models/notaventa.model';
 import { NotaVentaPreviewDialogComponent } from './notaventa-preview-dialog.component';
-import { NotaVentaFormDialogComponent, NotaVentaFormData } from './notaventa-form-dialog.component';
+import { NotaFormComponent, NotaFormData } from './nota-form.component';
 import { DetalleDialogComponent, DetalleDialogData } from './detalle-dialog.component';
 
 @Component({
@@ -112,8 +112,8 @@ export class NotaVentaListaComponent implements AfterViewInit {
   }
 
   abrirCrear(): void {
-    const dialogRef = this.dialog.open(NotaVentaFormDialogComponent, {
-      data: { mode: 'create' } as NotaVentaFormData,
+    const dialogRef = this.dialog.open(NotaFormComponent, {
+      data: { mode: 'create', type: 'notaventa' } as NotaFormData,
       width: '900px',
       maxWidth: '95vw',
       panelClass: 'notaventa-preview-dialog',
@@ -124,8 +124,8 @@ export class NotaVentaListaComponent implements AfterViewInit {
   }
 
   abrirEditar(notaId: string): void {
-    const dialogRef = this.dialog.open(NotaVentaFormDialogComponent, {
-      data: { mode: 'edit', notaId } as NotaVentaFormData,
+    const dialogRef = this.dialog.open(NotaFormComponent, {
+      data: { mode: 'edit', type: 'notaventa', notaId } as NotaFormData,
       width: '900px',
       maxWidth: '95vw',
       panelClass: 'notaventa-preview-dialog',

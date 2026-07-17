@@ -8,7 +8,6 @@ import { ClienteFormComponent } from './components/clientes/cliente-form.compone
 import { ContratoListaComponent } from './components/contratos/contrato-lista.component';
 import { ContratoFormComponent } from './components/contratos/contrato-form.component';
 import { NotaVentaListaComponent } from './components/notaventas/notaventa-lista.component';
-import { NotaVentaFormComponent } from './components/notaventas/notaventa-form.component';
 import { NotaVentaDetalleComponent } from './components/notaventas/notaventa-detalle.component';
 import { OrdenListaComponent } from './components/ordenes-compra/orden-lista.component';
 import { OrdenFormComponent } from './components/ordenes-compra/orden-form.component';
@@ -31,8 +30,6 @@ export const routes: Routes = [
   { path: 'contratos/nuevo', component: ContratoFormComponent, canActivate: [AuthGuard] },
   { path: 'contratos/:id', component: ContratoFormComponent, canActivate: [AuthGuard] },
   { path: 'notaventas', component: NotaVentaListaComponent, canActivate: [AuthGuard] },
-  { path: 'notaventas/nuevo', component: NotaVentaFormComponent, canActivate: [AuthGuard] },
-  { path: 'notaventas/:id', component: NotaVentaFormComponent, canActivate: [AuthGuard] },
   { path: 'notaventas/:id/ver', component: NotaVentaDetalleComponent, canActivate: [AuthGuard] },
   { path: 'ordenes-compra', component: OrdenListaComponent, canActivate: [AuthGuard] },
   { path: 'ordenes-compra/nuevo', component: OrdenFormComponent, canActivate: [AuthGuard] },

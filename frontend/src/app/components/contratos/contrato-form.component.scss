@@ -23,3 +23,7 @@
   justify-content: center;
   padding: 40px;
 }
+
+.full-width {
+  grid-column: 1 / -1;
+}

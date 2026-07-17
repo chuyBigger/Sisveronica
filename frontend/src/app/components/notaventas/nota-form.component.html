@@ -1,8 +1,8 @@
 <div class="dialog-layout">
   <div class="side-menu">
     <div class="menu-header">
-      <mat-icon>receipt</mat-icon>
-      <span>{{ data.mode === 'create' ? 'Nueva Nota' : 'Editar Nota' }}</span>
+      <mat-icon>{{ isExtra ? 'add_circle' : 'receipt' }}</mat-icon>
+      <span>{{ getTitle() }}</span>
     </div>
     <mat-divider></mat-divider>
     <div class="menu-actions">
@@ -12,7 +12,7 @@
         } @else {
           <mat-icon>save</mat-icon>
         }
-        {{ data.mode === 'create' ? 'Crear' : 'Guardar' }}
+        {{ esCreacion ? 'Crear' : 'Guardar' }}
       </button>
       <button mat-stroked-button class="menu-btn" (click)="cancelar()">
         <mat-icon>close</mat-icon> Cancelar
@@ -46,8 +46,8 @@
             </div>
           </div>
           <div class="folio-box">
-            <span class="folio-label">NOTA No.</span>
-            <span class="folio-number">{{ folioDisplay }}</span>
+            <span class="folio-label">{{ getLabel() }} No.</span>
+            <span class="folio-number">{{ esCreacion ? '—' : 'Edición' }}</span>
           </div>
         </div>
         <div class="fiscal-info">
@@ -63,32 +63,50 @@
             <span class="control-label">Fecha:</span>
             <span class="control-value">{{ '' | date:'fullDate' }}</span>
           </div>
-          <div class="control-row">
-            <span class="control-label">Receptor:</span>
-            <mat-form-field appearance="outline" class="inline-field">
-              <mat-select formControlName="clienteId">
-                @for (c of clientes; track c.id) {
-                  <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+
+          @if (isExtra) {
+            <div class="control-row">
+              <span class="control-label">Día:</span>
+              <mat-form-field appearance="outline" class="inline-field">
+                <mat-select [(ngModel)]="diaSeleccionado" [ngModelOptions]="{standalone: true}">
+                  @for (d of dias; track d; let i = $index) {
+                    <mat-option [value]="d">{{ diasCorto[i] }} ({{ d }})</mat-option>
+                  }
+                </mat-select>
+              </mat-form-field>
+            </div>
+            <div class="control-row">
+              <span class="control-label">Partida:</span>
+              <span class="control-value">{{ data.partida }}</span>
+            </div>
+          } @else {
+            <div class="control-row">
+              <span class="control-label">Receptor:</span>
+              <mat-form-field appearance="outline" class="inline-field">
+                <mat-select formControlName="clienteId">
+                  @for (c of clientes; track c.id) {
+                    <mat-option [value]="c.id">{{ c.nombre }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('clienteId')?.hasError('required') && form.get('clienteId')?.touched) {
+                  <mat-error>Requerido</mat-error>
                 }
-              </mat-select>
-              @if (form.get('clienteId')?.hasError('required')) {
-                <mat-error>Requerido</mat-error>
-              }
-            </mat-form-field>
-          </div>
-          <div class="control-row">
-            <span class="control-label">Partida:</span>
-            <mat-form-field appearance="outline" class="inline-field">
-              <mat-select formControlName="partida" (selectionChange)="onPartidaChange()">
-                @for (p of partidas; track p) {
-                  <mat-option [value]="p">{{ p }}</mat-option>
+              </mat-form-field>
+            </div>
+            <div class="control-row">
+              <span class="control-label">Partida:</span>
+              <mat-form-field appearance="outline" class="inline-field">
+                <mat-select formControlName="partida" (selectionChange)="onPartidaChange()">
+                  @for (p of partidas; track p) {
+                    <mat-option [value]="p">{{ p }}</mat-option>
+                  }
+                </mat-select>
+                @if (form.get('partida')?.hasError('required') && form.get('partida')?.touched) {
+                  <mat-error>Requerido</mat-error>
                 }
-              </mat-select>
-              @if (form.get('partida')?.hasError('required')) {
-                <mat-error>Requerido</mat-error>
-              }
-            </mat-form-field>
-          </div>
+              </mat-form-field>
+            </div>
+          }
         </div>
 
         <table class="detalle-table">

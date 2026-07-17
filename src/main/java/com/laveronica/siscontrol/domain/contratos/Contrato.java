@@ -41,6 +41,11 @@ public class Contrato {
     @Column(name = "fecha_termino", nullable = false)
     private LocalDate fechaTermino;
 
+    @Column(length = 100)
+    private String spei;
+
+    private String detalles;
+
 
 
     @Column(precision = 12, scale = 2, nullable = false)
@@ -53,15 +58,16 @@ public class Contrato {
     @OneToMany(mappedBy = "contrato")
     private List<NotaVenta> notas = new ArrayList<>();
 
-    public Contrato(@Valid DatosRegistroContrato datos, Cliente cliente) {
+public Contrato(@Valid DatosRegistroContrato datos, Cliente cliente) {
 
         this.contrato = datos.contrato();
         this.cliente = cliente;
         this.fechaInicio = datos.fechaInicio();
         this.fechaTermino = datos.fechaTermino();
         this.presupuesto = datos.presupuesto();
-        this.activo= true;
-
+        this.spei = datos.spei();
+        this.detalles = datos.detalles();
+this.activo= true;
 
 
     }

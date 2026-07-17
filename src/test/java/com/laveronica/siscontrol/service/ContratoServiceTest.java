@@ -47,7 +47,7 @@ class ContratoServiceTest {
 
     @Test
     void registrarContratoSuccess() {
-        var datos = new DatosRegistroContrato("CON-001", "1", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var datos = new DatosRegistroContrato("CON-001", "1", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000), null, null);
         Cliente cliente = new Cliente();
         cliente.setId("1");
         cliente.setNombre("Cliente Test");
@@ -70,7 +70,7 @@ class ContratoServiceTest {
 
     @Test
     void registrarContratoThrowsResourceNotFoundExceptionWhenClienteNotFound() {
-        var datos = new DatosRegistroContrato("CON-001", "bad-id", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var datos = new DatosRegistroContrato("CON-001", "bad-id", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000), null, null);
 
         given(clienteValidacionesHelper.validaClienteExistaId("bad-id"))
                 .willThrow(new ResourceNotFoundException("Cliente no encontrado"));
@@ -115,7 +115,7 @@ class ContratoServiceTest {
 
     @Test
     void buscarContratoIdFound() {
-        var detalle = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000));
+        var detalle = new DatosDetalleContrato("1", "CON-001", "Cliente Test", LocalDate.now(), LocalDate.now().plusDays(30), BigDecimal.valueOf(5000), null, null);
 
         given(contratoValidacionesHelper.buscarContratoExisteId("1")).willReturn(detalle);
 
@@ -155,7 +155,7 @@ class ContratoServiceTest {
         contrato.setPresupuesto(BigDecimal.valueOf(5000));
         contrato.setActivo(true);
 
-        var datos = new DatosActualizarContrato("2", LocalDate.now().plusDays(1), LocalDate.now().plusDays(60), BigDecimal.valueOf(10000));
+        var datos = new DatosActualizarContrato("2", LocalDate.now().plusDays(1), LocalDate.now().plusDays(60), BigDecimal.valueOf(10000), null, null);
 
         given(contratoValidacionesHelper.validaContratoExisteId("1")).willReturn(contrato);
         given(clienteValidacionesHelper.validaClienteExistaId("2")).willReturn(clienteNuevo);
@@ -173,7 +173,7 @@ class ContratoServiceTest {
 
     @Test
     void actualizarContratoThrowsResourceNotFoundException() {
-        var datos = new DatosActualizarContrato(null, null, null, null);
+        var datos = new DatosActualizarContrato(null, null, null, null, null, null);
 
         given(contratoValidacionesHelper.validaContratoExisteId("bad-id"))
                 .willThrow(new ResourceNotFoundException("Contrato no encontrado"));

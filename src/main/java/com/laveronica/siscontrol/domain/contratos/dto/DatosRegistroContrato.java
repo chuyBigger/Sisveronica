@@ -30,7 +30,11 @@ public record DatosRegistroContrato(
         @Positive
         @Digits(integer = 10, fraction = 2)
         @Schema(description = "Monto del presupuesto")
-        BigDecimal presupuesto
+        BigDecimal presupuesto,
+        @Schema(description = "Código SPEI")
+        String spei,
+        @Schema(description = "Detalles del contrato")
+        String detalles
 
 ) {
 
