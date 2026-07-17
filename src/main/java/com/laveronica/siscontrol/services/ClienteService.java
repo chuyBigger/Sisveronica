@@ -9,16 +9,16 @@ import com.laveronica.siscontrol.domain.clientes.dto.DatosRegistroCliente;
 import com.laveronica.siscontrol.infra.exceptions.ex.RecursoExistenteException;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ClienteService {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
 
 
     @Transactional

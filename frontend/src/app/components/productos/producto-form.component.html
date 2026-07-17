@@ -30,17 +30,38 @@
             }
           </mat-form-field>
 
-          <mat-form-field appearance="outline">
+          <mat-form-field appearance="outline" class="categoria-field">
             <mat-label>Categoría</mat-label>
-            <mat-select formControlName="categoriaId">
-              @for (cat of categorias; track cat.id) {
-                <mat-option [value]="cat.id">{{ cat.nombre }}</mat-option>
-              }
-            </mat-select>
-            @if (form.get('categoriaId')?.hasError('required')) {
+            <input matInput
+              [matAutocomplete]="autoCategoria"
+              [value]="mostrarCategoria(form.get('categoriaId')?.value)"
+              (input)="categoriaSearch = $any($event.target).value; filtrarCategorias()"
+              placeholder="Buscar o crear categoría">
+            <button matSuffix mat-icon-button type="button"
+                    matTooltip="Administrar categorías"
+                    (click)="abrirCategoriaDialog()">
+              <mat-icon>settings</mat-icon>
+            </button>
+            @if (form.get('categoriaId')?.hasError('required') && form.get('categoriaId')?.touched) {
               <mat-error>Requerido</mat-error>
             }
           </mat-form-field>
+
+          <mat-autocomplete #autoCategoria="matAutocomplete"
+                            (optionSelected)="seleccionarCategoria($event.option.value)">
+            @for (cat of filteredCategorias; track cat.id) {
+              <mat-option [value]="cat.id">
+                <span>{{ cat.nombre }}</span>
+                <span class="cat-partida-opcion"> — {{ cat.partida }}</span>
+              </mat-option>
+            }
+            @if (categoriaNoExiste) {
+              <mat-option [value]="'__AGREGAR__'" (onSelectionChange)="agregarCategoriaDesdeInput()"
+                          class="add-option">
+                <mat-icon>add_circle</mat-icon> Agregar "{{ categoriaSearch.toUpperCase().trim() }}"
+              </mat-option>
+            }
+          </mat-autocomplete>
 
           <mat-form-field appearance="outline">
             <mat-label>Código</mat-label>

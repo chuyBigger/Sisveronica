@@ -279,7 +279,7 @@ class NotaCancelacionServiceTest {
         notaExistente.setFecha(LocalDateTime.now());
         notaExistente.setActivo(true);
 
-        given(ordenCompraValidacionesHelper.buscarOrdenCompraId("orden-1")).willReturn(orden);
+        given(ordenCompraRespository.findByIdAndActivoTrueWithLock("orden-1")).willReturn(Optional.of(orden));
         given(cancelacionRepository.findByOrdenCompraIdAndActivoTrue("orden-1")).willReturn(List.of(nc));
         given(notaVentaRepository.findByOrdenCompraIdAndDiaAndActivoTrue("orden-1", "lunes"))
                 .willReturn(Optional.of(notaExistente));

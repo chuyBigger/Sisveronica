@@ -8,6 +8,8 @@ export interface ExtraListarDetalle {
   producto: string;
   productoNombre: string;
   cantidad: number;
+  precio: number;
+  subTotal: number;
 }
 
 export interface DatosRegistroExtra {
@@ -26,4 +28,5 @@ export interface DatosListarExtra {
   fechaCreacion: string;
   creadoPor: string;
   detalles: ExtraListarDetalle[];
+  totalGeneral: number;
 }

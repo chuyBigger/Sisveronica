@@ -5,16 +5,16 @@ import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.infra.exceptions.ex.RecursoExistenteException;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import com.laveronica.siscontrol.repositories.OrdenCompraRespository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 import java.time.LocalDate;
 
 @Component
+@RequiredArgsConstructor
 public class OrdenCompraValidacionesHelper {
 
-    @Autowired
-    private OrdenCompraRespository ordenCompraRespository;
+    private final OrdenCompraRespository ordenCompraRespository;
 
 
     public void validaOrdenCompraExiste(String clienteId, LocalDate fecha, Partida partida) {

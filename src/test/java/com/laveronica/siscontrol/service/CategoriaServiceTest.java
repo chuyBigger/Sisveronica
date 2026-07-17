@@ -37,7 +37,7 @@ class CategoriaServiceTest {
     void registrarCategoriaSuccess() {
         var datos = new DatosRegistroCategoria("Lacteos", Partida.LACTEOS);
 
-        given(categoriaRepository.existsByNombre("Lacteos")).willReturn(false);
+        given(categoriaRepository.existsByNombre("LACTEOS")).willReturn(false);
         given(categoriaRepository.save(any())).willAnswer(invocation -> {
             Categoria c = invocation.getArgument(0);
             c.setId("1");
@@ -48,7 +48,7 @@ class CategoriaServiceTest {
 
         assertThat(result).isNotNull();
         assertThat(result.getId()).isEqualTo("1");
-        assertThat(result.getNombre()).isEqualTo("Lacteos");
+        assertThat(result.getNombre()).isEqualTo("LACTEOS");
         assertThat(result.getPartida()).isEqualTo(Partida.LACTEOS);
     }
 
@@ -56,7 +56,7 @@ class CategoriaServiceTest {
     void registrarCategoriaThrowsRecursoExistenteException() {
         var datos = new DatosRegistroCategoria("Lacteos", Partida.LACTEOS);
 
-        given(categoriaRepository.existsByNombre("Lacteos")).willReturn(true);
+        given(categoriaRepository.existsByNombre("LACTEOS")).willReturn(true);
 
         assertThatThrownBy(() -> categoriaService.registrarCategoria(datos))
                 .isInstanceOf(RecursoExistenteException.class)
@@ -142,7 +142,7 @@ class CategoriaServiceTest {
         Categoria result = categoriaService.actualizarCategoria("1", datos);
 
         assertThat(result).isNotNull();
-        assertThat(result.getNombre()).isEqualTo("Carnes Frias");
+        assertThat(result.getNombre()).isEqualTo("CARNES FRIAS");
         assertThat(result.getPartida()).isEqualTo(Partida.CARNES);
     }
 

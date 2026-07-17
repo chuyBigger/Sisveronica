@@ -6,6 +6,7 @@ import com.laveronica.siscontrol.domain.extra.dto.DatosRegistroExtra;
 import com.laveronica.siscontrol.domain.extradetalle.ExtraDetalle;
 import com.laveronica.siscontrol.domain.ordencompra.OrdenCompra;
 import com.laveronica.siscontrol.domain.productos.Producto;
+import com.laveronica.siscontrol.enums.DiaSemana;
 import com.laveronica.siscontrol.infra.exceptions.ex.RecursoExistenteException;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import com.laveronica.siscontrol.repositories.ExtraRepository;
@@ -16,6 +17,7 @@ import jakarta.transaction.Transactional;
 import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
+import java.math.BigDecimal;
 import java.time.LocalDate;
 import java.time.LocalDateTime;
 import java.util.ArrayList;
@@ -56,9 +58,11 @@ public class ExtraService {
 
         for (var det : datos.detalles()) {
             Producto producto = productoValidacionesHelper.encontrarProductoId(det.productoId());
+            BigDecimal precioVenta = producto.getPrecioVenta() != null ? producto.getPrecioVenta() : BigDecimal.ZERO;
             ExtraDetalle ed = ExtraDetalle.builder()
                     .producto(producto)
                     .cantidad(det.cantidad())
+                    .precioVenta(precioVenta)
                     .activo(true)
                     .build();
             extra.agregarDetalle(ed);
@@ -97,15 +101,6 @@ public class ExtraService {
     }
 
     private LocalDate calcularFecha(LocalDate fechaInicioSemana, String dia) {
-        return switch (dia) {
-            case "martes" -> fechaInicioSemana.plusDays(1);
-            case "miercoles" -> fechaInicioSemana.plusDays(2);
-            case "jueves" -> fechaInicioSemana.plusDays(3);
-            case "viernes" -> fechaInicioSemana.plusDays(4);
-            case "sabado" -> fechaInicioSemana.plusDays(5);
-            case "domingo" -> fechaInicioSemana.plusDays(6);
-            case "lunes" -> fechaInicioSemana.plusDays(7);
-            default -> throw new IllegalArgumentException("Día inválido: " + dia);
-        };
+        return DiaSemana.fromString(dia).calcularFecha(fechaInicioSemana);
     }
 }

@@ -1,0 +1,1 @@
+ALTER TABLE extra_detalles ADD COLUMN precio_venta DECIMAL(10,2) NOT NULL DEFAULT 0;

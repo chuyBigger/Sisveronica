@@ -40,7 +40,7 @@ public class Categoria {
 
     public Categoria(DatosRegistroCategoria categoria){
         this.id=null;
-        this.nombre = categoria.nombre();
+        this.nombre = categoria.nombre().toUpperCase().trim();
         this.partida = categoria.partida();
         this.activo = true;
     }

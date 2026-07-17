@@ -6,18 +6,16 @@ import com.laveronica.siscontrol.infra.exceptions.ex.RecursoExistenteException;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import com.laveronica.siscontrol.repositories.ContratoRepository;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@RequiredArgsConstructor
 public class ContratoValidacionesHelper {
 
-    @Autowired
-    private ContratoRepository contratoRepository;
-
-    @Autowired
-    private StringValidacionesHelper stringValidacionesHelper;
+    private final ContratoRepository contratoRepository;
+    private final StringValidacionesHelper stringValidacionesHelper;
 
     public Contrato validaContratoExisteId(String id){
         return contratoRepository.findByIdAndActivoTrue(id).orElseThrow(

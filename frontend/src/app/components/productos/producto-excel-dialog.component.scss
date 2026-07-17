@@ -62,6 +62,24 @@
   color: var(--mat-sys-primary, #1976d2);
 }
 
+.export-section {
+  padding: 20px 24px;
+
+  .export-controls {
+    display: flex;
+    align-items: flex-start;
+    gap: 12px;
+
+    mat-form-field {
+      min-width: 200px;
+    }
+
+    button {
+      margin-top: 4px;
+    }
+  }
+}
+
 .report-section {
   padding: 20px 24px;
 

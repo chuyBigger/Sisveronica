@@ -14,6 +14,9 @@ import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.multipart.MultipartFile;
 
+import java.net.URLEncoder;
+import java.nio.charset.StandardCharsets;
+
 @RestController
 @RequestMapping("/productos/excel")
 @RequiredArgsConstructor
@@ -46,5 +49,22 @@ public class ProductoExcelController {
         return ResponseEntity.ok()
                 .headers(headers)
                 .body(plantilla);
+    }
+
+    @GetMapping("/exportar")
+    @Operation(summary = "Exportar productos por partida a Excel")
+    public ResponseEntity<byte[]> exportarProductos(@RequestParam String partida) {
+        byte[] excel = productoExcelService.exportarProductosPorPartida(partida);
+
+        String filename = URLEncoder.encode("productos_" + partida + ".xlsx", StandardCharsets.UTF_8);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.APPLICATION_OCTET_STREAM);
+        headers.setContentDispositionFormData("attachment", filename);
+        headers.setContentLength(excel.length);
+
+        return ResponseEntity.ok()
+                .headers(headers)
+                .body(excel);
     }
 }

@@ -17,7 +17,11 @@ public record DatosDetalleContrato(
         @Schema(description = "Fecha de término del contrato")
         LocalDate fechaTermino,
         @Schema(description = "Monto del presupuesto")
-        BigDecimal presupuesto
+        BigDecimal presupuesto,
+        @Schema(description = "Referencia SPEI")
+        String spei,
+        @Schema(description = "Detalles adicionales del contrato")
+        String detalles
 
         ) {
     public DatosDetalleContrato(Contrato contrato){
@@ -27,7 +31,9 @@ public record DatosDetalleContrato(
                 contrato.getCliente().getNombre(),
                 contrato.getFechaInicio(),
                 contrato.getFechaTermino(),
-                contrato.getPresupuesto()
+                contrato.getPresupuesto(),
+                contrato.getSpei(),
+                contrato.getDetalles()
         );
     }
 }

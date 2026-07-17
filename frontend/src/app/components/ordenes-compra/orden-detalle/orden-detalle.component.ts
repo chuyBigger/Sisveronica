@@ -15,8 +15,8 @@ import { DatosDetalleOrdenCompra } from '../../../models/ordencompra.model';
 import { DatosListarCancelacion } from '../../../models/cancelacion.model';
 import { DatosListarExtra } from '../../../models/extra.model';
 import { NotaVentaPreviewDialogComponent } from '../../notaventas/notaventa-preview-dialog.component';
+import { NotaFormComponent, NotaFormData } from '../../notaventas/nota-form.component';
 import { CancelacionFormDialogComponent, CancelacionFormData } from '../cancelacion-form-dialog.component';
-import { ExtraFormDialogComponent } from '../extra-form-dialog.component';
 import { FacturaService } from '../../../services/factura.service';
 import { Factura } from '../../../models/factura.model';
 
@@ -210,38 +210,30 @@ export class OrdenDetalleComponent implements OnInit {
   }
 
   abrirCrearExtra(): void {
-    const dialogRef = this.dialog.open(ExtraFormDialogComponent, {
-      data: { orden: this.orden },
-      width: '600px',
+    const dialogRef = this.dialog.open(NotaFormComponent, {
+      data: { mode: 'create', type: 'extra', ordenCompraId: this.orden.id, partida: this.orden.partida } as NotaFormData,
+      width: '900px',
       maxWidth: '95vw',
+      panelClass: 'notaventa-preview-dialog',
     });
     dialogRef.afterClosed().subscribe((result) => {
       if (result === 'saved') this.cargarExtras(this.orden.id);
     });
   }
 
-  firmarExtra(id: string): void {
-    if (confirm('¿Firmar este extra? Esta acción no se puede deshacer.')) {
-      this.extraService.firmar(id).subscribe({
-        next: () => {
-          this.snackBar.open('Extra firmado', 'Cerrar', { duration: 2000 });
-          this.cargarExtras(this.orden.id);
-        },
-        error: () => this.snackBar.open('Error al firmar extra', 'Cerrar', { duration: 3000 }),
-      });
-    }
-  }
-
-  eliminarExtra(id: string): void {
-    if (confirm('¿Eliminar este extra?')) {
-      this.extraService.eliminar(id).subscribe({
-        next: () => {
-          this.snackBar.open('Extra eliminado', 'Cerrar', { duration: 2000 });
-          this.cargarExtras(this.orden.id);
-        },
-        error: () => this.snackBar.open('Error al eliminar extra', 'Cerrar', { duration: 3000 }),
-      });
-    }
+  abrirExtra(extra: DatosListarExtra): void {
+    const dialogRef = this.dialog.open(NotaVentaPreviewDialogComponent, {
+      data: extra,
+      width: '900px',
+      maxWidth: '95vw',
+      maxHeight: '90vh',
+      panelClass: 'notaventa-preview-dialog',
+    });
+    dialogRef.afterClosed().subscribe((result) => {
+      if (result === 'deleted') {
+        this.cargarExtras(this.orden.id);
+      }
+    });
   }
 
   reconstruirNotas(): void {

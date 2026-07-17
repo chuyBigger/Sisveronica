@@ -10,6 +10,10 @@
   margin-top: 16px;
 }
 
+.categoria-field {
+  grid-column: 1 / -1;
+}
+
 .form-actions {
   grid-column: 1 / -1;
   display: flex;
@@ -22,4 +26,22 @@
   display: flex;
   justify-content: center;
   padding: 40px;
+}
+
+.cat-partida-opcion {
+  color: #888;
+  font-size: 0.8rem;
+}
+
+:host ::ng-deep .add-option {
+  border-top: 1px solid #e0e0e0;
+  color: #1565c0;
+  font-weight: 500;
+}
+
+:host ::ng-deep .add-option mat-icon {
+  margin-right: 8px;
+  font-size: 18px;
+  width: 18px;
+  height: 18px;
 }

@@ -3,14 +3,14 @@ package com.laveronica.siscontrol.utils.helpers;
 import com.laveronica.siscontrol.domain.categoria.Categoria;
 import com.laveronica.siscontrol.repositories.CategoriaRepository;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class CategoriaValidacionesHelper {
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    private final CategoriaRepository categoriaRepository;
 
     public Categoria validarCategoriaActiva(String id){
 

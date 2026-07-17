@@ -1,16 +1,16 @@
 package com.laveronica.siscontrol.domain.productos.validaciones;
 
 import com.laveronica.siscontrol.domain.productos.dto.DatosRegistroProducto;
-import com.laveronica.siscontrol.repositories.ProductosRepository;
 import com.laveronica.siscontrol.infra.exceptions.ex.RuleValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.laveronica.siscontrol.repositories.ProductosRepository;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ValidacionNombreNoExista implements ValidadorDeProductos {
 
-    @Autowired
-    private ProductosRepository productosRepository;
+    private final ProductosRepository productosRepository;
 
     @Override
     public void validar(DatosRegistroProducto datos){

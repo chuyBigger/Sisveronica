@@ -4,6 +4,8 @@ export interface DatosRegistroContrato {
   fechaInicio: string;
   fechaTermino: string;
   presupuesto: number;
+  spei?: string;
+  detalles?: string;
 }
 
 export interface DatosDetalleContrato {
@@ -13,6 +15,8 @@ export interface DatosDetalleContrato {
   fechaInicio: string;
   fechaTermino: string;
   presupuesto: number;
+  spei?: string;
+  detalles?: string;
 }
 
 export interface DatosActualizarContrato {
@@ -20,4 +24,6 @@ export interface DatosActualizarContrato {
   fechaInicio?: string;
   fechaTermino?: string;
   presupuesto?: number;
+  spei?: string;
+  detalles?: string;
 }

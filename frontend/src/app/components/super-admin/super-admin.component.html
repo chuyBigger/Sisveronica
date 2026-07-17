@@ -31,12 +31,16 @@
         <mat-form-field appearance="outline" class="input-field">
           @if (entityType === 'nota') {
             <mat-label>ID o Folio de la nota</mat-label>
-            <mat-hint>Ingresa el UUID o el número de folio</mat-hint>
           } @else if (entityType === 'orden') {
             <mat-label>ID de la orden</mat-label>
-            <mat-hint>Ingresa el UUID de la orden de compra</mat-hint>
           } @else {
             <mat-label>ID de la cancelación</mat-label>
+          }
+          @if (entityType === 'nota') {
+            <mat-hint>Ingresa el UUID o el número de folio</mat-hint>
+          } @else if (entityType === 'orden') {
+            <mat-hint>Ingresa el UUID de la orden de compra</mat-hint>
+          } @else {
             <mat-hint>Ingresa el UUID de la cancelación</mat-hint>
           }
           <input matInput [(ngModel)]="inputValue" placeholder="ej: 550e8400-e29b..." />

@@ -1,5 +1,7 @@
 # Flujo de Desarrollo — SisVeronica
 
+> Última actualización: 28/06/2026
+
 ---
 
 ## 1. Entorno Local

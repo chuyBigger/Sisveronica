@@ -13,6 +13,7 @@ import org.apache.poi.ss.usermodel.*;
 import org.apache.poi.xssf.usermodel.XSSFWorkbook;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
 import org.springframework.web.multipart.MultipartFile;
 
@@ -172,6 +173,53 @@ public class ProductoExcelService {
         } catch (IOException e) {
             LOG.error("Error al generar plantilla Excel", e);
             throw new RuntimeException("Error al generar la plantilla Excel", e);
+        }
+    }
+
+    public byte[] exportarProductosPorPartida(String partidaStr) {
+        Partida partida = partidaValidacionesHelper.validaPartidaExistaString(partidaStr);
+        List<Producto> productos = productosRepository.findAllByPartidaAndActivoTrue(partida, Pageable.unpaged()).getContent();
+
+        try (Workbook workbook = new XSSFWorkbook()) {
+            Sheet sheet = workbook.createSheet("Productos");
+
+            CellStyle headerStyle = workbook.createCellStyle();
+            Font headerFont = workbook.createFont();
+            headerFont.setBold(true);
+            headerStyle.setFont(headerFont);
+            headerStyle.setFillForegroundColor(IndexedColors.LIGHT_CORNFLOWER_BLUE.getIndex());
+            headerStyle.setFillPattern(FillPatternType.SOLID_FOREGROUND);
+
+            String[] headers = {"Nombre", "Partida", "Categoría", "Código", "Unidad Medida", "Precio Compra", "Precio Venta"};
+            Row headerRow = sheet.createRow(0);
+            for (int i = 0; i < headers.length; i++) {
+                Cell cell = headerRow.createCell(i);
+                cell.setCellValue(headers[i]);
+                cell.setCellStyle(headerStyle);
+            }
+
+            int rowIdx = 1;
+            for (Producto p : productos) {
+                Row row = sheet.createRow(rowIdx++);
+                row.createCell(0).setCellValue(p.getNombre());
+                row.createCell(1).setCellValue(p.getPartida().name());
+                row.createCell(2).setCellValue(p.getCategoria() != null ? p.getCategoria().getNombre() : "");
+                row.createCell(3).setCellValue(p.getCodigo() != null ? p.getCodigo() : "");
+                row.createCell(4).setCellValue(p.getUnidadMedida().name());
+                row.createCell(5).setCellValue(p.getPrecioCompra() != null ? p.getPrecioCompra().doubleValue() : 0);
+                row.createCell(6).setCellValue(p.getPrecioVenta() != null ? p.getPrecioVenta().doubleValue() : 0);
+            }
+
+            for (int i = 0; i < headers.length; i++) {
+                sheet.autoSizeColumn(i);
+            }
+
+            java.io.ByteArrayOutputStream outputStream = new java.io.ByteArrayOutputStream();
+            workbook.write(outputStream);
+            return outputStream.toByteArray();
+        } catch (IOException e) {
+            LOG.error("Error al exportar productos", e);
+            throw new RuntimeException("Error al exportar productos", e);
         }
     }
 

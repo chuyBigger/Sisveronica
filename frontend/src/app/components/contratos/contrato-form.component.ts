@@ -56,6 +56,8 @@ export class ContratoFormComponent implements OnInit {
     fechaInicio: ['', Validators.required],
     fechaTermino: ['', Validators.required],
     presupuesto: ['', Validators.required],
+    spei: [''],
+    detalles: [''],
   });
 
   private marcarTocados(): void {

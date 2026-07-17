@@ -26,7 +26,7 @@
         </div>
         <div class="info-item">
           <span class="info-label">Precio de Venta</span>
-          <span class="info-value precio">{{ producto.precioVenta | currency:'MXN':'symbol':'1.2-2' }}</span>
+          <span class="info-value precio">{{ producto.precioVenta | number:'1.2-2' }}</span>
         </div>
       </div>
     } @else {

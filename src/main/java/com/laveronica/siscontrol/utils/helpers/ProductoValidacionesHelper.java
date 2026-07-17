@@ -3,17 +3,17 @@ package com.laveronica.siscontrol.utils.helpers;
 import com.laveronica.siscontrol.domain.productos.Producto;
 import com.laveronica.siscontrol.domain.productos.dto.DatosRegistroProducto;
 import com.laveronica.siscontrol.infra.exceptions.ex.RuleValidationException;
-import com.laveronica.siscontrol.repositories.ProductosRepository;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
+import com.laveronica.siscontrol.repositories.ProductosRepository;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class ProductoValidacionesHelper {
 
-    @Autowired
-    private ProductosRepository productosRepository;
+    private final ProductosRepository productosRepository;
 
 
 

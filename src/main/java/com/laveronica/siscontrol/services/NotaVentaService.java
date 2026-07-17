@@ -12,6 +12,7 @@ import com.laveronica.siscontrol.domain.notaventadetalle.dto.NotaVentaActualizar
 import com.laveronica.siscontrol.domain.ordencompra.OrdenCompra;
 import com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle;
 import com.laveronica.siscontrol.domain.productos.Producto;
+import com.laveronica.siscontrol.enums.DiaSemana;
 import com.laveronica.siscontrol.enums.Partida;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import com.laveronica.siscontrol.repositories.FacturaRepository;
@@ -70,7 +71,7 @@ public class NotaVentaService {
 
     @Transactional
     public DatosDetalleNota generarNotaDesdeOrden(DatosGenerarNotaDesdeOrden datos) {
-        OrdenCompra orden = ordenCompraRespository.findByIdAndActivoTrue(datos.ordenCompraId())
+        OrdenCompra orden = ordenCompraRespository.findByIdAndActivoTrueWithLock(datos.ordenCompraId())
                 .orElseThrow(() -> new ResourceNotFoundException("Orden de compra no encontrada"));
         if (facturaRepository.existsByOrdenCompraIdAndActivoTrue(orden.getId())) {
             throw new RuntimeException("La orden de compra ya tiene una factura generada. No se pueden crear nuevas notas.");
@@ -126,26 +127,11 @@ public class NotaVentaService {
     }
 
     private LocalDate calcularFechaNota(OrdenCompra orden, String dia) {
-        java.util.Map<String, Integer> offsets = java.util.Map.of(
-            "martes", 0, "miercoles", 1, "jueves", 2,
-            "viernes", 3, "sabado", 4, "domingo", 5, "lunes", 6
-        );
-        Integer offset = offsets.get(dia);
-        if (offset == null) return orden.getFechaInicioSemana();
-        return orden.getFechaInicioSemana().plusDays(offset);
+        return DiaSemana.fromString(dia).calcularFecha(orden.getFechaInicioSemana());
     }
 
     private Double getCantidadPorDia(OrdenCompraDetalle detalle, String dia) {
-        return switch (dia) {
-            case "lunes" -> detalle.getLunes();
-            case "martes" -> detalle.getMartes();
-            case "miercoles" -> detalle.getMiercoles();
-            case "jueves" -> detalle.getJueves();
-            case "viernes" -> detalle.getViernes();
-            case "sabado" -> detalle.getSabado();
-            case "domingo" -> detalle.getDomingo();
-            default -> null;
-        };
+        return DiaSemana.fromString(dia).getCantidad(detalle);
     }
 
     public Page<DatosListarNota> listarNotas(Pageable paginacion) {
@@ -193,6 +179,7 @@ public class NotaVentaService {
         NotaVenta nota = notaVentaValidacionesHelper.notaVentaExiste(id);
         verificarNotaNoFacturada(nota);
         nota.setActivo(false);
+        notaVentaRepository.save(nota);
     }
 
     @Transactional

@@ -1,14 +1,14 @@
 package com.laveronica.siscontrol.domain.categoria.validaciones.registro;
 
-import com.laveronica.siscontrol.repositories.CategoriaRepository;
 import com.laveronica.siscontrol.domain.categoria.dto.DatosRegistroCategoria;
 import com.laveronica.siscontrol.infra.exceptions.ex.RuleValidationException;
-import org.springframework.beans.factory.annotation.Autowired;
+import com.laveronica.siscontrol.repositories.CategoriaRepository;
+import lombok.RequiredArgsConstructor;
 
+@RequiredArgsConstructor
 public class ValidarNombreCategoria implements ValiadacionesRegistarCategorias {
 
-    @Autowired
-    private CategoriaRepository categoriaRepository;
+    private final CategoriaRepository categoriaRepository;
 
     @Override
     public void validar(DatosRegistroCategoria datos) {

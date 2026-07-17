@@ -9,27 +9,21 @@ import com.laveronica.siscontrol.domain.contratos.dto.DatosRegistroContrato;
 import com.laveronica.siscontrol.repositories.ContratoRepository;
 import com.laveronica.siscontrol.utils.helpers.ClienteValidacionesHelper;
 import com.laveronica.siscontrol.utils.helpers.ContratoValidacionesHelper;
+import lombok.RequiredArgsConstructor;
 import org.springframework.transaction.annotation.Transactional;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 
 @Service
+@RequiredArgsConstructor
 public class ContratoService {
 
-    @Autowired
-    private ContratoRepository contratoRepository;
-
-    @Autowired
-    private ClienteRepository clienteRepository;
-
-    @Autowired
-    private ClienteValidacionesHelper clienteValidacionesHelper;
-
-    @Autowired
-    private ContratoValidacionesHelper contratoValidacionesHelper;
+    private final ContratoRepository contratoRepository;
+    private final ClienteRepository clienteRepository;
+    private final ClienteValidacionesHelper clienteValidacionesHelper;
+    private final ContratoValidacionesHelper contratoValidacionesHelper;
 
     @Transactional
     public Contrato registrarContrato(@Valid DatosRegistroContrato datos) {
@@ -67,6 +61,14 @@ public class ContratoService {
 
         if (datos.presupuesto() != null) {
             contrato.setPresupuesto(datos.presupuesto());
+        }
+
+        if (datos.spei() != null) {
+            contrato.setSpei(datos.spei());
+        }
+
+        if (datos.detalles() != null) {
+            contrato.setDetalles(datos.detalles());
         }
 
         Contrato contratoActulizado = contratoRepository.save(contrato);

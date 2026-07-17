@@ -8,20 +8,18 @@ import com.laveronica.siscontrol.domain.ordencompradetalle.dto.DatosRegistroOrde
 import com.laveronica.siscontrol.domain.productos.Producto;
 import com.laveronica.siscontrol.utils.helpers.ProductoValidacionesHelper;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.util.List;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class OrdenCompraDetalleService {
 
-    @Autowired
-    private ProductoValidacionesHelper productoValidacionesHelper;
-
-    @Autowired
-    private OrdenCompraDetalleMapper ordenCompraDetalleMapper;
+    private final ProductoValidacionesHelper productoValidacionesHelper;
+    private final OrdenCompraDetalleMapper ordenCompraDetalleMapper;
 
     public List<OrdenCompraDetalle> registrarListaDetallesOrdenCompra(List<DatosRegistroOrdenCompraDetalle> datos, OrdenCompra ordenCompraNueva) {
 

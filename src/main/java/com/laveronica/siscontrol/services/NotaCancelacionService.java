@@ -9,6 +9,7 @@ import com.laveronica.siscontrol.domain.notaventa.dto.DatosDetalleNota;
 import com.laveronica.siscontrol.domain.notaventadetalle.NotaVentaDetalle;
 import com.laveronica.siscontrol.domain.ordencompra.OrdenCompra;
 import com.laveronica.siscontrol.domain.productos.Producto;
+import com.laveronica.siscontrol.enums.DiaSemana;
 import com.laveronica.siscontrol.infra.exceptions.ex.RecursoExistenteException;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import com.laveronica.siscontrol.repositories.NotaCancelacionRepository;
@@ -17,7 +18,7 @@ import com.laveronica.siscontrol.repositories.OrdenCompraRespository;
 import com.laveronica.siscontrol.utils.helpers.OrdenCompraValidacionesHelper;
 import com.laveronica.siscontrol.utils.helpers.ProductoValidacionesHelper;
 import jakarta.transaction.Transactional;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Service;
 
 import java.math.BigDecimal;
@@ -28,25 +29,15 @@ import java.util.Map;
 import java.util.stream.Collectors;
 
 @Service
+@RequiredArgsConstructor
 public class NotaCancelacionService {
 
-    @Autowired
-    private NotaCancelacionRepository cancelacionRepository;
-
-    @Autowired
-    private OrdenCompraValidacionesHelper ordenCompraValidacionesHelper;
-
-    @Autowired
-    private OrdenCompraRespository ordenCompraRespository;
-
-    @Autowired
-    private ProductoValidacionesHelper productoValidacionesHelper;
-
-    @Autowired
-    private NotaVentaRepository notaVentaRepository;
-
-    @Autowired
-    private NotaVentaDetalleService notaVentaDetalleService;
+    private final NotaCancelacionRepository cancelacionRepository;
+    private final OrdenCompraValidacionesHelper ordenCompraValidacionesHelper;
+    private final OrdenCompraRespository ordenCompraRespository;
+    private final ProductoValidacionesHelper productoValidacionesHelper;
+    private final NotaVentaRepository notaVentaRepository;
+    private final NotaVentaDetalleService notaVentaDetalleService;
 
     @Transactional
     public DatosListarCancelacion crearCancelacion(DatosRegistroCancelacion datos, String username) {
@@ -88,40 +79,56 @@ public class NotaCancelacionService {
         if (nc.getValidadoPor() != null) {
             throw new RecursoExistenteException("Esta cancelación ya fue validada");
         }
+
+        var nota = aplicarCancelacionANota(nc);
+
         nc.setValidadoPor(username);
         nc.setFechaValidacion(LocalDateTime.now());
         cancelacionRepository.save(nc);
 
-        aplicarCancelacionANota(nc);
         return new DatosListarCancelacion(nc);
     }
 
-    private void aplicarCancelacionANota(NotaCancelacion nc) {
+    private NotaVenta aplicarCancelacionANota(NotaCancelacion nc) {
         NotaVenta nota = notaVentaRepository
                 .findByOrdenCompraIdAndDiaAndActivoTrue(
                         nc.getOrdenCompra().getId(), nc.getDia())
                 .orElse(null);
-        if (nota == null) return;
+        if (nota == null) return null;
 
         for (NotaCancelacionDetalle detCancel : nc.getDetalles()) {
             String prodCancelId = detCancel.getProducto().getId();
             double cancelQty = detCancel.getCantidadCancelada();
 
-            nota.getDetalles().removeIf(detNota -> {
+            boolean encontrado = false;
+            for (NotaVentaDetalle detNota : nota.getDetalles()) {
                 if (detNota.getProducto().getId().equals(prodCancelId)) {
+                    encontrado = true;
+                    double totalCancelado = cancelQty;
                     int nuevaCant = detNota.getCantidad() - (int) Math.round(cancelQty);
-                    if (nuevaCant <= 0) return true;
-                    detNota.setCantidad(nuevaCant);
-                    detNota.setSubTotal(detNota.getPrecioVenta().multiply(new BigDecimal(nuevaCant)));
-                    return false;
+                    if (nuevaCant < 0) {
+                        throw new RuntimeException("La cancelación excede la cantidad disponible en la nota. Producto: "
+                                + detNota.getProducto().getNombre());
+                    }
+                    if (nuevaCant == 0) {
+                        nota.getDetalles().remove(detNota);
+                    } else {
+                        detNota.setCantidad(nuevaCant);
+                        detNota.setSubTotal(detNota.getPrecioVenta().multiply(new BigDecimal(nuevaCant)));
+                    }
+                    break;
                 }
-                return false;
-            });
+            }
+            if (!encontrado) {
+                throw new RuntimeException("Producto no encontrado en la nota: "
+                        + detCancel.getProducto().getNombre());
+            }
         }
 
         BigDecimal nuevoTotal = notaVentaDetalleService.calcularTotalGeneral(nota.getDetalles());
         nota.setTotalGeneral(nuevoTotal);
         notaVentaRepository.save(nota);
+        return nota;
     }
 
     @Transactional
@@ -134,7 +141,8 @@ public class NotaCancelacionService {
 
     @Transactional
     public List<DatosDetalleNota> reconstruirNotas(String ordenCompraId) {
-        OrdenCompra orden = ordenCompraValidacionesHelper.buscarOrdenCompraId(ordenCompraId);
+        OrdenCompra orden = ordenCompraRespository.findByIdAndActivoTrueWithLock(ordenCompraId)
+                .orElseThrow(() -> new ResourceNotFoundException("Orden de compra no encontrada"));
         List<NotaCancelacion> cancelaciones = cancelacionRepository
                 .findByOrdenCompraIdAndActivoTrue(ordenCompraId)
                 .stream().filter(nc -> nc.getValidadoPor() != null)
@@ -193,15 +201,6 @@ public class NotaCancelacionService {
     }
 
     private Double getCantidadPorDia(com.laveronica.siscontrol.domain.ordencompradetalle.OrdenCompraDetalle detalle, String dia) {
-        return switch (dia) {
-            case "lunes" -> detalle.getLunes();
-            case "martes" -> detalle.getMartes();
-            case "miercoles" -> detalle.getMiercoles();
-            case "jueves" -> detalle.getJueves();
-            case "viernes" -> detalle.getViernes();
-            case "sabado" -> detalle.getSabado();
-            case "domingo" -> detalle.getDomingo();
-            default -> null;
-        };
+        return DiaSemana.fromString(dia).getCantidad(detalle);
     }
 }

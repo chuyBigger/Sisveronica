@@ -3,15 +3,15 @@ package com.laveronica.siscontrol.utils.helpers;
 import com.laveronica.siscontrol.domain.clientes.Cliente;
 import com.laveronica.siscontrol.repositories.ClienteRepository;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 
 @Component
+@RequiredArgsConstructor
 public class ClienteValidacionesHelper {
 
-    @Autowired
-    private ClienteRepository clienteRepository;
+    private final ClienteRepository clienteRepository;
 
     public Cliente validaClienteExista(String cliente){
         if (cliente == null || cliente.isBlank()){

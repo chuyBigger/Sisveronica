@@ -3,14 +3,14 @@ package com.laveronica.siscontrol.utils.helpers;
 import com.laveronica.siscontrol.domain.notaventa.NotaVenta;
 import com.laveronica.siscontrol.infra.exceptions.ex.ResourceNotFoundException;
 import com.laveronica.siscontrol.repositories.NotaVentaRepository;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.stereotype.Component;
 
 @Component
+@RequiredArgsConstructor
 public class NotaVentaValidacionesHelper {
 
-    @Autowired
-    private NotaVentaRepository notaVentaRepository;
+    private final NotaVentaRepository notaVentaRepository;
 
     public NotaVenta notaVentaExiste(String id){
         if (id == null ){

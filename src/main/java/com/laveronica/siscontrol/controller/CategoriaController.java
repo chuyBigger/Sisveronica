@@ -5,11 +5,12 @@ import com.laveronica.siscontrol.domain.categoria.dto.DatosActualizarCategoria;
 import com.laveronica.siscontrol.domain.categoria.dto.DatosDetalleCategoria;
 import com.laveronica.siscontrol.domain.categoria.dto.DatosRegistroCategoria;
 import com.laveronica.siscontrol.services.CategoriaService;
+import com.laveronica.siscontrol.services.CategoriaService;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import io.swagger.v3.oas.annotations.tags.Tag;
 import jakarta.validation.Valid;
-import org.springframework.beans.factory.annotation.Autowired;
+import lombok.RequiredArgsConstructor;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.util.UriComponentsBuilder;
@@ -18,12 +19,12 @@ import java.util.List;
 
 @RestController
 @RequestMapping("/categorias")
+@RequiredArgsConstructor
 @Tag(name = "Categorías")
 @SecurityRequirement(name = "bearerAuth")
 public class CategoriaController {
 
-    @Autowired
-    private CategoriaService categoriaService;
+    private final CategoriaService categoriaService;
 
     @PostMapping
     @Operation(summary = "Registrar categoría")
