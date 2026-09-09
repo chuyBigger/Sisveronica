@@ -35,8 +35,14 @@ export class App implements OnInit, OnDestroy {
   router = inject(Router);
   private ngZone = inject(NgZone);
 
-  fecha = '';
-  hora = '';
+  get isLoginRoute(): boolean {
+    return this.router.url === '/' || this.router.url.startsWith('/?');
+  }
+
+  fecha = new Date().toLocaleDateString('es-MX', {
+    weekday: 'long', year: 'numeric', month: 'long', day: 'numeric',
+  });
+  hora = new Date().toLocaleTimeString('es-MX', { hour: '2-digit', minute: '2-digit', second: '2-digit' });
   darkMode = false;
   sidebarOpen = true;
   private timerId: any;
@@ -59,7 +65,6 @@ export class App implements OnInit, OnDestroy {
     this.darkMode = localStorage.getItem('darkMode') === 'true';
     if (this.darkMode) document.body.classList.add('dark-mode');
     this.sidebarOpen = localStorage.getItem('sidebarOpen') !== 'false';
-    this.actualizarReloj();
     this.ngZone.runOutsideAngular(() => {
       this.timerId = setInterval(() => {
         this.ngZone.run(() => this.actualizarReloj());

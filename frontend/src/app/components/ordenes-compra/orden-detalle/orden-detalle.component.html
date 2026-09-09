@@ -59,7 +59,7 @@
               </tr>
             </thead>
             <tbody>
-              @for (detalle of orden.detalles; track $index) {
+              @for (detalle of detallesVisibles; track $index) {
                 <tr>
                   <td class="col-prod">{{ detalle.productoNombre }}</td>
                   @for (dia of dias; track dia) {
@@ -73,7 +73,7 @@
               <tr>
                 <th>Totales</th>
                 @for (dia of dias; track dia) {
-                  <th>{{ sumarDia(orden.detalles, dia) }}</th>
+                  <th>{{ sumarDia(detallesVisibles, dia) }}</th>
                 }
                 <th>{{ totalGeneral() }}</th>
               </tr>

@@ -93,6 +93,71 @@
             }
           </mat-form-field>
 
+          <mat-form-field appearance="outline">
+            <mat-label>Clave Prod/Serv SAT</mat-label>
+            <input matInput formControlName="claveProductoServicio" placeholder="Clave SAT">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Clave Unidad SAT</mat-label>
+            <input matInput formControlName="claveUnidadMedida" placeholder="Ej: H87, 58">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Impuesto</mat-label>
+            <input matInput type="number" step="0.01" formControlName="impuesto" placeholder="0.00">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Descuentos</mat-label>
+            <input matInput type="number" step="0.01" formControlName="descuentos" placeholder="0.00">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>IEPS 1</mat-label>
+            <input matInput type="number" step="0.01" formControlName="ieps1" placeholder="0.00">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>IEPS 2</mat-label>
+            <input matInput type="number" step="0.01" formControlName="ieps2" placeholder="0.00">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Retención 1 Tipo</mat-label>
+            <input matInput formControlName="retencion1Tipo" placeholder="Tipo">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Retención 1</mat-label>
+            <input matInput type="number" step="0.01" formControlName="retencion1" placeholder="0.00">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Retención 2 Tipo</mat-label>
+            <input matInput formControlName="retencion2Tipo" placeholder="Tipo">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Retención 2</mat-label>
+            <input matInput type="number" step="0.01" formControlName="retencion2" placeholder="0.00">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Retención 3 Tipo</mat-label>
+            <input matInput formControlName="retencion3Tipo" placeholder="Tipo">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>Retención 3</mat-label>
+            <input matInput type="number" step="0.01" formControlName="retencion3" placeholder="0.00">
+          </mat-form-field>
+
+          <mat-form-field appearance="outline">
+            <mat-label>ID Externo</mat-label>
+            <input matInput type="number" formControlName="idExterno" placeholder="ID sistema facturación">
+          </mat-form-field>
+
           <div class="form-actions">
             <button mat-button type="button" (click)="cancelar()">Cancelar</button>
             <button mat-raised-button color="primary" type="submit" [disabled]="form.invalid">

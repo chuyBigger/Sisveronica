@@ -25,6 +25,10 @@
           <span class="info-value">{{ producto.categoria }}</span>
         </div>
         <div class="info-item">
+          <span class="info-label">Unidad Medida</span>
+          <span class="info-value">{{ producto.unidadMedida }}</span>
+        </div>
+        <div class="info-item">
           <span class="info-label">Precio de Venta</span>
           <span class="info-value precio">{{ producto.precioVenta | number:'1.2-2' }}</span>
         </div>
@@ -92,6 +96,71 @@
           @if (form.get('precioVenta')?.hasError('required')) {
             <mat-error>Requerido</mat-error>
           }
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Clave Prod/Serv SAT</mat-label>
+          <input matInput formControlName="claveProductoServicio">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Clave Unidad SAT</mat-label>
+          <input matInput formControlName="claveUnidadMedida">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Impuesto</mat-label>
+          <input matInput type="number" step="0.01" formControlName="impuesto">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Descuentos</mat-label>
+          <input matInput type="number" step="0.01" formControlName="descuentos">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>IEPS 1</mat-label>
+          <input matInput type="number" step="0.01" formControlName="ieps1">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>IEPS 2</mat-label>
+          <input matInput type="number" step="0.01" formControlName="ieps2">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Retención 1 Tipo</mat-label>
+          <input matInput formControlName="retencion1Tipo">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Retención 1</mat-label>
+          <input matInput type="number" step="0.01" formControlName="retencion1">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Retención 2 Tipo</mat-label>
+          <input matInput formControlName="retencion2Tipo">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Retención 2</mat-label>
+          <input matInput type="number" step="0.01" formControlName="retencion2">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Retención 3 Tipo</mat-label>
+          <input matInput formControlName="retencion3Tipo">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>Retención 3</mat-label>
+          <input matInput type="number" step="0.01" formControlName="retencion3">
+        </mat-form-field>
+
+        <mat-form-field appearance="outline">
+          <mat-label>ID Externo</mat-label>
+          <input matInput type="number" formControlName="idExterno">
         </mat-form-field>
       </form>
     }

@@ -367,7 +367,15 @@ export class OrdenDetalleComponent implements OnInit {
     return this.dias.reduce((sum, d) => sum + (detalle[d] || 0), 0);
   }
 
+  get detallesVisibles(): any[] {
+    return (this.orden?.detalles ?? []).filter((d: any) =>
+      (d.lunes ?? 0) !== 0 || (d.martes ?? 0) !== 0 || (d.miercoles ?? 0) !== 0 ||
+      (d.jueves ?? 0) !== 0 || (d.viernes ?? 0) !== 0 || (d.sabado ?? 0) !== 0 ||
+      (d.domingo ?? 0) !== 0
+    );
+  }
+
   totalGeneral(): number {
-    return this.orden.detalles.reduce((sum, d) => sum + this.totalRow(d), 0);
+    return this.detallesVisibles.reduce((sum, d) => sum + this.totalRow(d), 0);
   }
 }

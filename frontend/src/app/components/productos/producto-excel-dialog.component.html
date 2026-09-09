@@ -10,8 +10,18 @@
     <div class="upload-section">
       <p class="instructions">
         Selecciona un archivo <strong>.xlsx</strong> con los productos a registrar.
-        <br>El archivo debe tener las columnas: Nombre, Partida, Categoría, Código, Unidad Medida, Precio Compra, Precio Venta.
+        <br>Soporta formato interno (Nombre, Partida, Categoría, Código, Unidad Medida, Precio Compra, Precio Venta)
+        y formato de reporte del sistema de facturación.
       </p>
+
+      <mat-form-field appearance="outline" class="full-width">
+        <mat-label>Partida para los productos</mat-label>
+        <mat-select [(ngModel)]="partidaCarga">
+          @for (p of partidas; track p) {
+            <mat-option [value]="p">{{ p }}</mat-option>
+          }
+        </mat-select>
+      </mat-form-field>
 
       <div class="file-input-wrapper">
         <input
@@ -34,7 +44,7 @@
           mat-raised-button
           color="primary"
           (click)="cargar()"
-          [disabled]="!archivoSeleccionado || cargando">
+          [disabled]="!archivoSeleccionado || !partidaCarga || cargando">
           @if (cargando) {
             <mat-spinner diameter="20"></mat-spinner>
           } @else {
@@ -63,6 +73,13 @@
       </div>
     </div>
 
+  } @else if (errorMessage) {
+    <div class="report-section">
+      <h3>Error</h3>
+      <div class="report-details">
+        <p>{{ errorMessage }}</p>
+      </div>
+    </div>
   } @else {
     <div class="report-section">
       <h3>Reporte de carga</h3>
@@ -107,6 +124,18 @@
         <mat-divider></mat-divider>
         <div class="report-details">
           <h4>Sin precio de venta</h4>
+          <ul>
+            @for (msg of reporte.mensajesSinPrecio; track $index) {
+              <li>{{ msg }}</li>
+            }
+          </ul>
+        </div>
+      }
+
+      @if (reporte.totalProcesados === 0 && reporte.exitosos === 0 && reporte.duplicados === 0 && reporte.sinPrecio === 0 && reporte.mensajesDuplicados.length === 0 && reporte.mensajesSinPrecio.length > 0) {
+        <mat-divider></mat-divider>
+        <div class="report-details">
+          <h4>Errores</h4>
           <ul>
             @for (msg of reporte.mensajesSinPrecio; track $index) {
               <li>{{ msg }}</li>

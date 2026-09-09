@@ -52,7 +52,7 @@ export class ProductoListaComponent implements AfterViewInit {
   private router = inject(Router);
   private cdr = inject(ChangeDetectorRef);
 
-  displayedColumns: string[] = ['codigo', 'nombre', 'partida', 'categoria', 'precioVenta', 'acciones'];
+  displayedColumns: string[] = ['codigo', 'nombre', 'partida', 'categoria', 'unidadMedida', 'precioVenta', 'claveProductoServicio', 'acciones'];
   dataSource = new MatTableDataSource<DatosListarProductos>([]);
   totalElements = 0;
   searchQuery = '';

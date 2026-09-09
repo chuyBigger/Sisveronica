@@ -31,10 +31,12 @@ export class ProductoExcelDialogComponent implements OnInit {
 
   partidas: string[] = [];
   partidaExportar = '';
+  partidaCarga = '';
 
   cargando = false;
   archivoSeleccionado: File | null = null;
   reporte: ReporteCargaProductos | null = null;
+  errorMessage = '';
 
   ngOnInit(): void {
     this.enumsService.getPartidas().subscribe(res => this.partidas = res);
@@ -48,18 +50,20 @@ export class ProductoExcelDialogComponent implements OnInit {
   }
 
   cargar(): void {
-    if (!this.archivoSeleccionado) return;
+    if (!this.archivoSeleccionado || !this.partidaCarga) return;
 
     this.cargando = true;
-    this.productoExcelService.cargarProductos(this.archivoSeleccionado).subscribe({
+    this.productoExcelService.cargarProductos(this.archivoSeleccionado, this.partidaCarga).subscribe({
       next: (reporte) => {
         this.reporte = reporte;
         this.cargando = false;
         this.snackBar.open(`Carga completada: ${reporte.exitosos} exitosos`, 'Cerrar', { duration: 5000 });
       },
-      error: () => {
-        this.snackBar.open('Error al cargar el archivo', 'Cerrar', { duration: 3000 });
+      error: (err) => {
+        this.reporte = { totalProcesados: 0, exitosos: 0, duplicados: 0, sinPrecio: 0, mensajesDuplicados: [], mensajesSinPrecio: [] };
+        this.errorMessage = err?.status ? `Error del servidor (${err.status})` : 'Error de conexión con el servidor';
         this.cargando = false;
+        this.snackBar.open('Error al cargar el archivo', 'Cerrar', { duration: 3000 });
       },
     });
   }

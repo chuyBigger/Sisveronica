@@ -1,4 +1,4 @@
-@if (router.url !== '/') {
+@if (!isLoginRoute) {
   <div class="top-header">
     <div class="header-left">
       <button mat-icon-button (click)="toggleSidebar()" class="hamburger-btn">

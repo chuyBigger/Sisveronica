@@ -18,10 +18,11 @@ export class ProductoExcelService {
 
   constructor(private http: HttpClient) {}
 
-  cargarProductos(archivo: File): Observable<ReporteCargaProductos> {
+  cargarProductos(archivo: File, partida?: string): Observable<ReporteCargaProductos> {
     const formData = new FormData();
     formData.append('archivo', archivo);
-    return this.http.post<ReporteCargaProductos>(`${this.apiUrl}/cargar`, formData);
+    const params = partida ? `?partida=${encodeURIComponent(partida)}` : '';
+    return this.http.post<ReporteCargaProductos>(`${this.apiUrl}/cargar${params}`, formData);
   }
 
   descargarPlantilla(): Observable<Blob> {

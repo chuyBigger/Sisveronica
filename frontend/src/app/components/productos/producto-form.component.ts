@@ -69,6 +69,19 @@ export class ProductoFormComponent implements OnInit {
     codigo: [''],
     precioCompra: [null],
     precioVenta: ['', Validators.required],
+    claveProductoServicio: [''],
+    claveUnidadMedida: [''],
+    impuesto: [null],
+    descuentos: [null],
+    ieps1: [null],
+    ieps2: [null],
+    retencion1Tipo: [''],
+    retencion1: [null],
+    retencion2Tipo: [''],
+    retencion2: [null],
+    retencion3Tipo: [''],
+    retencion3: [null],
+    idExterno: [null],
   });
 
   ngOnInit(): void {

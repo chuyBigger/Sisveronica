@@ -66,10 +66,11 @@ export class LoginComponent implements OnInit {
       error: (err) => {
         this.cargando = false;
         if (err.status === 0 || err.status === 503 || err.status === 504) {
-          this.snackBar.open('El servidor no está disponible. Verifique la conexión.', 'Cerrar', { duration: 5000 });
+          this.snackBar.open('El servidor no está disponible. Verifique la conexión.', 'Cerrar', { duration: 3000 });
         } else {
           this.snackBar.open(err.error?.error || 'Credenciales incorrectas', 'Cerrar', { duration: 3000 });
         }
+        setTimeout(() => window.location.reload(), 1000);
       },
     });
   }
