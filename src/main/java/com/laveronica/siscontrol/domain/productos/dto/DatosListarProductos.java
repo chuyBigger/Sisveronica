@@ -15,7 +15,13 @@ public record DatosListarProductos(
         String categoria,
         String codigo,
         @Schema(description = "Precio de venta")
-        BigDecimal precioVenta
+        BigDecimal precioVenta,
+        @Schema(description = "Unidad de medida")
+        String unidadMedida,
+        @Schema(description = "Clave del producto/servicio SAT")
+        String claveProductoServicio,
+        @Schema(description = "Clave de unidad de medida SAT")
+        String claveUnidadMedida
 
 ) {
 
@@ -27,7 +33,10 @@ public record DatosListarProductos(
                 producto.getPartida().name(),
                 producto.getCategoria() != null ? producto.getCategoria().getNombre() : "",
                 producto.getCodigo(),
-                producto.getPrecioVenta()
+                producto.getPrecioVenta(),
+                producto.getUnidadMedida().name(),
+                producto.getClaveProductoServicio(),
+                producto.getClaveUnidadMedida()
         );
 
     }

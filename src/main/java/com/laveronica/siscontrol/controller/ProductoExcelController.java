@@ -30,8 +30,10 @@ public class ProductoExcelController {
     @Operation(summary = "Cargar productos desde Excel")
     @ApiResponse(responseCode = "400", description = "Archivo vacío o formato inválido", content = @Content)
     @ApiResponse(responseCode = "500", description = "Error interno al procesar el archivo", content = @Content)
-    public ResponseEntity<DatosReporteCargaProductos> cargarProductos(@RequestParam("archivo") MultipartFile archivo) {
-        DatosReporteCargaProductos reporte = productoExcelService.cargarProductosDesdeExcel(archivo);
+    public ResponseEntity<DatosReporteCargaProductos> cargarProductos(
+            @RequestParam("archivo") MultipartFile archivo,
+            @RequestParam(value = "partida", required = false) String partida) {
+        DatosReporteCargaProductos reporte = productoExcelService.cargarProductosDesdeExcel(archivo, partida);
         return ResponseEntity.ok(reporte);
     }
 

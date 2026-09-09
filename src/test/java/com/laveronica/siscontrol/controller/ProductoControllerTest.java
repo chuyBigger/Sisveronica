@@ -45,8 +45,8 @@ class ProductoControllerTest {
     @Test
     @WithMockUser
     void registrar_DeberiaRetornar201() throws Exception {
-        var request = new DatosRegistroProducto("Leche Entera", "LACTEOS", "1", UnidadMedida.LITRO, BigDecimal.valueOf(15), BigDecimal.valueOf(22), null);
-        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+        var request = new DatosRegistroProducto("Leche Entera", "LACTEOS", "1", UnidadMedida.LITRO, BigDecimal.valueOf(15), BigDecimal.valueOf(22), null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001", null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         given(productoService.registrarProducto(any())).willReturn(response);
 
@@ -62,7 +62,7 @@ class ProductoControllerTest {
     @Test
     @WithMockUser
     void listarProductos_DeberiaRetornar200() throws Exception {
-        var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22));
+        var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22), "PIEZA", null, null);
         Page<DatosListarProductos> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 9), 1);
 
         given(productoService.listaProductos(any())).willReturn(page);
@@ -75,7 +75,7 @@ class ProductoControllerTest {
     @Test
     @WithMockUser
     void listarProductosPartida_DeberiaRetornar200() throws Exception {
-        var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22));
+        var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22), "PIEZA", null, null);
         Page<DatosListarProductos> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 10), 1);
 
         given(productoService.listaProductosPartida(any(), any())).willReturn(page);
@@ -88,7 +88,7 @@ class ProductoControllerTest {
     @Test
     @WithMockUser
     void listarProductosCategoria_DeberiaRetornar200() throws Exception {
-        var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22));
+        var producto = new DatosListarProductos("uuid-1", "leche entera", "LACTEOS", "Lacteos", "PROD-001", BigDecimal.valueOf(22), "PIEZA", null, null);
         Page<DatosListarProductos> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 10), 1);
 
         given(productoService.listaProdictosCategoriaId(any(), any())).willReturn(page);
@@ -101,7 +101,7 @@ class ProductoControllerTest {
     @Test
     @WithMockUser
     void buscarProductoId_DeberiaRetornar200() throws Exception {
-        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001", null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         given(productoService.buscarProductoId("uuid-1")).willReturn(response);
 
@@ -113,7 +113,7 @@ class ProductoControllerTest {
     @Test
     @WithMockUser
     void buscarProductoNombre_DeberiaRetornar200() throws Exception {
-        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001", null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         given(productoService.buscarProductoNombre("leche")).willReturn(response);
 
@@ -125,7 +125,7 @@ class ProductoControllerTest {
     @Test
     @WithMockUser
     void buscarProductosPorPalabra_DeberiaRetornar200() throws Exception {
-        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+        var response = new DatosDetalleProducto("uuid-1", "leche entera", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001", null, null, null, null, null, null, null, null, null, null, null, null, null);
         Page<DatosDetalleProducto> page = new PageImpl<>(List.of(response), PageRequest.of(0, 10), 1);
 
         given(productoService.buscarProductosPorPalabra(any(), any())).willReturn(page);
@@ -138,8 +138,8 @@ class ProductoControllerTest {
     @Test
     @WithMockUser
     void actualizarProducto_DeberiaRetornar200() throws Exception {
-        var request = new DatosActualizarProducto("Leche Deslactosada", null, null, null, null, null, null);
-        var response = new DatosDetalleProducto("uuid-1", "leche deslactosada", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001");
+        var request = new DatosActualizarProducto("Leche Deslactosada", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
+        var response = new DatosDetalleProducto("uuid-1", "leche deslactosada", "LACTEOS", "1", "LITRO", BigDecimal.valueOf(15), BigDecimal.valueOf(22), "PROD-001", null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         given(productoService.actualizarProductoId(any(), any())).willReturn(response);
 

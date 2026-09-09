@@ -38,7 +38,7 @@ class ProductoExcelControllerTest {
         var file = new MockMultipartFile("archivo", "productos.xlsx", "application/vnd.openxmlformats-officedocument.spreadsheetml.sheet", "contenido del excel".getBytes());
         var response = new DatosReporteCargaProductos(1, 1, 0, 0, List.of(), List.of());
 
-        given(productoExcelService.cargarProductosDesdeExcel(any())).willReturn(response);
+        given(productoExcelService.cargarProductosDesdeExcel(any(), any())).willReturn(response);
 
         mockMvc.perform(MockMvcRequestBuilders.multipart("/productos/excel/cargar")
                         .file(file)

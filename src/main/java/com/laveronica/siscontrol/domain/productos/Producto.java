@@ -47,6 +47,38 @@ public class Producto {
     @Column(name = "precio_venta")
     private BigDecimal precioVenta;
 
+    @Column(name = "clave_producto_servicio")
+    private String claveProductoServicio;
+
+    @Column(name = "clave_unidad_medida")
+    private String claveUnidadMedida;
+
+    private BigDecimal impuesto;
+
+    private BigDecimal descuentos;
+
+    private BigDecimal ieps1;
+
+    private BigDecimal ieps2;
+
+    @Column(name = "retencion1_tipo")
+    private String retencion1Tipo;
+
+    private BigDecimal retencion1;
+
+    @Column(name = "retencion2_tipo")
+    private String retencion2Tipo;
+
+    private BigDecimal retencion2;
+
+    @Column(name = "retencion3_tipo")
+    private String retencion3Tipo;
+
+    private BigDecimal retencion3;
+
+    @Column(name = "id_externo")
+    private Long idExterno;
+
     @Column(nullable = false)
     private Boolean activo;
 }

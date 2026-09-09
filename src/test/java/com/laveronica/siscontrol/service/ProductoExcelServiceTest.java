@@ -58,7 +58,7 @@ class ProductoExcelServiceTest {
         given(categoriaValidacionesHelper.validarCategoriaActiva("Verduras"))
                 .willThrow(new RuntimeException("Categoría no encontrada"));
 
-        DatosReporteCargaProductos result = productoExcelService.cargarProductosDesdeExcel(archivo);
+        DatosReporteCargaProductos result = productoExcelService.cargarProductosDesdeExcel(archivo, null);
 
         assertThat(result).isNotNull();
         assertThat(result.totalProcesados()).isEqualTo(1);
@@ -70,7 +70,7 @@ class ProductoExcelServiceTest {
 
         MultipartFile archivo = createMockMultipartFile("test.xlsx", excelContent);
 
-        DatosReporteCargaProductos result = productoExcelService.cargarProductosDesdeExcel(archivo);
+        DatosReporteCargaProductos result = productoExcelService.cargarProductosDesdeExcel(archivo, null);
 
         assertThat(result).isNotNull();
         assertThat(result.sinPrecio()).isEqualTo(1);
@@ -85,7 +85,7 @@ class ProductoExcelServiceTest {
 
         given(productosRepository.existsByNombre("producto duplicado")).willReturn(true);
 
-        DatosReporteCargaProductos result = productoExcelService.cargarProductosDesdeExcel(archivo);
+        DatosReporteCargaProductos result = productoExcelService.cargarProductosDesdeExcel(archivo, null);
 
         assertThat(result).isNotNull();
         assertThat(result.duplicados()).isEqualTo(1);

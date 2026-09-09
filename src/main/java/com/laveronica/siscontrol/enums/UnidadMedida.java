@@ -6,7 +6,10 @@ public enum UnidadMedida {
     KILO,
     LITRO,
     PIEZA,
-    PAQUETE;
+    PAQUETE,
+    LATA,
+    KILOGRAMO,
+    FRASCO;
 
     @JsonCreator
     public static UnidadMedida fromString(String value){

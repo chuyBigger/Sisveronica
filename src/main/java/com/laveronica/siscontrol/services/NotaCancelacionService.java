@@ -46,6 +46,14 @@ public class NotaCancelacionService {
             throw new ResourceNotFoundException("Orden de compra no encontrada");
         }
 
+        notaVentaRepository.findByOrdenCompraIdAndDiaAndActivoTrue(datos.ordenCompraId(), datos.dia())
+                .ifPresent(nota -> {
+                    if (Boolean.TRUE.equals(nota.getFirmada())) {
+                        throw new RecursoExistenteException(
+                                "No se puede crear una cancelación porque la nota del día " + datos.dia() + " ya está firmada");
+                    }
+                });
+
         NotaCancelacion nc = new NotaCancelacion();
         nc.setOrdenCompra(orden);
         nc.setDia(datos.dia());
@@ -79,6 +87,15 @@ public class NotaCancelacionService {
         if (nc.getValidadoPor() != null) {
             throw new RecursoExistenteException("Esta cancelación ya fue validada");
         }
+
+        notaVentaRepository.findByOrdenCompraIdAndDiaAndActivoTrue(
+                        nc.getOrdenCompra().getId(), nc.getDia())
+                .ifPresent(nota -> {
+                    if (Boolean.TRUE.equals(nota.getFirmada())) {
+                        throw new RecursoExistenteException(
+                                "No se puede validar la cancelación porque la nota del día " + nc.getDia() + " ya está firmada");
+                    }
+                });
 
         var nota = aplicarCancelacionANota(nc);
 

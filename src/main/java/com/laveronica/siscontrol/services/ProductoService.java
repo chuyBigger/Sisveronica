@@ -56,6 +56,19 @@ public class ProductoService {
         } else {
             nuevoProducto.setCodigo("PROD-" + System.currentTimeMillis());
         }
+        nuevoProducto.setClaveProductoServicio(datos.claveProductoServicio());
+        nuevoProducto.setClaveUnidadMedida(datos.claveUnidadMedida());
+        nuevoProducto.setImpuesto(datos.impuesto());
+        nuevoProducto.setDescuentos(datos.descuentos());
+        nuevoProducto.setIeps1(datos.ieps1());
+        nuevoProducto.setIeps2(datos.ieps2());
+        nuevoProducto.setRetencion1Tipo(datos.retencion1Tipo());
+        nuevoProducto.setRetencion1(datos.retencion1());
+        nuevoProducto.setRetencion2Tipo(datos.retencion2Tipo());
+        nuevoProducto.setRetencion2(datos.retencion2());
+        nuevoProducto.setRetencion3Tipo(datos.retencion3Tipo());
+        nuevoProducto.setRetencion3(datos.retencion3());
+        nuevoProducto.setIdExterno(datos.idExterno());
         var producto = productosRepository.save(nuevoProducto);
         return productoMapper.toDetalleDto(producto);
     }
@@ -135,6 +148,45 @@ public class ProductoService {
         }
         if (datos.codigo() != null) {
             productoActualizado.setCodigo(datos.codigo().toUpperCase().trim());
+        }
+        if (datos.claveProductoServicio() != null) {
+            productoActualizado.setClaveProductoServicio(datos.claveProductoServicio());
+        }
+        if (datos.claveUnidadMedida() != null) {
+            productoActualizado.setClaveUnidadMedida(datos.claveUnidadMedida());
+        }
+        if (datos.impuesto() != null) {
+            productoActualizado.setImpuesto(datos.impuesto());
+        }
+        if (datos.descuentos() != null) {
+            productoActualizado.setDescuentos(datos.descuentos());
+        }
+        if (datos.ieps1() != null) {
+            productoActualizado.setIeps1(datos.ieps1());
+        }
+        if (datos.ieps2() != null) {
+            productoActualizado.setIeps2(datos.ieps2());
+        }
+        if (datos.retencion1Tipo() != null) {
+            productoActualizado.setRetencion1Tipo(datos.retencion1Tipo());
+        }
+        if (datos.retencion1() != null) {
+            productoActualizado.setRetencion1(datos.retencion1());
+        }
+        if (datos.retencion2Tipo() != null) {
+            productoActualizado.setRetencion2Tipo(datos.retencion2Tipo());
+        }
+        if (datos.retencion2() != null) {
+            productoActualizado.setRetencion2(datos.retencion2());
+        }
+        if (datos.retencion3Tipo() != null) {
+            productoActualizado.setRetencion3Tipo(datos.retencion3Tipo());
+        }
+        if (datos.retencion3() != null) {
+            productoActualizado.setRetencion3(datos.retencion3());
+        }
+        if (datos.idExterno() != null) {
+            productoActualizado.setIdExterno(datos.idExterno());
         }
         return new DatosDetalleProducto(productoActualizado);
     }

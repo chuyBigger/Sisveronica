@@ -67,14 +67,14 @@ class ProductoServiceTest {
 
     @Test
     void registrarProductoSuccess() {
-        var datos = new DatosRegistroProducto("leche", "LACTEOS", "1", UnidadMedida.LITRO, BigDecimal.TEN, BigDecimal.valueOf(20), null);
+        var datos = new DatosRegistroProducto("leche", "LACTEOS", "1", UnidadMedida.LITRO, BigDecimal.TEN, BigDecimal.valueOf(20), null, null, null, null, null, null, null, null, null, null, null, null, null, null);
         Categoria categoria = new Categoria();
         categoria.setId("1");
         categoria.setNombre("Lacteos");
         Producto producto = new Producto();
         producto.setId("uuid-1");
         producto.setNombre("leche");
-        var detalle = new DatosDetalleProducto("uuid-1", "leche", "LACTEOS", "1", "LITRO", BigDecimal.TEN, BigDecimal.valueOf(20), "PROD-001");
+        var detalle = new DatosDetalleProducto("uuid-1", "leche", "LACTEOS", "1", "LITRO", BigDecimal.TEN, BigDecimal.valueOf(20), "PROD-001", null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         given(productoValidacionesHelper.validarNombreNoExista(datos)).willReturn("leche");
         given(partidaValidacionesHelper.validaPartidaExistaString("LACTEOS")).willReturn(Partida.LACTEOS);
@@ -101,6 +101,7 @@ class ProductoServiceTest {
         producto.setPartida(Partida.LACTEOS);
         producto.setCategoria(categoria);
         producto.setCodigo("PROD-001");
+        producto.setUnidadMedida(UnidadMedida.LITRO);
         producto.setPrecioVenta(BigDecimal.valueOf(20));
         Page<Producto> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 9), 1);
 
@@ -119,6 +120,7 @@ class ProductoServiceTest {
         producto.setId("uuid-1");
         producto.setNombre("carne");
         producto.setPartida(partida);
+        producto.setUnidadMedida(UnidadMedida.KILO);
         producto.setPrecioVenta(BigDecimal.valueOf(50));
         Page<Producto> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 9), 1);
 
@@ -142,6 +144,7 @@ class ProductoServiceTest {
         producto.setNombre("leche");
         producto.setPartida(Partida.LACTEOS);
         producto.setCategoria(categoria);
+        producto.setUnidadMedida(UnidadMedida.LITRO);
         producto.setPrecioVenta(BigDecimal.valueOf(20));
         Page<Producto> page = new PageImpl<>(List.of(producto), PageRequest.of(0, 9), 1);
 
@@ -240,7 +243,7 @@ class ProductoServiceTest {
         producto.setPrecioCompra(BigDecimal.TEN);
         producto.setPrecioVenta(BigDecimal.valueOf(20));
 
-        var datos = new DatosActualizarProducto("leche fresca", "CARNES", "2", "KILO", BigDecimal.valueOf(15), BigDecimal.valueOf(25), "LEC-001");
+        var datos = new DatosActualizarProducto("leche fresca", "CARNES", "2", "KILO", BigDecimal.valueOf(15), BigDecimal.valueOf(25), "LEC-001", null, null, null, null, null, null, null, null, null, null, null, null, null);
         Categoria nuevaCategoria = new Categoria();
         nuevaCategoria.setId("2");
         nuevaCategoria.setNombre("Carnes");
@@ -262,7 +265,7 @@ class ProductoServiceTest {
 
     @Test
     void actualizarProductoIdThrowsResourceNotFoundException() {
-        var datos = new DatosActualizarProducto("nuevo", null, null, null, null, null, null);
+        var datos = new DatosActualizarProducto("nuevo", null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null, null);
 
         given(productosRepository.findById("bad-id")).willReturn(Optional.empty());
 
